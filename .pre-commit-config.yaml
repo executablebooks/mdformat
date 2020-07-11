@@ -1,0 +1,41 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: ebc15addedad713c86ef18ae9632c88e187dd0af  # frozen: v3.1.0
+  hooks:
+  - id: check-yaml
+  - id: check-toml
+- repo: https://github.com/pre-commit/pygrep-hooks
+  rev: 0d7d077d6ed5624854f93ac601739c1804ebeb98  # frozen: v1.5.1
+  hooks:
+  - id: python-use-type-annotations
+  - id: python-check-blanket-noqa
+- repo: https://github.com/timothycrosley/isort
+  rev: ceabe5320d6f117ad501f038bc0e85d5f720ee41  # frozen: 5.0.7
+  hooks:
+  - id: isort
+- repo: https://github.com/psf/black
+  rev: 6bedb5c58a7d8c25aa9509f8217bc24e9797e90d  # frozen: 19.10b0
+  hooks:
+  - id: black
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: d6e31aeb109d8ff85282c3fd632c89f8ea7b0dee  # frozen: v0.782
+  hooks:
+  - id: mypy
+    args:
+    # Suppress errors resulting from no access to dependencies
+    - --ignore-missing-imports
+    - --no-warn-unused-ignores
+    # Allow multiple scripts (no .py postfix in name) to be checked in a single mypy invocation
+    - --scripts-are-modules
+- repo: https://gitlab.com/pycqa/flake8
+  rev: 05f6544aef321e2fee03a1277ce2eef8880fb927  # frozen: 3.8.3
+  hooks:
+  - id: flake8
+    additional_dependencies:
+    - flake8-bugbear
+    - flake8-builtins
+    - flake8-comprehensions
+- repo: https://github.com/myint/docformatter
+  rev: de0bf8fa254d25a01383fecdb6335bea01daeae3  # frozen: v1.3.1
+  hooks:
+  - id: docformatter

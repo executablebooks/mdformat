@@ -1,0 +1,6 @@
+[flake8]
+max-line-length = 88
+max-complexity = 10
+# These checks violate PEP8 so let's ignore them
+extend-ignore = E203
+extend-exclude = */site-packages/*

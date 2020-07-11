@@ -1,0 +1,6 @@
+- id: mdformat
+  name: mdformat
+  description: "CommonMark compliant Markdown formatter"
+  entry: mdformat
+  language: python
+  types: [markdown]

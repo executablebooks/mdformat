@@ -1,0 +1,76 @@
+[build-system]
+requires = ["poetry>=1.0.9"]
+build-backend = "poetry.masonry.api"
+
+
+[tool.poetry]
+name = "mdformat"
+version = "0.0.0"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
+authors = ["hukkinj1 <hukkinj1@users.noreply.github.com>"]
+description = "CommonMark compliant Markdown formatter"
+repository = "https://github.com/hukkinj1/mdformat"
+readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Environment :: Console",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup",
+    "Typing :: Typed",
+]
+keywords = ["markdown", "commonmark", "formatter"]
+
+packages = [
+    {include = "mdformat"},
+]
+include = ["mdformat/py.typed"]
+
+[tool.poetry.urls]
+"Changelog" = "https://github.com/hukkinj1/mdformat/blob/master/CHANGELOG.md"
+
+[tool.poetry.scripts]
+mdformat = "mdformat.__main__:run_cli"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+markdown-it-py = "^0.4.7"
+typing-extensions = { version = "^3.7.4", python = "<3.8" }
+
+[tool.poetry.dev-dependencies]
+# Tests
+pytest = ">=6.0.0rc1"
+pytest-randomly = "*"
+pytest-cov = "*"
+
+# Linting
+isort = "*"
+black = { version = "*", allow-prereleases = true }
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-builtins = "*"
+flake8-comprehensions = "*"
+mypy = "*"
+docformatter = "*"
+
+# Tools
+pre-commit = "*"
+bump2version = "*"
+
+
+[tool.isort]
+skip = ["venv"]
+# Force imports to be sorted by module, independent of import type
+force_sort_within_sections = true
+# Group first party and local folder imports together
+no_lines_before = ["LOCALFOLDER"]
+
+# Configure isort to work without access to site-packages
+known_first_party = ["mdformat", "tests"]
+
+# Settings for Black compatibility
+profile = "black"
+
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers"
+xfail_strict = true
