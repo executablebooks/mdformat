@@ -20,7 +20,8 @@ script:
       mypy . &&
       isort --check-only . &&
       black --check . &&
-      docformatter --recursive --check mdformat/ tests/
+      docformatter --recursive --check mdformat/ tests/ &&
+      mdformat --check README.md
     fi
   # Tests
   - pytest --cov # --cov-fail-under=95
