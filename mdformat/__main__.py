@@ -5,6 +5,7 @@ import sys
 from markdown_it import MarkdownIt
 
 from mdformat._renderer import RendererCmark
+from mdformat._util import is_md_equal
 
 
 def run_cli() -> None:
@@ -29,6 +30,15 @@ def run_cli() -> None:
                 print(f'Error: File "{path}" is not formatted.')
                 sys.exit(1)
         else:
+            if not is_md_equal(original_str, formatted_str):
+                print(
+                    f'Error: Could not format "{path}"\n'
+                    "\n"
+                    "The formatted Markdown renders to different HTML than the input Markdown.\n"  # noqa: E501
+                    "This is likely a bug in mdformat. Please create an issue report here:\n"  # noqa: E501
+                    "https://github.com/hukkinj1/mdformat/issues"
+                )
+                sys.exit(1)
             with path.open(mode="w") as f:
                 f.write(formatted_str)
 
