@@ -70,11 +70,6 @@ def test_cmark_renderer(entry):
     """
     if entry["name"] in {"289", "291", "294"}:
         pytest.xfail("These fail due to imperfect tight list whitespace handling")
-    if entry["name"] == "311":
-        pytest.xfail(
-            "This fails due to problems handling"
-            " entity and numeric character whitespace"
-        )
 
     md_original = entry["md"]
     html_original = MarkdownIt().render(md_original)

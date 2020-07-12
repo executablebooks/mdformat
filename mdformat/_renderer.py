@@ -214,9 +214,6 @@ class RendererCmark:
         # multiplying backslashes.
         text = text.replace("\\", "\\\\")
 
-        # if text.startswith("-"):
-        #     text = "\\-" + text[1:]
-
         text = text.replace("#", "\\#")
         text = text.replace("*", "\\*")
         text = text.replace("[", "\\[")
@@ -237,6 +234,9 @@ class RendererCmark:
             "&#9;" + line[1:] if line.startswith("\t") else line for line in lines
         )
         text = "\n".join(starting_tabs_replaced)
+
+        # Replace no-break space with decimal represenation
+        text = text.replace(chr(160), "&#160;")
 
         # The parser can give us consecutive newlines which can break
         # the markdown structure. Replace two or more consecutive newlines
