@@ -18,7 +18,7 @@ def run_cli() -> None:
 
     for path in args.paths:
         if not path.is_file():
-            print(f'Error: File "{path}" does not exist.')
+            sys.stderr.write(f'Error: File "{path}" does not exist.\n')
             sys.exit(1)
 
     for path in args.paths:
@@ -27,16 +27,16 @@ def run_cli() -> None:
 
         if args.check:
             if formatted_str != original_str:
-                print(f'Error: File "{path}" is not formatted.')
+                sys.stderr.write(f'Error: File "{path}" is not formatted.\n')
                 sys.exit(1)
         else:
             if not is_md_equal(original_str, formatted_str):
-                print(
+                sys.stderr.write(
                     f'Error: Could not format "{path}"\n'
                     "\n"
                     "The formatted Markdown renders to different HTML than the input Markdown.\n"  # noqa: E501
                     "This is likely a bug in mdformat. Please create an issue report here:\n"  # noqa: E501
-                    "https://github.com/hukkinj1/mdformat/issues"
+                    "https://github.com/hukkinj1/mdformat/issues\n"
                 )
                 sys.exit(1)
             with path.open(mode="w") as f:
