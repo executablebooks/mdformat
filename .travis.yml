@@ -24,7 +24,7 @@ script:
       mdformat --check README.md
     fi
   # Tests
-  - pytest --cov # --cov-fail-under=95
+  - pytest --cov --cov-fail-under=95
 after_success:
   # Upload coverage (only in Python 3.6 job, to not spam codecov with the same coverage report)
   - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install codecov && codecov; fi
