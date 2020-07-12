@@ -39,7 +39,3 @@ repos:
   rev: de0bf8fa254d25a01383fecdb6335bea01daeae3  # frozen: v1.3.1
   hooks:
   - id: docformatter
-- repo: https://github.com/hukkinj1/mdformat
-  rev: 455addd06c321784180b563dc9187be27e33dbd6  # frozen: 0.0.1
-  hooks:
-  - id: mdformat

@@ -1,11 +1,10 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
-import pytest
 from markdown_it import MarkdownIt
+import pytest
 
 from mdformat._renderer import RendererCmark
-
 
 SPECTESTS_PATH = Path(__file__).parent.joinpath("data/spec.json")
 SPECTESTS_CASES = tuple(
@@ -27,9 +26,9 @@ MY_TEST_CASES = (
         "name": "simple",
         "md": "# BIG Title\n" "> a quote here\n\n" "Paragraph is here.\n",
     },
-    {"name": "strikethrough", "md": "# Testing strikethrough\n" "~~here goes~~\n",},
-    {"name": "inline code", "md": "`print('Hello World!)`\n",},
-    {"name": "escape char", "md": "\\*not emphasized\\*\n",},
+    {"name": "strikethrough", "md": "# Testing strikethrough\n" "~~here goes~~\n"},
+    {"name": "inline code", "md": "`print('Hello World!)`\n"},
+    {"name": "escape char", "md": "\\*not emphasized\\*\n"},
     {
         "name": "fenced code",
         "md": "## Here's a code block\n"
@@ -37,24 +36,24 @@ MY_TEST_CASES = (
         "print('Hello world!')\n"
         "```\n",
     },
-    {"name": "paragraph line feeds", "md": "first paragraph\n\n" "second one\n",},
-    {"name": "thematic break", "md": "thematic break\n\n" "---\n" "above\n",},
-    {"name": "autolink", "md": "<http://foo.bar.baz>\n",},
-    {"name": "link", "md": '[link](/uri "title")\n' "[link](/uri)\n" "[link]()\n",},
-    {"name": "image", "md": '![foo](/url "title")\n' "![foo [bar](/url)](/url2)\n",},
-    {"name": "unordered list", "md": "- item1\n" "- item2\n",},
-    {"name": "unordered loose list", "md": "- item1\n" "\n" "- item2\n",},
-    {"name": "ordered list", "md": "1. item1\n" "1. item2\n",},
-    {"name": "ordered list 2", "md": "10021. item1\n" "10021. item2\n",},
-    {"name": "ordered list zero", "md": "0. item1\n" "0. item2\n",},
-    {"name": "whitespace preserve", "md": "- foo\n\n\tbar\n",},
-    {"name": "debug", "md": "> ```\n> a\n> \n> \n> ```\n",},
-    {"name": "list indentation", "md": "- foo\n\n\t\tbar\n",},
-    {"name": "list in quote", "md": "> -",},
-    {"name": "reference link", "md": '[foo][bar]\n\n[bar]: /url "title"\n',},
-    {"name": "empty file", "md": "",},
-    {"name": "whitespace only", "md": "  \n\n \n  \n",},
-    {"name": "soft breaks", "md": "this is\nall one\nparagraph\n",},
+    {"name": "paragraph line feeds", "md": "first paragraph\n\n" "second one\n"},
+    {"name": "thematic break", "md": "thematic break\n\n" "---\n" "above\n"},
+    {"name": "autolink", "md": "<http://foo.bar.baz>\n"},
+    {"name": "link", "md": '[link](/uri "title")\n' "[link](/uri)\n" "[link]()\n"},
+    {"name": "image", "md": '![foo](/url "title")\n' "![foo [bar](/url)](/url2)\n"},
+    {"name": "unordered list", "md": "- item1\n" "- item2\n"},
+    {"name": "unordered loose list", "md": "- item1\n" "\n" "- item2\n"},
+    {"name": "ordered list", "md": "1. item1\n" "1. item2\n"},
+    {"name": "ordered list 2", "md": "10021. item1\n" "10021. item2\n"},
+    {"name": "ordered list zero", "md": "0. item1\n" "0. item2\n"},
+    {"name": "whitespace preserve", "md": "- foo\n\n\tbar\n"},
+    {"name": "debug", "md": "> ```\n> a\n> \n> \n> ```\n"},
+    {"name": "list indentation", "md": "- foo\n\n\t\tbar\n"},
+    {"name": "list in quote", "md": "> -"},
+    {"name": "reference link", "md": '[foo][bar]\n\n[bar]: /url "title"\n'},
+    {"name": "empty file", "md": ""},
+    {"name": "whitespace only", "md": "  \n\n \n  \n"},
+    {"name": "soft breaks", "md": "this is\nall one\nparagraph\n"},
 )
 
 
@@ -63,10 +62,11 @@ ALL_TESTS = MY_TEST_CASES + SPECTESTS_CASES
 
 @pytest.mark.parametrize("entry", ALL_TESTS, ids=[c["name"] for c in ALL_TESTS])
 def test_cmark_renderer(entry):
-    """
+    """Test Markdown renderer against the Commonmark spec.
+
     Test that:
-      1. HTML is the same before and after RendererCmark
-      2. Markdown after 1st pass and 2nd pass of RendererCmark are equal
+    1. HTML is the same before and after RendererCmark
+    2. Markdown after 1st pass and 2nd pass of RendererCmark are equal
     """
     if entry["name"] in {"289", "291", "294"}:
         pytest.xfail("These fail due to imperfect tight list whitespace handling")

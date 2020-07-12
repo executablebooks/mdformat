@@ -1,8 +1,7 @@
 import inspect
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 from markdown_it.token import Token
-
 
 # This fixes some issues with tight list newlines, but definitely
 # misses some corner cases.
@@ -27,14 +26,18 @@ class RendererCmark:
         }
 
     def render(
-        self, tokens: List[Token], options: dict, env: dict, *, _recursion_level: int = 0
+        self,
+        tokens: List[Token],
+        options: dict,
+        env: dict,
+        *,
+        _recursion_level: int = 0,
     ) -> str:
         """Takes token stream and generates Markdown.
 
         :param tokens: list on block tokens to render
         :param options: params of parser instance
         :param env: additional data from parsed input
-
         """
         assert _recursion_level in {
             0,
@@ -84,11 +87,14 @@ class RendererCmark:
             rendered_content = rendered_content.rstrip("\n") + "\n"
         return rendered_content
 
-    def renderInlineAsText(self, tokens: Optional[List[Token]], options: dict, env: dict) -> str:
-        """Special kludge for image `alt` attributes to conform CommonMark spec.
+    def renderInlineAsText(
+        self, tokens: Optional[List[Token]], options: dict, env: dict
+    ) -> str:
+        """Special kludge for image `alt` attributes to conform CommonMark
+        spec.
 
-        Don't try to use it! Spec requires to show `alt` content with stripped markup,
-        instead of simple escaping.
+        Don't try to use it! Spec requires to show `alt` content with
+        stripped markup, instead of simple escaping.
         """
         result = ""
         if not tokens:
@@ -104,7 +110,7 @@ class RendererCmark:
 
         return result
 
-    def renderToken(
+    def renderToken(  # noqa: C901
         self, tokens: List[Token], idx: int, options: dict, env: dict
     ) -> str:
         token = tokens[idx]
@@ -157,7 +163,9 @@ class RendererCmark:
             return '![{}]({} "{}")'.format(label, uri, title)
         return "![{}]({})".format(label, uri)
 
-    def code_inline(self, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+    def code_inline(
+        self, tokens: List[Token], idx: int, options: dict, env: dict
+    ) -> str:
         code = tokens[idx].content
         if not code.strip():  # If all chars are whitespace
             return f"`{code}`"
@@ -177,7 +185,9 @@ class RendererCmark:
 
         return f"{fence_str}{lang}\n{code_block}{fence_str}\n"
 
-    def code_block(self, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+    def code_block(
+        self, tokens: List[Token], idx: int, options: dict, env: dict
+    ) -> str:
         return self.fence(tokens, idx, options, env)
 
     def html_block(self, tokens: List[Token], idx: int, *args: Any) -> str:
@@ -186,10 +196,14 @@ class RendererCmark:
     def html_inline(self, tokens: List[Token], idx: int, *args: Any) -> str:
         return tokens[idx].content
 
-    def hardbreak(self, tokens: List[Token], idx: int, options: dict, *args: Any) -> str:
+    def hardbreak(
+        self, tokens: List[Token], idx: int, options: dict, *args: Any
+    ) -> str:
         return "\\" + "\n"
 
-    def softbreak(self, tokens: List[Token], idx: int, options: dict, *args: Any) -> str:
+    def softbreak(
+        self, tokens: List[Token], idx: int, options: dict, *args: Any
+    ) -> str:
         return "\n"
 
     def text(self, tokens: List[Token], idx: int, *args: Any) -> str:
@@ -229,7 +243,8 @@ class RendererCmark:
         # with newline character's decimal reference.
         text = "&#10;&#10;".join(text.split("\n\n"))
 
-        # === or --- sequences can seem like a header when aligned properly. Escape them.
+        # === or --- sequences can seem like a header when aligned
+        # properly. Escape them.
         text = "\\=\\=\\=".join(text.split("==="))
         text = "\\-\\-\\-".join(text.split("---"))
 
@@ -245,13 +260,13 @@ class RendererCmark:
         return text
 
     class ContainerBlockRenderers:
-        """
-        A namespace for functions that render the markdown of
-        complete container blocks.
-        """
+        """A namespace for functions that render the markdown of complete
+        container blocks."""
 
         @staticmethod
-        def default(text: str, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+        def default(
+            text: str, tokens: List[Token], idx: int, options: dict, env: dict
+        ) -> str:
             """Default formatter for tokens that don't have one implemented."""
             return text
 
@@ -273,8 +288,10 @@ class RendererCmark:
         ) -> str:
             """Return one list item as string.
 
-            The string contains LIST_ITEM_MARKERs and INDENTATION_MARKERs which
-            have to be replaced in later processing."""
+            The string contains LIST_ITEM_MARKERs and
+            INDENTATION_MARKERs which have to be replaced in later
+            processing.
+            """
             without_trailing_newlines = text.rstrip("\n")
             trailing_newline_count = len(text) - len(without_trailing_newlines)
             lines = without_trailing_newlines.splitlines()
@@ -357,9 +374,10 @@ class RendererCmark:
 
             # TODO: Make this logic happen in the closing token of the bullet list
             #       or ordered list (for all lines if one line is not "hidden").
-            #       ENABLE_HACKY_TIGHT_LIST_FIX attempts to do exactly this, but passes
-            #       less tests than using this logic here. When used together, these two hacks
-            #       pass more tests than alone... There must be a cleaner way
+            #       ENABLE_HACKY_TIGHT_LIST_FIX attempts to do exactly this, but
+            #       passes less tests than using this logic here. When used
+            #       together, these two hacks pass more tests than alone...
+            #       There must be a cleaner way
             closing_token = tokens[idx]
             if closing_token.hidden:
                 return text + "\n"
