@@ -25,8 +25,8 @@ packages = [
 ]
 include = ["mdformat/py.typed"]
 
-[tool.poetry.urls]
-"Changelog" = "https://github.com/hukkinj1/mdformat/blob/master/CHANGELOG.md"
+#[tool.poetry.urls]
+#"Changelog" = "https://github.com/hukkinj1/mdformat/blob/master/CHANGELOG.md"
 
 [tool.poetry.scripts]
 mdformat = "mdformat.__main__:run_cli"
@@ -34,7 +34,6 @@ mdformat = "mdformat.__main__:run_cli"
 [tool.poetry.dependencies]
 python = "^3.6"
 markdown-it-py = "^0.4.7"
-typing-extensions = { version = "^3.7.4", python = "<3.8" }
 
 [tool.poetry.dev-dependencies]
 # Tests
