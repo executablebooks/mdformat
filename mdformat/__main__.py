@@ -2,6 +2,10 @@ import argparse
 from pathlib import Path
 import sys
 
+from markdown_it import MarkdownIt
+
+from mdformat._renderer import RendererCmark
+
 
 def run_cli() -> None:
     parser = argparse.ArgumentParser(
@@ -17,11 +21,8 @@ def run_cli() -> None:
             sys.exit(1)
 
     for path in args.paths:
-        with path.open() as f:
-            original_str = f.read()
-
-        # TODO: do formatting here
-        formatted_str = original_str
+        original_str = path.read_text()
+        formatted_str = MarkdownIt(renderer_cls=RendererCmark).render(original_str)
 
         if args.check:
             if formatted_str != original_str:
