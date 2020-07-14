@@ -114,20 +114,12 @@ class RendererCmark:
 
         return result
 
-    def renderToken(  # noqa: C901
+    def renderToken(
         self, tokens: List[Token], idx: int, options: dict, env: dict
     ) -> str:
         token = tokens[idx]
 
-        if token.type == "em_open":
-            return token.markup
-        elif token.type == "em_close":
-            return token.markup
-        elif token.type == "strong_open":
-            return token.markup
-        elif token.type == "strong_close":
-            return token.markup
-        elif token.type == "link_open":
+        if token.type == "link_open":
             if token.markup == "autolink":
                 return "<"
             return "["
@@ -228,7 +220,7 @@ class RendererCmark:
         text = text.replace("&", "\\&")
 
         # Solves a test for Rule 12 of Emphasis and strong emphasis.
-        # Should look into only making the replace in emphasis blocks.
+        # TODO: Should look into only making the replace in emphasis/strong blocks.
         text = text.replace("_", "\\_")
 
         # Replace line starting tabs with numeric decimal representation.
@@ -397,6 +389,20 @@ class RendererCmark:
 
             return prefix + newlines_removed + BLOCK_SEPARATOR
 
+        @staticmethod
+        def strong_close(
+            text: str, tokens: List[Token], idx: int, options: dict, env: dict
+        ) -> str:
+            indicator = tokens[idx].markup
+            return indicator + text + indicator
+
+        @staticmethod
+        def em_close(
+            text: str, tokens: List[Token], idx: int, options: dict, env: dict
+        ) -> str:
+            indicator = tokens[idx].markup
+            return indicator + text + indicator
+
 
 def _index_opening_token(tokens: List[Token], closing_token_idx: int) -> int:
     closing_tkn = tokens[closing_token_idx]
@@ -466,6 +472,20 @@ def _is_text_inside_autolink(tokens: List[Token], idx: int) -> bool:
         return False
     previous_token = tokens[idx - 1]
     return previous_token.type == "link_open" and previous_token.markup == "autolink"
+
+
+def _is_in_block(tokens: List[Token], idx: int, block_closing_tkn_type: str) -> bool:
+    """Is tokens[idx] in a block closed by block_closing_tkn_type?"""
+    assert tokens[idx].type == "text"
+    if tokens[idx].level == 0:
+        return False
+    current_lvl = tokens[idx].level
+    for i in range(idx + 1, len(tokens)):
+        if tokens[i].level < current_lvl:
+            current_lvl = tokens[i].level
+            if tokens[i].type == block_closing_tkn_type:
+                return True
+    return False
 
 
 def _escape_dots_after_digit(text: str) -> str:

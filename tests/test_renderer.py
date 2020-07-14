@@ -54,6 +54,7 @@ MY_TEST_CASES = (
     {"name": "empty file", "md": ""},
     {"name": "whitespace only", "md": "  \n\n \n  \n"},
     {"name": "soft breaks", "md": "this is\nall one\nparagraph\n"},
+    {"name": "escape underscore", "md": "# foo _bar_ \\_baz\\_\n"},
 )
 
 
