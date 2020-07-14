@@ -33,8 +33,8 @@ This will not apply any changes to the files. If a file is not properly formatte
 
 ### As a pre-commit hook
 
-` mdformat ` can be used as a [pre-commit](<https://github.com/pre-commit/pre-commit>) hook.
-Add the following to your project's ` .pre-commit-config.yaml ` to enable this:
+`mdformat` can be used as a [pre-commit](<https://github.com/pre-commit/pre-commit>) hook.
+Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ~~~yaml
 - repo: https://github.com/hukkinj1/mdformat
