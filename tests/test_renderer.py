@@ -68,9 +68,6 @@ def test_cmark_renderer(entry):
     1. HTML is the same before and after RendererCmark
     2. Markdown after 1st pass and 2nd pass of RendererCmark are equal
     """
-    if entry["name"] in {"289", "291", "294"}:
-        pytest.xfail("These fail due to imperfect tight list whitespace handling")
-
     md_original = entry["md"]
     html_original = MarkdownIt().render(md_original)
     md_new = MarkdownIt(renderer_cls=RendererCmark).render(md_original)

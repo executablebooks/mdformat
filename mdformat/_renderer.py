@@ -3,16 +3,18 @@ from typing import Any, List, Optional
 
 from markdown_it.token import Token
 
-# This fixes some issues with tight list newlines, but definitely
-# misses some corner cases.
-ENABLE_HACKY_TIGHT_LIST_FIX = True
-
-
 # Marks that can be used markdown that is not yet fully processed.
 # "\x00" is invalid Markdown so a string that contains it can't be
 # naturally exist in Markdown.
-LIST_ITEM_MARKER = "\x00list-item"
-INDENTATION_MARKER = "\x00indentation"
+LIST_ITEM_MARKER = "\x00 0 list-item"
+INDENTATION_MARKER = "\x00 1 indentation"
+# We add BLOCK_SEPARATOR instead of newlines at the end of every block.
+# We convert it to newlines when closing
+#   - a list item
+#   - a list
+#   - a blockquote
+#   - the root document
+BLOCK_SEPARATOR = "\x00 2 block-separator"
 
 
 class RendererCmark:
@@ -84,7 +86,9 @@ class RendererCmark:
         assert not text_stack, "Text stack should be empty before returning"
 
         if not _recursion_level:
-            rendered_content = rendered_content.rstrip("\n") + "\n"
+            rendered_content = _removesuffix(rendered_content, BLOCK_SEPARATOR)
+            rendered_content = rendered_content.replace(BLOCK_SEPARATOR, "\n\n")
+            rendered_content = rendered_content + "\n"
         return rendered_content
 
     def renderInlineAsText(
@@ -139,7 +143,7 @@ class RendererCmark:
             title = _escape_link_title(title)
             return '](<{}> "{}")'.format(uri, title)
         elif token.type == "hr":
-            return "___\n"
+            return "___" + BLOCK_SEPARATOR
         return ""
 
     ###################################################################
@@ -183,7 +187,7 @@ class RendererCmark:
         fence_len = max(3, _longest_consecutive_sequence(code_block, "~") + 1)
         fence_str = "~" * fence_len
 
-        return f"{fence_str}{lang}\n{code_block}{fence_str}\n"
+        return f"{fence_str}{lang}\n{code_block}{fence_str}" + BLOCK_SEPARATOR
 
     def code_block(
         self, tokens: List[Token], idx: int, options: dict, env: dict
@@ -191,7 +195,7 @@ class RendererCmark:
         return self.fence(tokens, idx, options, env)
 
     def html_block(self, tokens: List[Token], idx: int, *args: Any) -> str:
-        return tokens[idx].content.rstrip("\n") + "\n\n"
+        return tokens[idx].content.rstrip("\n") + BLOCK_SEPARATOR
 
     def html_inline(self, tokens: List[Token], idx: int, *args: Any) -> str:
         return tokens[idx].content
@@ -274,13 +278,14 @@ class RendererCmark:
         def blockquote_close(
             text: str, tokens: List[Token], idx: int, options: dict, env: dict
         ) -> str:
-            without_trailing_newlines = text.rstrip("\n")
-            lines = without_trailing_newlines.splitlines()
+            text = _removesuffix(text, BLOCK_SEPARATOR)
+            text = text.replace(BLOCK_SEPARATOR, "\n\n")
+            lines = text.splitlines()
             if not lines:
-                return ">" + "\n\n"
+                return ">" + BLOCK_SEPARATOR
             tabbed_lines = (f"> {line}" for line in lines)
             tabbed_str = "\n".join(tabbed_lines)
-            return tabbed_str + "\n\n"
+            return tabbed_str + BLOCK_SEPARATOR
 
         @staticmethod
         def list_item_close(
@@ -292,18 +297,22 @@ class RendererCmark:
             INDENTATION_MARKERs which have to be replaced in later
             processing.
             """
-            without_trailing_newlines = text.rstrip("\n")
-            trailing_newline_count = len(text) - len(without_trailing_newlines)
-            lines = without_trailing_newlines.splitlines()
+            text = _removesuffix(text, BLOCK_SEPARATOR)
+            if _is_tight_list_item(tokens, idx):
+                text = text.replace(BLOCK_SEPARATOR, "\n")
+            else:
+                text = text.replace(BLOCK_SEPARATOR, "\n\n")
+
+            lines = text.splitlines()
             if not lines:
-                return LIST_ITEM_MARKER + "\n"
+                return LIST_ITEM_MARKER + BLOCK_SEPARATOR
             indented = []
             for i, line in enumerate(lines):
                 if i == 0:
                     indented.append(LIST_ITEM_MARKER + line)
                 else:
                     indented.append(INDENTATION_MARKER + line)
-            tabbed_str = "\n".join(indented) + "\n" * trailing_newline_count
+            tabbed_str = "\n".join(indented) + BLOCK_SEPARATOR
             return tabbed_str
 
         @staticmethod
@@ -312,17 +321,17 @@ class RendererCmark:
         ) -> str:
             last_item_closing_tkn = tokens[idx - 1]
 
-            if ENABLE_HACKY_TIGHT_LIST_FIX:
-                if _is_tight_list(tokens, idx):
-                    text = text.replace(
-                        "\n\n" + LIST_ITEM_MARKER, "\n" + LIST_ITEM_MARKER
-                    )
+            text = _removesuffix(text, BLOCK_SEPARATOR)
+            if _is_tight_list(tokens, idx):
+                text = text.replace(BLOCK_SEPARATOR, "\n")
+            else:
+                text = text.replace(BLOCK_SEPARATOR, "\n\n")
 
             bullet_marker = last_item_closing_tkn.markup + " "
             indentation = " " * len(bullet_marker)
             text = text.replace(LIST_ITEM_MARKER, bullet_marker)
             text = text.replace(INDENTATION_MARKER, indentation)
-            return text + "\n"
+            return text + BLOCK_SEPARATOR
 
         @staticmethod
         def ordered_list_close(
@@ -331,11 +340,11 @@ class RendererCmark:
             last_item_closing_tkn = tokens[idx - 1]
             number_marker = last_item_closing_tkn.markup
 
-            if ENABLE_HACKY_TIGHT_LIST_FIX:
-                if _is_tight_list(tokens, idx):
-                    text = text.replace(
-                        "\n\n" + LIST_ITEM_MARKER, "\n" + LIST_ITEM_MARKER
-                    )
+            text = _removesuffix(text, BLOCK_SEPARATOR)
+            if _is_tight_list(tokens, idx):
+                text = text.replace(BLOCK_SEPARATOR, "\n")
+            else:
+                text = text.replace(BLOCK_SEPARATOR, "\n\n")
 
             # Replace first LIST_ITEM_MARKER with the starting number of the list.
             # Replace following LIST_ITEM_MARKERs with number one prefixed by zeros
@@ -357,7 +366,7 @@ class RendererCmark:
             text = text.replace(LIST_ITEM_MARKER, other_item_marker)
             text = text.replace(INDENTATION_MARKER, indentation)
 
-            return text + "\n"
+            return text + BLOCK_SEPARATOR
 
         @staticmethod
         def paragraph_close(
@@ -368,21 +377,7 @@ class RendererCmark:
             lines = text.split("\n")
             lines = [f"\\{line}" if line.startswith("-") else line for line in lines]
             text = "\n".join(lines)
-
-            # if ENABLE_HACKY_TIGHT_LIST_FIX:
-            #     return text + "\n\n"
-
-            # TODO: Make this logic happen in the closing token of the bullet list
-            #       or ordered list (for all lines if one line is not "hidden").
-            #       ENABLE_HACKY_TIGHT_LIST_FIX attempts to do exactly this, but
-            #       passes less tests than using this logic here. When used
-            #       together, these two hacks pass more tests than alone...
-            #       There must be a cleaner way
-            closing_token = tokens[idx]
-            if closing_token.hidden:
-                return text + "\n"
-
-            return text + "\n\n"
+            return text + BLOCK_SEPARATOR
 
         @staticmethod
         def heading_close(
@@ -400,7 +395,7 @@ class RendererCmark:
             # header always. Convert newlines to spaces.
             newlines_removed = text.replace("\n", " ").rstrip()
 
-            return prefix + newlines_removed + "\n"
+            return prefix + newlines_removed + BLOCK_SEPARATOR
 
 
 def _index_opening_token(tokens: List[Token], closing_token_idx: int) -> int:
@@ -435,6 +430,16 @@ def _is_tight_list(tokens: List[Token], closing_token_idx: int) -> bool:
         if not is_tight:
             return False
     return True
+
+
+def _is_tight_list_item(tokens: List[Token], closing_token_idx: int) -> bool:
+    list_item_closing_tkn = tokens[closing_token_idx]
+    assert list_item_closing_tkn.type == "list_item_close"
+
+    for i in range(closing_token_idx, len(tokens)):
+        if tokens[i].level < list_item_closing_tkn.level:
+            return _is_tight_list(tokens, i)
+    raise ValueError("List closing token not found")
 
 
 def _longest_consecutive_sequence(seq: str, char: str) -> int:
@@ -473,3 +478,9 @@ def _escape_dots_after_digit(text: str) -> str:
             escaped_str += c
         is_prev_digit = c.isdigit()
     return escaped_str
+
+
+def _removesuffix(string: str, suffix: str) -> str:
+    if suffix and string.endswith(suffix):
+        return string[: -len(suffix)]
+    return string
