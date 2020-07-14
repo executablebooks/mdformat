@@ -163,9 +163,10 @@ class RendererCmark:
         self, tokens: List[Token], idx: int, options: dict, env: dict
     ) -> str:
         code = tokens[idx].content
-        if not code.strip():  # If all chars are whitespace
-            return f"`{code}`"
+        all_chars_are_whitespace = not code.strip()
         longest_backtick_seq = _longest_consecutive_sequence(code, "`")
+        if not longest_backtick_seq or all_chars_are_whitespace:
+            return f"`{code}`"
         separator = "`" * (longest_backtick_seq + 1)
         return f"{separator} {code} {separator}"
 
