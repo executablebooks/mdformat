@@ -204,6 +204,13 @@ class RendererCmark:
         return "\n"
 
     def text(self, tokens: List[Token], idx: int, *args: Any) -> str:
+        """Process a text token.
+
+        Text should always be a child of an inline token enclosed by a
+          - heading
+          - paragraph
+          - autolink (any link?)
+        """
         text = tokens[idx].content
         if _is_text_inside_autolink(tokens, idx):
             return text

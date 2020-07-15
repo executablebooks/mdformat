@@ -12,9 +12,13 @@ def run_cli() -> None:
     parser = argparse.ArgumentParser(
         description="CommonMark compliant Markdown formatter"
     )
-    parser.add_argument("paths", type=Path, nargs="+", help="Files to format")
+    parser.add_argument("paths", type=Path, nargs="*", help="Files to format")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
+
+    if not args.paths:
+        sys.stderr.write(f'No files have been passed in. Doing nothing.\n')
+        sys.exit(0)
 
     for path in args.paths:
         if not path.is_file():
