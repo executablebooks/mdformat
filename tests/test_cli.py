@@ -1,3 +1,6 @@
+from io import StringIO
+import sys
+
 from mdformat._cli import run
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
@@ -29,3 +32,10 @@ def test_check__fail(tmp_path):
     file_path = tmp_path / "test_markdown.md"
     file_path.write_text(UNFORMATTED_MARKDOWN)
     assert run((str(file_path), "--check")) == 1
+
+
+def test_dash_stdin(capsys, monkeypatch):
+    monkeypatch.setattr(sys, "stdin", StringIO(UNFORMATTED_MARKDOWN))
+    run(("-",))
+    captured = capsys.readouterr()
+    assert captured.out == FORMATTED_MARKDOWN
