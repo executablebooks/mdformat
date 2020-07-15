@@ -1,5 +1,5 @@
 import argparse
-from pathlib import Path
+import os
 import sys
 from typing import Sequence
 
@@ -13,7 +13,7 @@ def run(cli_args: Sequence[str]) -> int:
     parser = argparse.ArgumentParser(
         description="CommonMark compliant Markdown formatter"
     )
-    parser.add_argument("paths", type=Path, nargs="*", help="Files to format")
+    parser.add_argument("paths", nargs="*", help="Files to format")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(cli_args)
 
@@ -22,12 +22,16 @@ def run(cli_args: Sequence[str]) -> int:
         return 0
 
     for path in args.paths:
-        if not path.is_file():
+        if not (os.path.isfile(path) or path == "-"):
             sys.stderr.write(f'Error: File "{path}" does not exist.\n')
             return 1
 
     for path in args.paths:
-        original_str = path.read_text()
+        if path == "-":
+            original_str = sys.stdin.read()
+        else:
+            with open(path, encoding="utf-8") as f:
+                original_str = f.read()
         formatted_str = MarkdownIt(renderer_cls=RendererCmark).render(original_str)
 
         if args.check:
@@ -44,6 +48,9 @@ def run(cli_args: Sequence[str]) -> int:
                     "https://github.com/hukkinj1/mdformat/issues\n"
                 )
                 return 1
-            with path.open(mode="w") as f:
-                f.write(formatted_str)
+            if path == "-":
+                sys.stdout.write(formatted_str)
+            else:
+                with open(path, mode="w", encoding="utf-8") as f:
+                    f.write(formatted_str)
     return 0
