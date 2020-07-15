@@ -1,4 +1,5 @@
 import inspect
+import re
 from typing import Any, List, Optional
 
 from markdown_it.token import Token
@@ -224,7 +225,6 @@ class RendererCmark:
         text = text.replace("]", "\\]")
         text = text.replace("<", "\\<")
         text = text.replace("`", "\\`")
-        text = _escape_dots_after_digit(text)
         text = text.replace("&", "\\&")
 
         # Solves a test for Rule 12 of Emphasis and strong emphasis.
@@ -372,11 +372,24 @@ class RendererCmark:
         def paragraph_close(
             text: str, tokens: List[Token], idx: int, options: dict, env: dict
         ) -> str:
+            lines = text.split("\n")
+
             # Make sure a paragraph line does not start with "-"
             # (otherwise it will be interpreted as list item).
-            lines = text.split("\n")
             lines = [f"\\{line}" if line.startswith("-") else line for line in lines]
+            # If a line starts with a number followed by "." or ")", escape the "." or
+            # ")" or it will be interpreted as ordered list item.
+            lines = [
+                line.replace(")", "\\)", 1) if re.match(r"[0-9]+\)", line) else line
+                for line in lines
+            ]
+            lines = [
+                line.replace(".", "\\.", 1) if re.match(r"[0-9]+\.", line) else line
+                for line in lines
+            ]
+
             text = "\n".join(lines)
+
             return text + BLOCK_SEPARATOR
 
         @staticmethod
@@ -494,18 +507,6 @@ def _is_in_block(tokens: List[Token], idx: int, block_closing_tkn_type: str) -> 
             if tokens[i].type == block_closing_tkn_type:
                 return True
     return False
-
-
-def _escape_dots_after_digit(text: str) -> str:
-    escaped_str = ""
-    is_prev_digit = False
-    for c in text:
-        if is_prev_digit and c == ".":
-            escaped_str += "\\."
-        else:
-            escaped_str += c
-        is_prev_digit = c.isdigit()
-    return escaped_str
 
 
 def _removesuffix(string: str, suffix: str) -> str:

@@ -55,6 +55,10 @@ MY_TEST_CASES = (
     {"name": "whitespace only", "md": "  \n\n \n  \n"},
     {"name": "soft breaks", "md": "this is\nall one\nparagraph\n"},
     {"name": "escape underscore", "md": "# foo _bar_ \\_baz\\_\n"},
+    {
+        "name": "extend spectest 300",
+        "md": "\\_not emphasized_\n1\\) not a list\n\\- not a list\n",
+    },
 )
 
 
@@ -62,7 +66,7 @@ ALL_TESTS = MY_TEST_CASES + SPECTESTS_CASES
 
 
 @pytest.mark.parametrize("entry", ALL_TESTS, ids=[c["name"] for c in ALL_TESTS])
-def test_cmark_renderer(entry):
+def test_renderer_correctness(entry):
     """Test Markdown renderer against the Commonmark spec.
 
     Test that:
