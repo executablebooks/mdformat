@@ -17,7 +17,7 @@ def run_cli() -> None:
     args = parser.parse_args()
 
     if not args.paths:
-        sys.stderr.write(f'No files have been passed in. Doing nothing.\n')
+        sys.stderr.write("No files have been passed in. Doing nothing.\n")
         sys.exit(0)
 
     for path in args.paths:
