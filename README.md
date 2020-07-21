@@ -6,8 +6,10 @@
 
 > CommonMark compliant Markdown formatter
 
-**WARNING:** This is pre-alpha software.
+**WARNING:**
+Mdformat is still in an early phase of development.
 There is no stable library API, and the Markdown formatting rules may change at any time.
+It is recommended to pin mdformat dependency to an exact version.
 
 ## Installing
 
@@ -29,7 +31,8 @@ mdformat README.md CHANGELOG.md
 mdformat --check README.md CHANGELOG.md
 ~~~
 
-This will not apply any changes to the files. If a file is not properly formatted, the exit code will be non-zero.
+This will not apply any changes to the files.
+If a file is not properly formatted, the exit code will be non-zero.
 
 ### As a pre-commit hook
 
