@@ -21,8 +21,17 @@ pip install mdformat
 
 ### Format files
 
+Format files `README.md` and `CHANGELOG.md` in place
+
 ~~~bash
 mdformat README.md CHANGELOG.md
+~~~
+
+Read Markdown from standard input until `EOF`.
+Write formatted Markdown to standard output.
+
+~~~bash
+mdformat -
 ~~~
 
 ### Check formatting
