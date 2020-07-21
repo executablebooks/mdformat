@@ -283,9 +283,9 @@ class RendererCmark:
             lines = text.splitlines()
             if not lines:
                 return ">" + BLOCK_SEPARATOR
-            tabbed_lines = (f"> {line}" for line in lines)
-            tabbed_str = "\n".join(tabbed_lines)
-            return tabbed_str + BLOCK_SEPARATOR
+            quoted_lines = (f"> {line}" if line else ">" for line in lines)
+            quoted_str = "\n".join(quoted_lines)
+            return quoted_str + BLOCK_SEPARATOR
 
         @staticmethod
         def list_item_close(

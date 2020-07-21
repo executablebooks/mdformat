@@ -94,3 +94,30 @@ def test_renderer_correctness(entry):
 
     assert equal_html
     assert equal_md_2nd_pass
+
+
+STYLE_TESTS = (
+    {
+        "name": "strip paragraph lines",
+        "input_md": "trailing whitespace \n"
+        "at the end of paragraph lines \n"
+        "should be stripped                   \n",
+        "output_md": "trailing whitespace\n"
+        "at the end of paragraph lines\n"
+        "should be stripped\n",
+    },
+    {
+        "name": "strip quotes",
+        "input_md": "> Paragraph 1\n" "> \n" "> Paragraph 2\n",
+        "output_md": "> Paragraph 1\n" ">\n" "> Paragraph 2\n",
+    },
+)
+
+
+@pytest.mark.parametrize("entry", STYLE_TESTS, ids=[c["name"] for c in STYLE_TESTS])
+def test_renderer_style(entry):
+    """Test Markdown renderer renders expected style."""
+    md_original = entry["input_md"]
+    md_new = MarkdownIt(renderer_cls=RendererCmark).render(md_original)
+    expected_md = entry["output_md"]
+    assert md_new == expected_md
