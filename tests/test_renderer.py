@@ -116,7 +116,7 @@ STYLE_TESTS = (
         "input_md": "R&B, rock & roll\n",
         "output_md": "R&B, rock & roll\n",
     },
-   {
+    {
         "name": "list whitespaces",
         "input_md": "- item one\n  \n- item two\n  - sublist\n    \n  - sublist\n",
         "output_md": "- item one\n\n- item two\n\n  - sublist\n\n  - sublist\n",
