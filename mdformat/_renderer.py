@@ -1,8 +1,21 @@
+import html
 import inspect
 import re
 from typing import Any, List, Optional
 
 from markdown_it.token import Token
+
+# Regex that finds character references.
+# The reference can be either
+#   1. decimal representation, e.g. &#11;
+#   2. hex representation, e.g. &#x1e;
+#   3. HTML5 entity reference, e.g. &nbsp;
+RE_CHAR_REFERENCE = re.compile(
+    "&("
+    "#[0-9]{1,7}"
+    "|#[Xx][0-9A-Fa-f]{1,6}"
+    "|" + "|".join({c.rstrip(";") for c in html.entities.html5}) + ");"
+)
 
 # Marks that can be used markdown that is not yet fully processed.
 # "\x00" is invalid Markdown so a string that contains it can't be
@@ -225,7 +238,11 @@ class RendererCmark:
         text = text.replace("]", "\\]")
         text = text.replace("<", "\\<")
         text = text.replace("`", "\\`")
-        text = text.replace("&", "\\&")
+        # Only escape "&" if it starts a sequence that can be interpreted as
+        # a character reference.
+        for char_refs_found, char_ref in enumerate(RE_CHAR_REFERENCE.finditer(text)):
+            start = char_ref.start() + char_refs_found
+            text = text[:start] + "\\" + text[start:]
 
         # Solves a test for Rule 12 of Emphasis and strong emphasis.
         # TODO: Should look into only making the replace in emphasis/strong blocks.

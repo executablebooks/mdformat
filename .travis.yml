@@ -10,7 +10,7 @@ jobs:
   allow_failures:
     - python: 'nightly'
 install:
-  - pip install "poetry==1.0.9"
+  - pip install "poetry==1.0.10"
   - poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 script:
   # Static checks (only in Python 3.6 job)

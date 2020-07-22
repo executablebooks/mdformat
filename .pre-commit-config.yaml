@@ -17,16 +17,6 @@ repos:
   rev: 6bedb5c58a7d8c25aa9509f8217bc24e9797e90d  # frozen: 19.10b0
   hooks:
   - id: black
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: d6e31aeb109d8ff85282c3fd632c89f8ea7b0dee  # frozen: v0.782
-  hooks:
-  - id: mypy
-    args:
-    # Suppress errors resulting from no access to dependencies
-    - --ignore-missing-imports
-    - --no-warn-unused-ignores
-    # Allow multiple scripts (no .py postfix in name) to be checked in a single mypy invocation
-    - --scripts-are-modules
 - repo: https://gitlab.com/pycqa/flake8
   rev: 05f6544aef321e2fee03a1277ce2eef8880fb927  # frozen: 3.8.3
   hooks:

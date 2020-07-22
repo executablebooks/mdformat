@@ -111,6 +111,11 @@ STYLE_TESTS = (
         "input_md": "> Paragraph 1\n" "> \n" "> Paragraph 2\n",
         "output_md": "> Paragraph 1\n" ">\n" "> Paragraph 2\n",
     },
+    {
+        "name": "no escape ampersand",
+        "input_md": "R&B, rock & roll\n",
+        "output_md": "R&B, rock & roll\n",
+    },
 )
 
 
