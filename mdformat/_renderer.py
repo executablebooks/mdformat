@@ -17,18 +17,24 @@ RE_CHAR_REFERENCE = re.compile(
     "|" + "|".join({c.rstrip(";") for c in html.entities.html5}) + ");"
 )
 
-# Marks that can be used markdown that is not yet fully processed.
-# "\x00" is invalid Markdown so a string that contains it can't be
-# naturally exist in Markdown.
-LIST_ITEM_MARKER = "\x00 0 list-item"
-INDENTATION_MARKER = "\x00 1 indentation"
-# We add BLOCK_SEPARATOR instead of newlines at the end of every block.
-# We convert it to newlines when closing
-#   - a list item
-#   - a list
-#   - a blockquote
-#   - the root document
-BLOCK_SEPARATOR = "\x00 2 block-separator"
+
+class MARKERS:
+    """A container for markers for unprocessed Markdown.
+
+    Temporary markers that can be used for markdown that is not yet
+    fully processed. "\x00" is invalid Markdown so a string that
+    contains it can not naturally exist in Markdown.
+    """
+
+    LIST_ITEM = "\x00 0 list-item"
+    INDENTATION = "\x00 1 indentation"
+    # We add BLOCK_SEPARATOR instead of newlines at the end of every block.
+    # We convert it to newlines when closing
+    #   - a list item
+    #   - a list
+    #   - a blockquote
+    #   - the root document
+    BLOCK_SEPARATOR = "\x00 2 block-separator"
 
 
 class RendererCmark:
@@ -71,7 +77,7 @@ class RendererCmark:
             elif token.type in self.rules:
                 result = self.rules[token.type](tokens, i, options, env)
             else:
-                result = self.renderToken(tokens, i, options, env)
+                result = ""
 
             # If the token opens a new container block, create a new item for
             # it in the text stack.
@@ -100,8 +106,8 @@ class RendererCmark:
         assert not text_stack, "Text stack should be empty before returning"
 
         if not _recursion_level:
-            rendered_content = _removesuffix(rendered_content, BLOCK_SEPARATOR)
-            rendered_content = rendered_content.replace(BLOCK_SEPARATOR, "\n\n")
+            rendered_content = _removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
+            rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
             rendered_content = rendered_content + "\n"
         return rendered_content
 
@@ -123,36 +129,39 @@ class RendererCmark:
                 result += token.content
             elif token.type == "image":
                 result += self.renderInlineAsText(token.children, options, env)
-            elif token.type in {"link_open", "link_close"}:
-                result += self.renderToken(tokens, i, options, env)
+            elif token.type == "link_open":
+                result += self.link_open(tokens, i, options, env)
+            elif token.type == "link_close":
+                result += self.link_close(tokens, i, options, env)
 
         return result
 
-    def renderToken(
+    ###################################################################
+
+    def link_open(self, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+        token = tokens[idx]
+        if token.markup == "autolink":
+            return "<"
+        return "["
+
+    def link_close(
         self, tokens: List[Token], idx: int, options: dict, env: dict
     ) -> str:
         token = tokens[idx]
+        if token.markup == "autolink":
+            return ">"
+        open_tkn = _find_opening_token(tokens, idx)
+        attrs = dict(open_tkn.attrs)
+        uri = attrs["href"]
+        title = attrs.get("title")
+        if title is None:
+            return "](<{}>)".format(uri)
+        title = title.replace('"', '\\"')
+        return '](<{}> "{}")'.format(uri, title)
 
-        if token.type == "link_open":
-            if token.markup == "autolink":
-                return "<"
-            return "["
-        elif token.type == "link_close":
-            if token.markup == "autolink":
-                return ">"
-            open_tkn = _find_opening_token(tokens, idx)
-            attrs = dict(open_tkn.attrs)
-            uri = attrs["href"]
-            title = attrs.get("title")
-            if title is None:
-                return "](<{}>)".format(uri)
-            title = _escape_link_title(title)
-            return '](<{}> "{}")'.format(uri, title)
-        elif token.type == "hr":
-            return "___" + BLOCK_SEPARATOR
-        return ""
+    def hr(self, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+        return "___" + MARKERS.BLOCK_SEPARATOR
 
-    ###################################################################
     def image(self, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
         token = tokens[idx]
 
@@ -194,7 +203,7 @@ class RendererCmark:
         fence_len = max(3, _longest_consecutive_sequence(code_block, "~") + 1)
         fence_str = "~" * fence_len
 
-        return f"{fence_str}{lang}\n{code_block}{fence_str}" + BLOCK_SEPARATOR
+        return f"{fence_str}{lang}\n{code_block}{fence_str}" + MARKERS.BLOCK_SEPARATOR
 
     def code_block(
         self, tokens: List[Token], idx: int, options: dict, env: dict
@@ -202,7 +211,7 @@ class RendererCmark:
         return self.fence(tokens, idx, options, env)
 
     def html_block(self, tokens: List[Token], idx: int, *args: Any) -> str:
-        return tokens[idx].content.rstrip("\n") + BLOCK_SEPARATOR
+        return tokens[idx].content.rstrip("\n") + MARKERS.BLOCK_SEPARATOR
 
     def html_inline(self, tokens: List[Token], idx: int, *args: Any) -> str:
         return tokens[idx].content
@@ -295,14 +304,14 @@ class RendererCmark:
         def blockquote_close(
             text: str, tokens: List[Token], idx: int, options: dict, env: dict
         ) -> str:
-            text = _removesuffix(text, BLOCK_SEPARATOR)
-            text = text.replace(BLOCK_SEPARATOR, "\n\n")
+            text = _removesuffix(text, MARKERS.BLOCK_SEPARATOR)
+            text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
             lines = text.splitlines()
             if not lines:
-                return ">" + BLOCK_SEPARATOR
+                return ">" + MARKERS.BLOCK_SEPARATOR
             quoted_lines = (f"> {line}" if line else ">" for line in lines)
             quoted_str = "\n".join(quoted_lines)
-            return quoted_str + BLOCK_SEPARATOR
+            return quoted_str + MARKERS.BLOCK_SEPARATOR
 
         @staticmethod
         def list_item_close(
@@ -310,26 +319,26 @@ class RendererCmark:
         ) -> str:
             """Return one list item as string.
 
-            The string contains LIST_ITEM_MARKERs and
-            INDENTATION_MARKERs which have to be replaced in later
+            The string contains MARKERS.LIST_ITEMs and
+            MARKERS.INDENTATIONs which have to be replaced in later
             processing.
             """
-            text = _removesuffix(text, BLOCK_SEPARATOR)
+            text = _removesuffix(text, MARKERS.BLOCK_SEPARATOR)
             if _is_tight_list_item(tokens, idx):
-                text = text.replace(BLOCK_SEPARATOR, "\n")
+                text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n")
             else:
-                text = text.replace(BLOCK_SEPARATOR, "\n\n")
+                text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
             lines = text.splitlines()
             if not lines:
-                return LIST_ITEM_MARKER + BLOCK_SEPARATOR
+                return MARKERS.LIST_ITEM + MARKERS.BLOCK_SEPARATOR
             indented = []
             for i, line in enumerate(lines):
                 if i == 0:
-                    indented.append(LIST_ITEM_MARKER + line)
+                    indented.append(MARKERS.LIST_ITEM + line)
                 else:
-                    indented.append(INDENTATION_MARKER + line if line else line)
-            tabbed_str = "\n".join(indented) + BLOCK_SEPARATOR
+                    indented.append(MARKERS.INDENTATION + line if line else line)
+            tabbed_str = "\n".join(indented) + MARKERS.BLOCK_SEPARATOR
             return tabbed_str
 
         @staticmethod
@@ -338,17 +347,17 @@ class RendererCmark:
         ) -> str:
             last_item_closing_tkn = tokens[idx - 1]
 
-            text = _removesuffix(text, BLOCK_SEPARATOR)
+            text = _removesuffix(text, MARKERS.BLOCK_SEPARATOR)
             if _is_tight_list(tokens, idx):
-                text = text.replace(BLOCK_SEPARATOR, "\n")
+                text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n")
             else:
-                text = text.replace(BLOCK_SEPARATOR, "\n\n")
+                text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
             bullet_marker = last_item_closing_tkn.markup + " "
             indentation = " " * len(bullet_marker)
-            text = text.replace(LIST_ITEM_MARKER, bullet_marker)
-            text = text.replace(INDENTATION_MARKER, indentation)
-            return text + BLOCK_SEPARATOR
+            text = text.replace(MARKERS.LIST_ITEM, bullet_marker)
+            text = text.replace(MARKERS.INDENTATION, indentation)
+            return text + MARKERS.BLOCK_SEPARATOR
 
         @staticmethod
         def ordered_list_close(
@@ -357,14 +366,14 @@ class RendererCmark:
             last_item_closing_tkn = tokens[idx - 1]
             number_marker = last_item_closing_tkn.markup
 
-            text = _removesuffix(text, BLOCK_SEPARATOR)
+            text = _removesuffix(text, MARKERS.BLOCK_SEPARATOR)
             if _is_tight_list(tokens, idx):
-                text = text.replace(BLOCK_SEPARATOR, "\n")
+                text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n")
             else:
-                text = text.replace(BLOCK_SEPARATOR, "\n\n")
+                text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
-            # Replace first LIST_ITEM_MARKER with the starting number of the list.
-            # Replace following LIST_ITEM_MARKERs with number one prefixed by zeros
+            # Replace first MARKERS.LIST_ITEM with the starting number of the list.
+            # Replace following MARKERS.LIST_ITEMs with number one prefixed by zeros
             # to make the marker of even length with the first one.
             # E.g.
             #   5321. This is the first list item
@@ -379,11 +388,11 @@ class RendererCmark:
                 "0" * (len(str(starting_number)) - 1) + "1" + number_marker + " "
             )
             indentation = " " * len(first_item_marker)
-            text = text.replace(LIST_ITEM_MARKER, first_item_marker, 1)
-            text = text.replace(LIST_ITEM_MARKER, other_item_marker)
-            text = text.replace(INDENTATION_MARKER, indentation)
+            text = text.replace(MARKERS.LIST_ITEM, first_item_marker, 1)
+            text = text.replace(MARKERS.LIST_ITEM, other_item_marker)
+            text = text.replace(MARKERS.INDENTATION, indentation)
 
-            return text + BLOCK_SEPARATOR
+            return text + MARKERS.BLOCK_SEPARATOR
 
         @staticmethod
         def paragraph_close(
@@ -407,7 +416,7 @@ class RendererCmark:
 
             text = "\n".join(lines)
 
-            return text + BLOCK_SEPARATOR
+            return text + MARKERS.BLOCK_SEPARATOR
 
         @staticmethod
         def heading_close(
@@ -425,7 +434,7 @@ class RendererCmark:
             # header always. Convert newlines to spaces.
             newlines_removed = text.replace("\n", " ").rstrip()
 
-            return prefix + newlines_removed + BLOCK_SEPARATOR
+            return prefix + newlines_removed + MARKERS.BLOCK_SEPARATOR
 
         @staticmethod
         def strong_close(
@@ -487,6 +496,7 @@ def _is_tight_list_item(tokens: List[Token], closing_token_idx: int) -> bool:
 
 
 def _longest_consecutive_sequence(seq: str, char: str) -> int:
+    assert len(char) == 1
     longest = 0
     current_streak = 0
     for c in seq:
@@ -497,11 +507,6 @@ def _longest_consecutive_sequence(seq: str, char: str) -> int:
         if current_streak > longest:
             longest = current_streak
     return longest
-
-
-def _escape_link_title(title: str) -> str:
-    title = title.replace('"', '\\"')
-    return title
 
 
 def _is_text_inside_autolink(tokens: List[Token], idx: int) -> bool:
