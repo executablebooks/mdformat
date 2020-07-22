@@ -328,7 +328,7 @@ class RendererCmark:
                 if i == 0:
                     indented.append(LIST_ITEM_MARKER + line)
                 else:
-                    indented.append(INDENTATION_MARKER + line)
+                    indented.append(INDENTATION_MARKER + line if line else line)
             tabbed_str = "\n".join(indented) + BLOCK_SEPARATOR
             return tabbed_str
 
