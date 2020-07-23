@@ -271,12 +271,12 @@ class RendererCmark:
         # The parser can give us consecutive newlines which can break
         # the markdown structure. Replace two or more consecutive newlines
         # with newline character's decimal reference.
-        text = re.sub(r"\n\n", "&#10;&#10;", text)
+        text = text.replace("\n\n", "&#10;&#10;")
 
         # === or --- sequences can seem like a header when aligned
         # properly. Escape them.
-        text = re.sub(r"===", r"\=\=\=", text)
-        text = re.sub(r"---", r"\-\-\-", text)
+        text = text.replace("===", r"\=\=\=")
+        text = text.replace("---", r"\-\-\-")
 
         # If the last character is a "!" and the token next up is a link, we
         # have to escape the "!" or else the link will be interpreted as image.
