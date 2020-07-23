@@ -169,12 +169,12 @@ class RendererCmark:
         # should be placed on proper position for tests.
         #
         # Replace content with actual value
-
         token.attrs[token.attrIndex("alt")][1] = self.renderInlineAsText(
             token.children, options, env
         )
         label = token.attrGet("alt")
         assert label is not None
+
         uri = token.attrGet("src")
         assert uri is not None
         title = token.attrGet("title")
@@ -265,18 +265,18 @@ class RendererCmark:
         )
         text = "\n".join(starting_tabs_replaced)
 
-        # Replace no-break space with decimal represenation
+        # Replace no-break space with its decimal representation
         text = text.replace(chr(160), "&#160;")
 
         # The parser can give us consecutive newlines which can break
         # the markdown structure. Replace two or more consecutive newlines
         # with newline character's decimal reference.
-        text = "&#10;&#10;".join(text.split("\n\n"))
+        text = re.sub(r"\n\n", "&#10;&#10;", text)
 
         # === or --- sequences can seem like a header when aligned
         # properly. Escape them.
-        text = "\\=\\=\\=".join(text.split("==="))
-        text = "\\-\\-\\-".join(text.split("---"))
+        text = re.sub(r"===", r"\=\=\=", text)
+        text = re.sub(r"---", r"\-\-\-", text)
 
         # If the last character is a "!" and the token next up is a link, we
         # have to escape the "!" or else the link will be interpreted as image.
