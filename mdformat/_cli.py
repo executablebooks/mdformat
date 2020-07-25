@@ -3,9 +3,7 @@ from pathlib import Path
 import sys
 from typing import List, Optional, Sequence
 
-from markdown_it import MarkdownIt
-
-from mdformat._renderer import RendererCmark
+import mdformat
 from mdformat._util import is_md_equal
 
 
@@ -46,7 +44,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         else:
             path_str = "-"
             original_str = sys.stdin.read()
-        formatted_str = MarkdownIt(renderer_cls=RendererCmark).render(original_str)
+        formatted_str = mdformat.string(original_str)
 
         if args.check:
             if formatted_str != original_str:
