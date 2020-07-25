@@ -1,7 +1,7 @@
 import argparse
-import os
+from pathlib import Path
 import sys
-from typing import Sequence
+from typing import List, Optional, Sequence
 
 from markdown_it import MarkdownIt
 
@@ -9,7 +9,7 @@ from mdformat._renderer import RendererCmark
 from mdformat._util import is_md_equal
 
 
-def run(cli_args: Sequence[str]) -> int:
+def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     parser = argparse.ArgumentParser(
         description="CommonMark compliant Markdown formatter"
     )
@@ -21,36 +21,49 @@ def run(cli_args: Sequence[str]) -> int:
         sys.stderr.write("No files have been passed in. Doing nothing.\n")
         return 0
 
-    for path in args.paths:
-        if not (os.path.isfile(path) or path == "-"):
-            sys.stderr.write(f'Error: File "{path}" does not exist.\n')
+    # Convert paths given as args to pathlib.Path objects.
+    # Check that all paths are either files, directories or stdin.
+    # Resolve directory paths to a list of file paths (ending with ".md").
+    file_paths: List[Optional[Path]] = []  # Path to file or None for stdin/stdout
+    for path_str in args.paths:
+        if path_str == "-":
+            file_paths.append(None)
+            continue
+        path_obj = Path(path_str)
+        if path_obj.is_dir():
+            for p in path_obj.glob("**/*.md"):
+                file_paths.append(p)
+        elif path_obj.is_file():
+            file_paths.append(path_obj)
+        else:
+            sys.stderr.write(f'Error: File "{path_str}" does not exist.\n')
             return 1
 
-    for path in args.paths:
-        if path == "-":
-            original_str = sys.stdin.read()
+    for path in file_paths:
+        if path:
+            path_str = str(path)
+            original_str = path.read_text(encoding="utf-8")
         else:
-            with open(path, encoding="utf-8") as f:
-                original_str = f.read()
+            path_str = "-"
+            original_str = sys.stdin.read()
         formatted_str = MarkdownIt(renderer_cls=RendererCmark).render(original_str)
 
         if args.check:
             if formatted_str != original_str:
-                sys.stderr.write(f'Error: File "{path}" is not formatted.\n')
+                sys.stderr.write(f'Error: File "{path_str}" is not formatted.\n')
                 return 1
         else:
             if not is_md_equal(original_str, formatted_str):
                 sys.stderr.write(
-                    f'Error: Could not format "{path}"\n'
+                    f'Error: Could not format "{path_str}"\n'
                     "\n"
                     "The formatted Markdown renders to different HTML than the input Markdown.\n"  # noqa: E501
                     "This is likely a bug in mdformat. Please create an issue report here:\n"  # noqa: E501
                     "https://github.com/hukkinj1/mdformat/issues\n"
                 )
                 return 1
-            if path == "-":
-                sys.stdout.write(formatted_str)
+            if path:
+                path.write_text(formatted_str, encoding="utf-8")
             else:
-                with open(path, mode="w", encoding="utf-8") as f:
-                    f.write(formatted_str)
+                sys.stdout.write(formatted_str)
     return 0
