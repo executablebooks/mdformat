@@ -37,6 +37,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             sys.stderr.write(f'Error: File "{path_str}" does not exist.\n')
             return 1
 
+    format_errors_found = False
     for path in file_paths:
         if path:
             path_str = str(path)
@@ -48,8 +49,8 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
 
         if args.check:
             if formatted_str != original_str:
+                format_errors_found = True
                 sys.stderr.write(f'Error: File "{path_str}" is not formatted.\n')
-                return 1
         else:
             if not is_md_equal(original_str, formatted_str):
                 sys.stderr.write(
@@ -64,4 +65,6 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 path.write_text(formatted_str, encoding="utf-8")
             else:
                 sys.stdout.write(formatted_str)
+    if format_errors_found:
+        return 1
     return 0

@@ -47,6 +47,22 @@ def test_check__fail(tmp_path):
     assert run((str(file_path), "--check")) == 1
 
 
+def test_check__multi_fail(capsys, tmp_path):
+    """Test for --check flag when multiple files are unformatted.
+
+    Test that the names of all unformatted files are listed when using
+    --check.
+    """
+    file_path1 = tmp_path / "test_markdown1.md"
+    file_path2 = tmp_path / "test_markdown2.md"
+    file_path1.write_text(UNFORMATTED_MARKDOWN)
+    file_path2.write_text(UNFORMATTED_MARKDOWN)
+    run((str(tmp_path), "--check"))
+    captured = capsys.readouterr()
+    assert str(file_path1) in captured.err
+    assert str(file_path2) in captured.err
+
+
 def test_dash_stdin(capsys, monkeypatch):
     monkeypatch.setattr(sys, "stdin", StringIO(UNFORMATTED_MARKDOWN))
     run(("-",))
