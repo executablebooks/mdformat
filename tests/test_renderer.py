@@ -121,6 +121,11 @@ STYLE_TESTS = (
         "input_md": "- item one\n  \n- item two\n  - sublist\n    \n  - sublist\n",
         "output_md": "- item one\n\n- item two\n\n  - sublist\n\n  - sublist\n",
     },
+    {
+        "name": "convert setext to ATX heading",
+        "input_md": "Top level heading\n=========\n\n2nd level heading\n---------",
+        "output_md": "# Top level heading\n\n## 2nd level heading\n",
+    },
 )
 
 
