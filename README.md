@@ -17,7 +17,7 @@ It is recommended to pin mdformat dependency to an exact version.
 pip install mdformat
 ~~~
 
-## Usage
+## Command line usage
 
 ### Format files
 
@@ -43,14 +43,42 @@ mdformat --check README.md CHANGELOG.md
 This will not apply any changes to the files.
 If a file is not properly formatted, the exit code will be non-zero.
 
-### As a pre-commit hook
+## Python API usage
+
+### Format a string
+
+~~~python
+import mdformat
+
+markdown = "\n\n# A header\n\n"
+formatted_markdown = mdformat.string(markdown)
+assert formatted_markdown == "# A header\n"
+~~~
+
+### Format a file
+
+Format file `README.md` in place:
+
+~~~python
+import mdformat
+
+# Input filepath as a string...
+mdformat.file("README.md")
+
+# ...or a pathlib.Path object
+import pathlib
+filepath = pathlib.Path("README.md")
+mdformat.file(filepath)
+~~~
+
+## Usage as a pre-commit hook
 
 `mdformat` can be used as a [pre-commit](<https://github.com/pre-commit/pre-commit>) hook.
 Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ~~~yaml
 - repo: https://github.com/hukkinj1/mdformat
-  rev: 0.0.2  # Use the ref you want to point at
+  rev: 0.0.6  # Use the ref you want to point at
   hooks:
   - id: mdformat
 ~~~
