@@ -19,4 +19,4 @@ def test_fmt_file(tmp_path):
 
 
 def test_fmt_string():
-    assert mdformat.string(UNFORMATTED_MARKDOWN) == FORMATTED_MARKDOWN
+    assert mdformat.text(UNFORMATTED_MARKDOWN) == FORMATTED_MARKDOWN

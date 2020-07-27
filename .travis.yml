@@ -21,7 +21,7 @@ script:
       isort --check-only . &&
       black --check . &&
       docformatter --recursive --check mdformat/ tests/ &&
-      mdformat --check README.md
+      mdformat --check CHANGELOG.md README.md
     fi
   # Tests
   - pytest --cov --cov-fail-under=95

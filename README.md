@@ -6,13 +6,6 @@
 
 > CommonMark compliant Markdown formatter
 
-**WARNING:**
-Mdformat is still in an early phase of development.
-There is no stable library API, and the Markdown formatting rules may change at any time.
-It is recommended to pin mdformat dependency to an exact version.
-
-## What? Why?
-
 Mdformat is an opinionated Markdown formatter that can be used to enforce a consistent style in Markdown files.
 Mdformat is a Unix-style command-line tool as well as a Python library.
 
@@ -34,6 +27,10 @@ The rationale for this is to support techniques like
 and
 [Semantic Line Breaks](<https://sembr.org/>).
 
+**NOTE:**
+The formatting style produced by mdformat may change in each version.
+It is recommended to pin mdformat dependency version.
+
 ## Installing
 
 ~~~bash
@@ -48,6 +45,12 @@ Format files `README.md` and `CHANGELOG.md` in place
 
 ~~~bash
 mdformat README.md CHANGELOG.md
+~~~
+
+Format `.md` files in current working directory recursively
+
+~~~bash
+mdformat .
 ~~~
 
 Read Markdown from standard input until `EOF`.
@@ -68,14 +71,14 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ## Python API usage
 
-### Format a string
+### Format text
 
 ~~~python
 import mdformat
 
-markdown = "\n\n# A header\n\n"
-formatted_markdown = mdformat.string(markdown)
-assert formatted_markdown == "# A header\n"
+unformatted = "\n\n# A header\n\n"
+formatted = mdformat.text(unformatted)
+assert formatted == "# A header\n"
 ~~~
 
 ### Format a file

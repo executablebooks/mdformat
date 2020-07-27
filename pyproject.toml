@@ -25,11 +25,11 @@ packages = [
 ]
 include = ["mdformat/py.typed"]
 
-#[tool.poetry.urls]
-#"Changelog" = "https://github.com/hukkinj1/mdformat/blob/master/CHANGELOG.md"
+[tool.poetry.urls]
+"Changelog" = "https://github.com/hukkinj1/mdformat/blob/master/CHANGELOG.md"
 
 [tool.poetry.scripts]
-mdformat = "mdformat.__main__:run_cli"
+mdformat = "mdformat.__main__:run"
 
 [tool.poetry.dependencies]
 python = "^3.6"

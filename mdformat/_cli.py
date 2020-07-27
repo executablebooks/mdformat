@@ -45,7 +45,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         else:
             path_str = "-"
             original_str = sys.stdin.read()
-        formatted_str = mdformat.string(original_str)
+        formatted_str = mdformat.text(original_str)
 
         if args.check:
             if formatted_str != original_str:

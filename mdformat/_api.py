@@ -6,7 +6,7 @@ from markdown_it import MarkdownIt
 from mdformat._renderer import MDRenderer
 
 
-def string(md: str) -> str:
+def text(md: str) -> str:
     """Format a Markdown string."""
     return MarkdownIt(renderer_cls=MDRenderer).render(md)
 
@@ -18,5 +18,5 @@ def file(f: Union[str, Path]) -> None:
     if not f.is_file():
         raise ValueError(f'Can not format "{f}". It is not a file.')
     original_md = f.read_text(encoding="utf-8")
-    formatted_md = string(original_md)
+    formatted_md = text(original_md)
     f.write_text(formatted_md, encoding="utf-8")
