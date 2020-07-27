@@ -30,7 +30,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         path_obj = Path(path_str)
         try:
             path_exists = path_obj.exists()
-        except OSError:  # Catch "OSError: [WinError 123]" in Windows
+        except OSError:  # Catch "OSError: [WinError 123]" on Windows
             path_exists = False
         if not path_exists:
             sys.stderr.write(f'Error: File "{path_str}" does not exist.\n')
