@@ -15,7 +15,11 @@ def file(f: Union[str, Path]) -> None:
     """Format a Markdown file in place."""
     if isinstance(f, str):
         f = Path(f)
-    if not f.is_file():
+    try:
+        is_file = f.is_file()
+    except OSError:  # Catch "OSError: [WinError 123]" on Windows
+        is_file = False
+    if not is_file:
         raise ValueError(f'Can not format "{f}". It is not a file.')
     original_md = f.read_text(encoding="utf-8")
     formatted_md = text(original_md)
