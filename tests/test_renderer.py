@@ -4,7 +4,7 @@ from pathlib import Path
 from markdown_it import MarkdownIt
 import pytest
 
-from mdformat._renderer import RendererCmark
+from mdformat._renderer import MDRenderer
 
 SPECTESTS_PATH = Path(__file__).parent.joinpath("data/spec.json")
 SPECTESTS_CASES = tuple(
@@ -75,8 +75,8 @@ def test_renderer_correctness(entry):
     """
     md_original = entry["md"]
     html_original = MarkdownIt().render(md_original)
-    md_new = MarkdownIt(renderer_cls=RendererCmark).render(md_original)
-    md_2nd_pass = MarkdownIt(renderer_cls=RendererCmark).render(md_new)
+    md_new = MarkdownIt(renderer_cls=MDRenderer).render(md_original)
+    md_2nd_pass = MarkdownIt(renderer_cls=MDRenderer).render(md_new)
     html_new = MarkdownIt().render(md_new)
 
     equal_html = html_original == html_new
@@ -133,6 +133,6 @@ STYLE_TESTS = (
 def test_renderer_style(entry):
     """Test Markdown renderer renders expected style."""
     md_original = entry["input_md"]
-    md_new = MarkdownIt(renderer_cls=RendererCmark).render(md_original)
+    md_new = MarkdownIt(renderer_cls=MDRenderer).render(md_original)
     expected_md = entry["output_md"]
     assert md_new == expected_md

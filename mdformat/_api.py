@@ -3,12 +3,12 @@ from typing import Union
 
 from markdown_it import MarkdownIt
 
-from mdformat._renderer import RendererCmark
+from mdformat._renderer import MDRenderer
 
 
 def string(md: str) -> str:
     """Format a Markdown string."""
-    return MarkdownIt(renderer_cls=RendererCmark).render(md)
+    return MarkdownIt(renderer_cls=MDRenderer).render(md)
 
 
 def file(f: Union[str, Path]) -> None:
