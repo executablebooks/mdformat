@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/hukkinj1/mdformat.svg?branch=master)](<https://travis-ci.com/hukkinj1/mdformat>)
+[![Build Status](https://github.com/hukkinj1/mdformat/workflows/Tests/badge.svg?branch=master)](<https://github.com/hukkinj1/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
 [![codecov.io](https://codecov.io/gh/hukkinj1/mdformat/branch/master/graph/badge.svg)](<https://codecov.io/gh/hukkinj1/mdformat>)
 [![PyPI version](https://badge.fury.io/py/mdformat.svg)](<https://badge.fury.io/py/mdformat>)
 
