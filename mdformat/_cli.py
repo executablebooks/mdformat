@@ -28,14 +28,18 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             file_paths.append(None)
             continue
         path_obj = Path(path_str)
+        try:
+            path_exists = path_obj.exists()
+        except OSError:  # Catch "OSError: [WinError 123]" in Windows
+            path_exists = False
+        if not path_exists:
+            sys.stderr.write(f'Error: File "{path_str}" does not exist.\n')
+            return 1
         if path_obj.is_dir():
             for p in path_obj.glob("**/*.md"):
                 file_paths.append(p)
-        elif path_obj.is_file():
-            file_paths.append(path_obj)
         else:
-            sys.stderr.write(f'Error: File "{path_str}" does not exist.\n')
-            return 1
+            file_paths.append(path_obj)
 
     format_errors_found = False
     for path in file_paths:
