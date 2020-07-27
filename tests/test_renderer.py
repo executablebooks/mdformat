@@ -9,7 +9,7 @@ from mdformat._renderer import MDRenderer
 SPECTESTS_PATH = Path(__file__).parent.joinpath("data/spec.json")
 SPECTESTS_CASES = tuple(
     {"name": str(entry["example"]), "md": entry["markdown"]}
-    for entry in json.loads(SPECTESTS_PATH.read_text())
+    for entry in json.loads(SPECTESTS_PATH.read_text(encoding="utf-8"))
 )
 MY_TEST_CASES = (
     {
