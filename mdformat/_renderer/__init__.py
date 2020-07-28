@@ -7,6 +7,12 @@ from mdformat._renderer.util import MARKERS, removesuffix
 
 
 class MDRenderer:
+    """Markdown renderer.
+
+    A renderer class that outputs formatted Markdown. Compatible with
+    `markdown_it.MarkdownIt`.
+    """
+
     __output__ = "md"
 
     def __init__(self, parser: Any = None):

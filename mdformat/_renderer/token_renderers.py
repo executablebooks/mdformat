@@ -1,6 +1,6 @@
 """A namespace for functions that render the Markdown of tokens from markdown-
 it-py."""
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from markdown_it.token import Token
 
@@ -34,9 +34,9 @@ def link_close(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     uri = attrs["href"]
     title = attrs.get("title")
     if title is None:
-        return "](<{}>)".format(uri)
+        return f"](<{uri}>)"
     title = title.replace('"', '\\"')
-    return '](<{}> "{}")'.format(uri, title)
+    return f'](<{uri}> "{title}")'
 
 
 def hr(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
@@ -60,8 +60,8 @@ def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     assert uri is not None
     title = token.attrGet("title")
     if title is not None:
-        return '![{}]({} "{}")'.format(label, uri, title)
-    return "![{}]({})".format(label, uri)
+        return f'![{label}]({uri} "{title}")'
+    return f"![{label}]({uri})"
 
 
 def code_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
@@ -91,23 +91,23 @@ def code_block(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return fence(tokens, idx, options, env)
 
 
-def html_block(tokens: List[Token], idx: int, *args: Any) -> str:
+def html_block(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return tokens[idx].content.rstrip("\n") + MARKERS.BLOCK_SEPARATOR
 
 
-def html_inline(tokens: List[Token], idx: int, *args: Any) -> str:
+def html_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return tokens[idx].content
 
 
-def hardbreak(tokens: List[Token], idx: int, options: dict, *args: Any) -> str:
+def hardbreak(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return "\\" + "\n"
 
 
-def softbreak(tokens: List[Token], idx: int, options: dict, *args: Any) -> str:
+def softbreak(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return "\n"
 
 
-def text(tokens: List[Token], idx: int, *args: Any) -> str:
+def text(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     """Process a text token.
 
     Text should always be a child of an inline token enclosed by a
