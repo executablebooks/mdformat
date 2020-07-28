@@ -104,7 +104,7 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ~~~yaml
 - repo: https://github.com/hukkinj1/mdformat
-  rev: 0.1.0  # Use the ref you want to point at
+  rev: 0.1.1  # Use the ref you want to point at
   hooks:
   - id: mdformat
 ~~~
