@@ -57,7 +57,10 @@ MY_TEST_CASES = (
     {"name": "escape underscore", "md": "# foo _bar_ \\_baz\\_\n"},
     {
         "name": "extend spectest 300",
-        "md": "\\_not emphasized_\n1\\) not a list\n\\- not a list\n",
+        "md": "\\_not emphasized_\n"
+        "1\\) not a list\n"
+        "\\- not a list\n"
+        "\\+ not a list\n",
     },
 )
 

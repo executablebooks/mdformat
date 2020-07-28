@@ -117,9 +117,12 @@ def paragraph_close(
 ) -> str:
     lines = text.split("\n")
 
-    # Make sure a paragraph line does not start with "-"
+    # Make sure a paragraph line does not start with "-" or "+"
     # (otherwise it will be interpreted as list item).
-    lines = [f"\\{line}" if line.startswith("-") else line for line in lines]
+    lines = [
+        f"\\{line}" if (line.startswith("-") or line.startswith("+")) else line
+        for line in lines
+    ]
     # If a line starts with a number followed by "." or ")", escape the "." or
     # ")" or it will be interpreted as ordered list item.
     lines = [
