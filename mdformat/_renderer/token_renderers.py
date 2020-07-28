@@ -118,25 +118,25 @@ def text(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     text = tokens[idx].content
     if is_text_inside_autolink(tokens, idx):
         return text
-    # This backslash replace has to be first, else we start
-    # multiplying backslashes.
+
+    # Escape backslash to prevent it from making unintended escapes.
+    # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")
 
-    text = text.replace("#", "\\#")
+    text = text.replace("#", "\\#")  # Escape ATX heading marker
+    # Escape emphasis/strong marker. Also list item marker if first char in line
     text = text.replace("*", "\\*")
-    text = text.replace("[", "\\[")
-    text = text.replace("]", "\\]")
-    text = text.replace("<", "\\<")
-    text = text.replace("`", "\\`")
-    # Only escape "&" if it starts a sequence that can be interpreted as
+    text = text.replace("_", "\\_")  # Escape emphasis/strong emphasis marker
+    text = text.replace("[", "\\[")  # Escape link label enclosure
+    text = text.replace("]", "\\]")  # Escape link label enclosure
+    text = text.replace("<", "\\<")  # Escape URI enclosure
+    text = text.replace("`", "\\`")  # Escape code span marker
+
+    # Escape "&" if it starts a sequence that can be interpreted as
     # a character reference.
     for char_refs_found, char_ref in enumerate(RE_CHAR_REFERENCE.finditer(text)):
         start = char_ref.start() + char_refs_found
         text = text[:start] + "\\" + text[start:]
-
-    # Solves a test for Rule 12 of Emphasis and strong emphasis.
-    # TODO: Should look into only making the replace in emphasis/strong blocks.
-    text = text.replace("_", "\\_")
 
     # Replace line starting tabs with numeric decimal representation.
     # A normal tab character would start a code block.
