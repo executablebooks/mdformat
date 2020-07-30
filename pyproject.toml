@@ -40,7 +40,7 @@ markdown-it-py = "^0.4.7"
 
 [tool.poetry.dev-dependencies]
 # Tests
-pytest = ">=6.0.0rc1"
+pytest = "*"
 pytest-randomly = "*"
 pytest-cov = "*"
 
@@ -74,5 +74,5 @@ profile = "black"
 
 
 [tool.pytest.ini_options]
-addopts = "--strict-markers"
+addopts = "--strict-markers --strict-config"
 xfail_strict = true
