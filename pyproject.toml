@@ -36,7 +36,7 @@ mdformat = "mdformat.__main__:run"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-markdown-it-py = "^0.4.7"
+markdown-it-py = ">=0.4.7, <0.6.0"
 
 [tool.poetry.dev-dependencies]
 # Tests
