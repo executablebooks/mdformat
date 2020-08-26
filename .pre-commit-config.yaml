@@ -14,7 +14,7 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: 6bedb5c58a7d8c25aa9509f8217bc24e9797e90d  # frozen: 19.10b0
+  rev: e66be67b9b6811913470f70c28b4d50f94d05b22  # frozen: 20.8b1
   hooks:
   - id: black
 - repo: https://gitlab.com/pycqa/flake8

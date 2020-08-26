@@ -48,7 +48,7 @@ class MDRenderer:
                 )
             else:
                 tkn_renderer = getattr(
-                    token_renderers, token.type, token_renderers.default,
+                    token_renderers, token.type, token_renderers.default
                 )
                 result = tkn_renderer(tokens, i, options, env)
 
@@ -66,7 +66,7 @@ class MDRenderer:
             else:  # token.nesting == -1
                 container_result = text_stack.pop() + result
                 container_renderer = getattr(
-                    container_renderers, token.type, container_renderers.default,
+                    container_renderers, token.type, container_renderers.default
                 )
                 container_result = container_renderer(
                     container_result, tokens, i, options, env
