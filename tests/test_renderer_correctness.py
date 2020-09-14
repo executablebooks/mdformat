@@ -71,8 +71,8 @@ def test_renderer_correctness(entry):
     """Test Markdown renderer against the Commonmark spec.
 
     Test that:
-    1. HTML is the same before and after RendererCmark
-    2. Markdown after 1st pass and 2nd pass of RendererCmark are equal
+    1. HTML is the same before and after MDRenderer
+    2. Markdown after 1st pass and 2nd pass of MDRenderer are equal
     """
     md_original = entry["md"]
     html_original = MarkdownIt().render(md_original)

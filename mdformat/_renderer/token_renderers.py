@@ -14,7 +14,7 @@ from mdformat._renderer.util import (
 
 
 def default(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
-    """Default formatter for containers that don't have one implemented."""
+    """Default formatter for tokens that don't have one implemented."""
     return ""
 
 
