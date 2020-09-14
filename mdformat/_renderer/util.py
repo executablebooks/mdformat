@@ -37,6 +37,11 @@ class MARKERS:
 
 
 def index_opening_token(tokens: List[Token], closing_token_idx: int) -> int:
+    """Return index of an opening token.
+
+    Takes token stream and closing token index of a container block as
+    params. Returns index of the corresponding opening token.
+    """
     closing_tkn = tokens[closing_token_idx]
     assert closing_tkn.nesting == -1, "Cant find opening token for non closing token"
     for i in reversed(range(closing_token_idx)):
@@ -47,6 +52,11 @@ def index_opening_token(tokens: List[Token], closing_token_idx: int) -> int:
 
 
 def find_opening_token(tokens: List[Token], closing_token_idx: int) -> Token:
+    """Return an opening token.
+
+    Takes token stream and closing token index of a container block as
+    params. Returns the corresponding opening token.
+    """
     opening_token_idx = index_opening_token(tokens, closing_token_idx)
     return tokens[opening_token_idx]
 
@@ -81,6 +91,8 @@ def is_tight_list_item(tokens: List[Token], closing_token_idx: int) -> bool:
 
 
 def longest_consecutive_sequence(seq: str, char: str) -> int:
+    """Return length of the longest consecutive sequence of `char` characters
+    in string `seq`."""
     assert len(char) == 1
     longest = 0
     current_streak = 0
@@ -102,21 +114,21 @@ def is_text_inside_autolink(tokens: List[Token], idx: int) -> bool:
     return previous_token.type == "link_open" and previous_token.markup == "autolink"
 
 
-def is_in_block(tokens: List[Token], idx: int, block_closing_tkn_type: str) -> bool:
-    """Is tokens[idx] in a block closed by block_closing_tkn_type?"""
-    assert tokens[idx].type == "text"
-    if tokens[idx].level == 0:
-        return False
-    current_lvl = tokens[idx].level
-    for i in range(idx + 1, len(tokens)):
-        if tokens[i].level < current_lvl:
-            current_lvl = tokens[i].level
-            if tokens[i].type == block_closing_tkn_type:
-                return True
-    return False
-
-
 def removesuffix(string: str, suffix: str) -> str:
     if suffix and string.endswith(suffix):
         return string[: -len(suffix)]
     return string
+
+
+# def is_in_block(tokens: List[Token], idx: int, block_closing_tkn_type: str) -> bool:
+#     """Is tokens[idx] in a block closed by block_closing_tkn_type?"""
+#     assert tokens[idx].type == "text"
+#     if tokens[idx].level == 0:
+#         return False
+#     current_lvl = tokens[idx].level
+#     for i in range(idx + 1, len(tokens)):
+#         if tokens[i].level < current_lvl:
+#             current_lvl = tokens[i].level
+#             if tokens[i].type == block_closing_tkn_type:
+#                 return True
+#     return False

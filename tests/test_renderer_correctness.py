@@ -11,7 +11,7 @@ SPECTESTS_CASES = tuple(
     {"name": str(entry["example"]), "md": entry["markdown"]}
     for entry in json.loads(SPECTESTS_PATH.read_text(encoding="utf-8"))
 )
-MY_TEST_CASES = (
+EXTRA_CASES = (
     {
         "name": "titles",
         "md": "# BIG Title\n"
@@ -63,12 +63,10 @@ MY_TEST_CASES = (
         "\\+ not a list\n",
     },
 )
+ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 
 
-ALL_TESTS = MY_TEST_CASES + SPECTESTS_CASES
-
-
-@pytest.mark.parametrize("entry", ALL_TESTS, ids=[c["name"] for c in ALL_TESTS])
+@pytest.mark.parametrize("entry", ALL_CASES, ids=[c["name"] for c in ALL_CASES])
 def test_renderer_correctness(entry):
     """Test Markdown renderer against the Commonmark spec.
 
@@ -97,45 +95,3 @@ def test_renderer_correctness(entry):
 
     assert equal_html
     assert equal_md_2nd_pass
-
-
-STYLE_TESTS = (
-    {
-        "name": "strip paragraph lines",
-        "input_md": "trailing whitespace \n"
-        "at the end of paragraph lines \n"
-        "should be stripped                   \n",
-        "output_md": "trailing whitespace\n"
-        "at the end of paragraph lines\n"
-        "should be stripped\n",
-    },
-    {
-        "name": "strip quotes",
-        "input_md": "> Paragraph 1\n" "> \n" "> Paragraph 2\n",
-        "output_md": "> Paragraph 1\n" ">\n" "> Paragraph 2\n",
-    },
-    {
-        "name": "no escape ampersand",
-        "input_md": "R&B, rock & roll\n",
-        "output_md": "R&B, rock & roll\n",
-    },
-    {
-        "name": "list whitespaces",
-        "input_md": "- item one\n  \n- item two\n  - sublist\n    \n  - sublist\n",
-        "output_md": "- item one\n\n- item two\n\n  - sublist\n\n  - sublist\n",
-    },
-    {
-        "name": "convert setext to ATX heading",
-        "input_md": "Top level heading\n=========\n\n2nd level heading\n---------",
-        "output_md": "# Top level heading\n\n## 2nd level heading\n",
-    },
-)
-
-
-@pytest.mark.parametrize("entry", STYLE_TESTS, ids=[c["name"] for c in STYLE_TESTS])
-def test_renderer_style(entry):
-    """Test Markdown renderer renders expected style."""
-    md_original = entry["input_md"]
-    md_new = MarkdownIt(renderer_cls=MDRenderer).render(md_original)
-    expected_md = entry["output_md"]
-    assert md_new == expected_md

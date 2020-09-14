@@ -29,9 +29,10 @@ class MDRenderer:
     ) -> str:
         """Takes token stream and generates Markdown.
 
-        :param tokens: list on block tokens to render
-        :param options: params of parser instance
-        :param env: additional data from parsed input
+        Args:
+            tokens: A list of block tokens to render
+            options: Params of parser instance
+            env: Additional data from parsed input
         """
         assert _recursion_level in {
             0,
@@ -79,5 +80,5 @@ class MDRenderer:
         if not _recursion_level:
             rendered_content = removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
             rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
-            rendered_content = rendered_content + "\n"
+            rendered_content += "\n"
         return rendered_content
