@@ -62,7 +62,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                     "\n"
                     "The formatted Markdown renders to different HTML than the input Markdown.\n"  # noqa: E501
                     "This is likely a bug in mdformat. Please create an issue report here:\n"  # noqa: E501
-                    "https://github.com/hukkinj1/mdformat/issues\n"
+                    "https://github.com/executablebooks/mdformat/issues\n"
                 )
                 return 1
             if path:
