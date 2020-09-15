@@ -1,5 +1,5 @@
-[![Build Status](https://github.com/hukkinj1/mdformat/workflows/Tests/badge.svg?branch=master)](<https://github.com/hukkinj1/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
-[![codecov.io](https://codecov.io/gh/hukkinj1/mdformat/branch/master/graph/badge.svg)](<https://codecov.io/gh/hukkinj1/mdformat>)
+[![Build Status](https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master)](<https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
+[![codecov.io](https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg)](<https://codecov.io/gh/executablebooks/mdformat>)
 [![PyPI version](https://badge.fury.io/py/mdformat.svg)](<https://badge.fury.io/py/mdformat>)
 
 # mdformat
@@ -103,7 +103,7 @@ mdformat.file(filepath)
 Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ~~~yaml
-- repo: https://github.com/hukkinj1/mdformat
+- repo: https://github.com/executablebooks/mdformat
   rev: 0.1.1  # Use the ref you want to point at
   hooks:
   - id: mdformat
