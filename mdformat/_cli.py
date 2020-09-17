@@ -5,6 +5,7 @@ from typing import List, Optional, Sequence
 
 import mdformat
 from mdformat._util import is_md_equal
+import mdformat.plugins
 
 
 def run(cli_args: Sequence[str]) -> int:  # noqa: C901
@@ -41,6 +42,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         else:
             file_paths.append(path_obj)
 
+    # Enable code formatting for all languages that have a plugin installed
+    enabled_codeformatter_langs = mdformat.plugins.CODEFORMATTERS.keys()
+
     format_errors_found = False
     for path in file_paths:
         if path:
@@ -49,14 +53,20 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         else:
             path_str = "-"
             original_str = sys.stdin.read()
-        formatted_str = mdformat.text(original_str)
+        formatted_str = mdformat.text(
+            original_str, codeformatters=enabled_codeformatter_langs
+        )
 
         if args.check:
             if formatted_str != original_str:
                 format_errors_found = True
                 sys.stderr.write(f'Error: File "{path_str}" is not formatted.\n')
         else:
-            if not is_md_equal(original_str, formatted_str):
+            if not is_md_equal(
+                original_str,
+                formatted_str,
+                ignore_codeclasses=enabled_codeformatter_langs,
+            ):
                 sys.stderr.write(
                     f'Error: Could not format "{path_str}"\n'
                     "\n"

@@ -37,6 +37,7 @@ mdformat = "mdformat.__main__:run"
 [tool.poetry.dependencies]
 python = "^3.6"
 markdown-it-py = ">=0.4.7, <0.6.0"
+importlib-metadata = { version = ">=0.12", python = "<3.8" }
 
 [tool.poetry.dev-dependencies]
 # Tests
