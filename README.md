@@ -128,3 +128,6 @@ unformatted = "~~~python\n'''black converts quotes'''\n~~~\n"
 formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '~~~python\n"""black converts quotes"""\n~~~\n'
 ~~~~
+
+Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
+if you wish to implement a new code formatter plugin.

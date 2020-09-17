@@ -35,7 +35,7 @@ jobs:
         isort --check-only .
         black --check .
         docformatter --recursive --check mdformat/ tests/
-        mdformat --check CHANGELOG.md README.md
+        mdformat --check CHANGELOG.md CONTRIBUTING.md README.md
 
     - name: Test with pytest
       run: |
