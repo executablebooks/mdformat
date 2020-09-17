@@ -93,6 +93,7 @@ mdformat.file("README.md")
 
 # ...or a pathlib.Path object
 import pathlib
+
 filepath = pathlib.Path("README.md")
 mdformat.file(filepath)
 ~~~
@@ -108,3 +109,22 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
   hooks:
   - id: mdformat
 ~~~
+
+## Code formatter plugins
+
+Mdformat features a plugin system to support formatting of Markdown code blocks where the coding language has been labeled.
+For instance, if [`mdformat-black`](<https://github.com/hukkinj1/mdformat-black>) plugin is installed in the environment,
+mdformat CLI will automatically format Python code blocks with [Black](<https://github.com/psf/black>).
+
+For stability, mdformat Python API behavior will not change simply due to a plugin being installed.
+Code formatters will have to be explicitly enabled in addition to being installed:
+
+~~~~python
+import mdformat
+
+unformatted = "~~~python\n'''black converts quotes'''\n~~~\n"
+# Pass in `codeformatters` here! It is an iterable of coding languages
+# that should be formatted
+formatted = mdformat.text(unformatted, codeformatters={"python"})
+assert formatted == '~~~python\n"""black converts quotes"""\n~~~\n'
+~~~~
