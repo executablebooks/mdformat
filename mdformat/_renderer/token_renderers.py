@@ -79,6 +79,16 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     lang = token.info.strip() if token.info else ""
     code_block = token.content
 
+    # Format the code block using enabled codeformatter funcs
+    if lang in options.get("codeformatters", {}):
+        fmt_func = options["codeformatters"][lang]
+        try:
+            code_block = fmt_func(code_block)
+        except Exception:
+            # Swallow exceptions so that formatter errors (e.g. due to
+            # invalid code) do not crash mdformat.
+            pass
+
     # The code block must not include as long or longer sequence of "~"
     # chars as the fence string itself
     fence_len = max(3, longest_consecutive_sequence(code_block, "~") + 1)
