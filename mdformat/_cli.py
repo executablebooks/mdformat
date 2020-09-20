@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import List, Optional, Sequence
+from typing import Iterable, List, Optional, Sequence
 
 import mdformat
 from mdformat._util import is_md_equal
@@ -20,27 +20,11 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         sys.stderr.write("No files have been passed in. Doing nothing.\n")
         return 0
 
-    # Convert paths given as args to pathlib.Path objects.
-    # Check that all paths are either files, directories or stdin.
-    # Resolve directory paths to a list of file paths (ending with ".md").
-    file_paths: List[Optional[Path]] = []  # Path to file or None for stdin/stdout
-    for path_str in args.paths:
-        if path_str == "-":
-            file_paths.append(None)
-            continue
-        path_obj = Path(path_str)
-        try:
-            path_exists = path_obj.exists()
-        except OSError:  # Catch "OSError: [WinError 123]" on Windows
-            path_exists = False
-        if not path_exists:
-            sys.stderr.write(f'Error: File "{path_str}" does not exist.\n')
-            return 1
-        if path_obj.is_dir():
-            for p in path_obj.glob("**/*.md"):
-                file_paths.append(p)
-        else:
-            file_paths.append(path_obj)
+    try:
+        file_paths = resolve_file_paths(args.paths)
+    except InvalidPath as e:
+        sys.stderr.write(f'Error: File "{e.path}" does not exist.\n')
+        return 1
 
     # Enable code formatting for all languages that have a plugin installed
     enabled_codeformatter_langs = mdformat.plugins.CODEFORMATTERS.keys()
@@ -82,3 +66,37 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     if format_errors_found:
         return 1
     return 0
+
+
+class InvalidPath(Exception):
+    """Exception raised when a path does not exist."""
+
+    def __init__(self, path: Path):
+        self.path = path
+
+
+def resolve_file_paths(path_strings: Iterable[str]) -> List[Optional[Path]]:
+    """Resolve pathlib.Path objects from filepath strings.
+
+    Convert path strings to pathlib.Path objects. Check that all paths
+    are either files, directories or stdin. If not, raise InvalidPath.
+    Resolve directory paths to a list of file paths (ending with ".md").
+    """
+    file_paths: List[Optional[Path]] = []  # Path to file or None for stdin/stdout
+    for path_str in path_strings:
+        if path_str == "-":
+            file_paths.append(None)
+            continue
+        path_obj = Path(path_str)
+        try:
+            path_exists = path_obj.exists()
+        except OSError:  # Catch "OSError: [WinError 123]" on Windows
+            path_exists = False
+        if not path_exists:
+            raise InvalidPath(path_obj)
+        if path_obj.is_dir():
+            for p in path_obj.glob("**/*.md"):
+                file_paths.append(p)
+        else:
+            file_paths.append(path_obj)
+    return file_paths
