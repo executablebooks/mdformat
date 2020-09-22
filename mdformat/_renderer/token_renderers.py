@@ -76,7 +76,8 @@ def code_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
 
 def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     token = tokens[idx]
-    lang = token.info.strip() if token.info else ""
+    info_str = token.info.strip() if token.info else ""
+    lang = info_str.split()[0] if info_str.split() else ""
     code_block = token.content
 
     # Format the code block using enabled codeformatter funcs
@@ -94,7 +95,7 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     fence_len = max(3, longest_consecutive_sequence(code_block, "~") + 1)
     fence_str = "~" * fence_len
 
-    return f"{fence_str}{lang}\n{code_block}{fence_str}" + MARKERS.BLOCK_SEPARATOR
+    return f"{fence_str}{info_str}\n{code_block}{fence_str}" + MARKERS.BLOCK_SEPARATOR
 
 
 def code_block(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
