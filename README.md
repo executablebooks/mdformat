@@ -131,3 +131,24 @@ assert formatted == '~~~python\n"""black converts quotes"""\n~~~\n'
 
 Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
 if you wish to implement a new code formatter plugin.
+
+### Existing formatter plugins
+
+<table>
+  <tr>
+    <th>Plugin</th>
+    <th>Supported languages</th>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-black">mdformat-black</a></td>
+    <td><code>python</code></td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-config">mdformat-config</a></td>
+    <td><code>json</code>, <code>toml</code></td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-beautysh">mdformat-beautysh</a></td>
+    <td><code>bash</code>, <code>sh</code></td>
+  </tr>
+</table> 
