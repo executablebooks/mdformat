@@ -105,7 +105,7 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ```yaml
 - repo: https://github.com/executablebooks/mdformat
-  rev: 0.1.3  # Use the ref you want to point at
+  rev: 0.2.0  # Use the ref you want to point at
   hooks:
   - id: mdformat
 ```
