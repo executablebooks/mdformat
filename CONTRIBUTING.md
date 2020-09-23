@@ -4,22 +4,22 @@
 
 1. Install dependencies.
 
-   ~~~bash
+   ```bash
    pip install poetry
    poetry install
-   ~~~
+   ```
 
 1. Install pre-commit hooks
 
-   ~~~bash
+   ```bash
    pre-commit install
-   ~~~
+   ```
 
 1. After making changes and having written tests, make sure tests pass:
 
-   ~~~bash
+   ```bash
    pytest
-   ~~~
+   ```
 
 1. Commit, push, and make a PR.
 
@@ -36,7 +36,7 @@ e.g. "my\_package.some\_module:format\_python"
 
 If using `setup.py` for packaging, the entry point configuration would have to be similar to:
 
-~~~python
+```python
 import setuptools
 
 setuptools.setup(
@@ -45,15 +45,15 @@ setuptools.setup(
         "mdformat.codeformatter": ["python = my_package.some_module:format_python"]
     }
 )
-~~~
+```
 
 If using Poetry for packaging, the entry point configuration in `pyproject.toml` would need to be like:
 
-~~~toml
+```toml
 # other config here...
 [tool.poetry.plugins."mdformat.codeformatter"]
 "python" = "my_package.some_module:format_python"
-~~~
+```
 
 For a real-world example plugin, see [mdformat-black](<https://github.com/hukkinj1/mdformat-black>),
 which formats Python code blocks with Black.

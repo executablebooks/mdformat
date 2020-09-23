@@ -33,9 +33,9 @@ It is recommended to pin mdformat dependency version.
 
 ## Installing
 
-~~~bash
+```bash
 pip install mdformat
-~~~
+```
 
 ## Command line usage
 
@@ -43,28 +43,28 @@ pip install mdformat
 
 Format files `README.md` and `CHANGELOG.md` in place
 
-~~~bash
+```bash
 mdformat README.md CHANGELOG.md
-~~~
+```
 
 Format `.md` files in current working directory recursively
 
-~~~bash
+```bash
 mdformat .
-~~~
+```
 
 Read Markdown from standard input until `EOF`.
 Write formatted Markdown to standard output.
 
-~~~bash
+```bash
 mdformat -
-~~~
+```
 
 ### Check formatting
 
-~~~bash
+```bash
 mdformat --check README.md CHANGELOG.md
-~~~
+```
 
 This will not apply any changes to the files.
 If a file is not properly formatted, the exit code will be non-zero.
@@ -73,19 +73,19 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ### Format text
 
-~~~python
+```python
 import mdformat
 
 unformatted = "\n\n# A header\n\n"
 formatted = mdformat.text(unformatted)
 assert formatted == "# A header\n"
-~~~
+```
 
 ### Format a file
 
 Format file `README.md` in place:
 
-~~~python
+```python
 import mdformat
 
 # Input filepath as a string...
@@ -96,19 +96,19 @@ import pathlib
 
 filepath = pathlib.Path("README.md")
 mdformat.file(filepath)
-~~~
+```
 
 ## Usage as a pre-commit hook
 
 `mdformat` can be used as a [pre-commit](<https://github.com/pre-commit/pre-commit>) hook.
 Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
-~~~yaml
+```yaml
 - repo: https://github.com/executablebooks/mdformat
   rev: 0.1.3  # Use the ref you want to point at
   hooks:
   - id: mdformat
-~~~
+```
 
 ## Code formatter plugins
 
@@ -119,7 +119,7 @@ mdformat CLI will automatically format Python code blocks with [Black](<https://
 For stability, mdformat Python API behavior will not change simply due to a plugin being installed.
 Code formatters will have to be explicitly enabled in addition to being installed:
 
-~~~~python
+```python
 import mdformat
 
 unformatted = "~~~python\n'''black converts quotes'''\n~~~\n"
@@ -127,7 +127,7 @@ unformatted = "~~~python\n'''black converts quotes'''\n~~~\n"
 # that should be formatted
 formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '~~~python\n"""black converts quotes"""\n~~~\n'
-~~~~
+```
 
 Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
 if you wish to implement a new code formatter plugin.
