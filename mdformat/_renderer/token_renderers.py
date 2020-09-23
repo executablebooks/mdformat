@@ -80,6 +80,13 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     lang = info_str.split()[0] if info_str.split() else ""
     code_block = token.content
 
+    # Info strings of backtick code fences can not contain backticks or tildes.
+    # If that is the case, we make a tilde code fence instead.
+    if "`" in info_str or "~" in info_str:
+        fence_char = "~"
+    else:
+        fence_char = "`"
+
     # Format the code block using enabled codeformatter funcs
     if lang in options.get("codeformatters", {}):
         fmt_func = options["codeformatters"][lang]
@@ -90,10 +97,10 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
             # invalid code) do not crash mdformat.
             pass
 
-    # The code block must not include as long or longer sequence of "~"
-    # chars as the fence string itself
-    fence_len = max(3, longest_consecutive_sequence(code_block, "~") + 1)
-    fence_str = "~" * fence_len
+    # The code block must not include as long or longer sequence of `fence_char`s
+    # as the fence string itself
+    fence_len = max(3, longest_consecutive_sequence(code_block, fence_char) + 1)
+    fence_str = fence_char * fence_len
 
     return f"{fence_str}{info_str}\n{code_block}{fence_str}" + MARKERS.BLOCK_SEPARATOR
 
