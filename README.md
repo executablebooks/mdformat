@@ -119,15 +119,15 @@ mdformat CLI will automatically format Python code blocks with [Black](<https://
 For stability, mdformat Python API behavior will not change simply due to a plugin being installed.
 Code formatters will have to be explicitly enabled in addition to being installed:
 
-```python
+````python
 import mdformat
 
-unformatted = "~~~python\n'''black converts quotes'''\n~~~\n"
+unformatted = "```python\n'''black converts quotes'''\n```\n"
 # Pass in `codeformatters` here! It is an iterable of coding languages
 # that should be formatted
 formatted = mdformat.text(unformatted, codeformatters={"python"})
-assert formatted == '~~~python\n"""black converts quotes"""\n~~~\n'
-```
+assert formatted == '```python\n"""black converts quotes"""\n```\n'
+````
 
 Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
 if you wish to implement a new code formatter plugin.
