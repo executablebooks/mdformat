@@ -145,7 +145,7 @@ if you wish to implement a new code formatter plugin.
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-config">mdformat-config</a></td>
-    <td><code>json</code>, <code>toml</code></td>
+    <td><code>json</code>, <code>toml</code>, <code>yaml</code></td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-beautysh">mdformat-beautysh</a></td>
