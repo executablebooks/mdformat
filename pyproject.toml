@@ -45,16 +45,6 @@ pytest = "*"
 pytest-randomly = "*"
 pytest-cov = "*"
 
-# Linting
-isort = "*"
-black = { version = "*", allow-prereleases = true }
-flake8 = "*"
-flake8-bugbear = "*"
-flake8-builtins = "*"
-flake8-comprehensions = "*"
-mypy = "*"
-docformatter = "*"
-
 # Tools
 pre-commit = "*"
 bump2version = "*"
