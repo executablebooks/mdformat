@@ -26,6 +26,8 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         sys.stderr.write(f'Error: File "{e.path}" does not exist.\n')
         return 1
 
+    # Enable all parser plugins
+    enabled_parserplugins_langs = mdformat.plugins.PARSEPLUGINS.keys()
     # Enable code formatting for all languages that have a plugin installed
     enabled_codeformatter_langs = mdformat.plugins.CODEFORMATTERS.keys()
 
@@ -38,7 +40,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             path_str = "-"
             original_str = sys.stdin.read()
         formatted_str = mdformat.text(
-            original_str, codeformatters=enabled_codeformatter_langs
+            original_str,
+            plugins=enabled_parserplugins_langs,
+            codeformatters=enabled_codeformatter_langs,
         )
 
         if args.check:

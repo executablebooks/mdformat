@@ -7,16 +7,28 @@ from mdformat._renderer import MDRenderer
 import mdformat.plugins
 
 
-def text(md: str, *, codeformatters: Iterable[str] = ()) -> str:
+def text(
+    md: str, *, plugins: Iterable[str] = (), codeformatters: Iterable[str] = ()
+) -> str:
     """Format a Markdown string."""
     markdown_it = MarkdownIt(renderer_cls=MDRenderer)
+    markdown_it.options["parseplugins"] = []
+    for name in plugins:
+        plugin = mdformat.plugins.PARSEPLUGINS[name]
+        markdown_it = plugin.update_mdit(markdown_it)
+        markdown_it.options["parseplugins"].append(plugin)
     markdown_it.options["codeformatters"] = {
         lang: mdformat.plugins.CODEFORMATTERS[lang] for lang in codeformatters
     }
     return markdown_it.render(md)
 
 
-def file(f: Union[str, Path], *, codeformatters: Iterable[str] = ()) -> None:
+def file(
+    f: Union[str, Path],
+    *,
+    plugins: Iterable[str] = (),
+    codeformatters: Iterable[str] = (),
+) -> None:
     """Format a Markdown file in place."""
     if isinstance(f, str):
         f = Path(f)
@@ -27,5 +39,5 @@ def file(f: Union[str, Path], *, codeformatters: Iterable[str] = ()) -> None:
     if not is_file:
         raise ValueError(f'Can not format "{f}". It is not a file.')
     original_md = f.read_text(encoding="utf-8")
-    formatted_md = text(original_md, codeformatters=codeformatters)
+    formatted_md = text(original_md, plugins=plugins, codeformatters=codeformatters)
     f.write_text(formatted_md, encoding="utf-8")
