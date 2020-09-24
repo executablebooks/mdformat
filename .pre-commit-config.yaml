@@ -22,9 +22,9 @@ repos:
   hooks:
   - id: flake8
     additional_dependencies:
-    - flake8-bugbear
-    - flake8-builtins
-    - flake8-comprehensions
+    - flake8-bugbear==20.1.4
+    - flake8-builtins==1.5.3
+    - flake8-comprehensions==3.2.3
 - repo: https://github.com/myint/docformatter
   rev: de0bf8fa254d25a01383fecdb6335bea01daeae3  # frozen: v1.3.1
   hooks:

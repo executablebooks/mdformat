@@ -7,6 +7,19 @@ on:
     branches: [ master ]
 
 jobs:
+
+  pre-commit:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+    - uses: pre-commit/action@v2.0.0
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -27,14 +40,9 @@ jobs:
         pip install "poetry==1.0.10"
         poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
-    - name: Linters
+    - name: Run formatter on repo files
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.6'
       run: |
-        flake8 .
-        mypy .
-        isort --check-only .
-        black --check .
-        docformatter --recursive --check mdformat/ tests/
         mdformat --check CHANGELOG.md CONTRIBUTING.md README.md
 
     - name: Test with pytest
