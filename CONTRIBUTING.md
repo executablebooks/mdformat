@@ -21,6 +21,9 @@
    pytest
    ```
 
+   Alternatively you can run the tests *via* `tox`,
+   which will automate the poetry install into a virtual environment, before calling pytest.
+
 1. Commit, push, and make a PR.
 
 ## Developing code formatter plugins
