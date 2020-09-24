@@ -25,12 +25,13 @@
 
 ## Developing code formatter plugins
 
-Mdformat code formatter plugins need to define a formatter function that is of type `Callable[[str], str]`.
-That is, the function takes one `str` argument as input (unformatted code), and returns a `str` (formatted code).
+Mdformat code formatter plugins need to define a formatter function that is of type `Callable[[str, str], str]`.
+The input arguments are the code block's unformatted code and info string, in that order.
+The return value should be formatted code.
 
 This function needs to be exposed via entry point distribution metadata.
 The entry point's group must be "mdformat.codeformatter",
-name must be name of the coding language it formats (as it appears in the Markdown code block label), e.g. "python",
+name must be name of the coding language it formats (as it appears in Markdown code block info strings), e.g. "python",
 and value has to point to the formatter function within the plugin package,
 e.g. "my\_package.some\_module:format\_python"
 
