@@ -27,7 +27,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         return 1
 
     # Enable all parser plugins
-    enabled_parserplugins_langs = mdformat.plugins.PARSEPLUGINS.keys()
+    enabled_parserplugins_langs = mdformat.plugins.EXTENDPLUGINS.keys()
     # Enable code formatting for all languages that have a plugin installed
     enabled_codeformatter_langs = mdformat.plugins.CODEFORMATTERS.keys()
 

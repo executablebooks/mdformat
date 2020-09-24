@@ -12,11 +12,11 @@ def text(
 ) -> str:
     """Format a Markdown string."""
     markdown_it = MarkdownIt(renderer_cls=MDRenderer)
-    markdown_it.options["parseplugins"] = []
+    markdown_it.options["extendplugins"] = []
     for name in plugins:
-        plugin = mdformat.plugins.PARSEPLUGINS[name]
+        plugin = mdformat.plugins.EXTENDPLUGINS[name]
         markdown_it = plugin.update_mdit(markdown_it)
-        markdown_it.options["parseplugins"].append(plugin)
+        markdown_it.options["extendplugins"].append(plugin)
     markdown_it.options["codeformatters"] = {
         lang: mdformat.plugins.CODEFORMATTERS[lang] for lang in codeformatters
     }
