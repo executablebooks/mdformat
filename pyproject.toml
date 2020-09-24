@@ -38,6 +38,7 @@ mdformat = "mdformat.__main__:run"
 python = "^3.6"
 markdown-it-py = ">=0.4.7, <0.6.0"
 importlib-metadata = { version = ">=0.12", python = "<3.8" }
+typing-extensions= { version = "*", python = "<3.8" }
 
 [tool.poetry.dev-dependencies]
 # Tests
@@ -48,6 +49,7 @@ pyyaml = "*"
 
 # Tools
 pre-commit = "*"
+mypy = "*"  # this is separate to pre-commit, since it requires an external env
 bump2version = "*"
 
 
@@ -88,6 +90,12 @@ commands = pytest {posargs}
 [testenv:py{36,37,38}-pre-commit]
 deps = pre-commit
 commands = pre-commit run {posargs}
+
+[testenv:py{36,37,38}-mypy]
+deps =
+    mypy
+    pytest
+commands = mypy {posargs:.}
 
 [testenv:py{36,37,38}-hook]
 deps = pre-commit

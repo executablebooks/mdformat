@@ -1,5 +1,10 @@
 # Contributing
 
+Welcome to the `mdformat` repository!
+We're excited you're here and want to contribute. ✨
+
+Below are the basic development steps, and for further information also see the [EPB organisation guidelines](<https://github.com/executablebooks/.github/blob/master/CONTRIBUTING.md>).
+
 1. Fork and clone the repository.
 
 1. Install dependencies.
@@ -67,3 +72,58 @@ If using Poetry for packaging, the entry point configuration in `pyproject.toml`
 
 For a real-world example plugin, see [mdformat-black](<https://github.com/hukkinj1/mdformat-black>),
 which formats Python code blocks with Black.
+
+## Developing parser extension plugins
+
+Mdformat parser extension plugins need to adhere to the `mdformat.plugins.ParserExtensionInterface`:
+
+```python
+from typing import List, Optional, Tuple
+from markdown_it import MarkdownIt
+from markdown_it.token import Token
+from mdformat import MDRenderer
+
+
+def update_mdit(mdit: MarkdownIt) -> None:
+   """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
+   pass
+
+
+def render_token(
+   renderer: MDRenderer,
+   tokens: List[Token],
+   index: int,
+   options: dict,
+   env: dict,
+) -> Optional[Tuple[str, int]]:
+   """Convert token(s) to a string, or return None if no render method
+   available.
+
+   :returns: (text, index) where index is of the final "consumed" token
+   """
+   return None
+```
+
+This function needs to be exposed via entry point distribution metadata.
+and the entry point's group must be "mdformat.parser\_extension".
+
+If using `setup.py` for packaging, the entry point configuration would have to be similar to:
+
+```python
+import setuptools
+
+setuptools.setup(
+    # other arguments here...
+    entry_points={
+        "mdformat.parser_extension": ["myextension = my_package:ext_module_or_class"]
+    }
+)
+```
+
+If using Poetry for packaging, the entry point configuration in `pyproject.toml` would need to be like:
+
+```toml
+# other config here...
+[tool.poetry.plugins."mdformat.parser_extension"]
+"myextension" = "my_package:ext_module_or_class"
+```

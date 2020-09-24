@@ -8,8 +8,10 @@ from mdformat._renderer import MDRenderer
 
 if sys.version_info >= (3, 8):
     from importlib import metadata as importlib_metadata
+    from typing import Protocol
 else:
     import importlib_metadata
+    from typing_extensions import Protocol
 
 
 def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:
@@ -22,19 +24,22 @@ def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:
 CODEFORMATTERS: Mapping[str, Callable[[str, str], str]] = _load_codeformatters()
 
 
-class ParsePluginAbstract:
-    """A class for extending the base parser."""
+class ParserExtensionInterface(Protocol):
+    """A interface for parser extension plugins."""
 
-    @staticmethod
-    def update_mdit(mdit: MarkdownIt) -> MarkdownIt:
+    def update_mdit(self, mdit: MarkdownIt) -> None:
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
-        return mdit
+        pass
 
-    @staticmethod
     def render_token(
-        renderer: MDRenderer, tokens: List[Token], index: int, options: dict, env: dict
+        self,
+        renderer: MDRenderer,
+        tokens: List[Token],
+        index: int,
+        options: dict,
+        env: dict,
     ) -> Optional[Tuple[str, int]]:
-        """Convert a token to a string, or return None if no render method
+        """Convert token(s) to a string, or return None if no render method
         available.
 
         :returns: (text, index) where index is of the final "consumed" token
@@ -42,11 +47,11 @@ class ParsePluginAbstract:
         return None
 
 
-def _load_extendplugins() -> Mapping[str, ParsePluginAbstract]:
-    extendplugins_entrypoints = importlib_metadata.entry_points().get(
-        "mdformat.extendplugins", ()
+def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:
+    parser_extension_entrypoints = importlib_metadata.entry_points().get(
+        "mdformat.parser_extension", ()
     )
-    return {ep.name: ep.load() for ep in extendplugins_entrypoints}
+    return {ep.name: ep.load() for ep in parser_extension_entrypoints}
 
 
-EXTENDPLUGINS: Mapping[str, ParsePluginAbstract] = _load_extendplugins()
+PARSER_EXTENSIONS: Mapping[str, ParserExtensionInterface] = _load_parser_extensions()
