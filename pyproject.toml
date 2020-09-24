@@ -77,3 +77,28 @@ profile = "black"
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config"
 xfail_strict = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{36,37,38}
+isolated_build = True
+
+[testenv:py{36,37,38}]
+# from https://github.com/python-poetry/poetry/issues/1941
+# it appears there is no easy way to access [tool.poetry.dev-dependencies]
+deps =
+    pytest
+    pytest-randomly
+    pytest-cov
+commands = pytest {posargs}
+
+[testenv:py{36,37,38}-pre-commit]
+deps = pre-commit
+commands = pre-commit run {posargs}
+
+[testenv:py{36,37,38}-hook]
+deps = pre-commit
+commands = pre-commit try-repo . mdformat --verbose --all-files --show-diff-on-failure
+
+"""
