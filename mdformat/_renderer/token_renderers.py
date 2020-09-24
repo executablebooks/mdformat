@@ -91,7 +91,7 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     if lang in options.get("codeformatters", {}):
         fmt_func = options["codeformatters"][lang]
         try:
-            code_block = fmt_func(code_block)
+            code_block = fmt_func(code_block, info_str)
         except Exception:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.

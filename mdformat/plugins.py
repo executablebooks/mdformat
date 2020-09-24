@@ -7,11 +7,11 @@ else:
     import importlib_metadata
 
 
-def _load_codeformatters() -> Dict[str, Callable[[str], str]]:
+def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:
     codeformatter_entrypoints = importlib_metadata.entry_points().get(
         "mdformat.codeformatter", ()
     )
     return {ep.name: ep.load() for ep in codeformatter_entrypoints}
 
 
-CODEFORMATTERS: Mapping[str, Callable[[str], str]] = _load_codeformatters()
+CODEFORMATTERS: Mapping[str, Callable[[str, str], str]] = _load_codeformatters()
