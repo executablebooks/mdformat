@@ -48,10 +48,18 @@ class MDRenderer:
                     token.children, options, env, _recursion_level=_recursion_level + 1
                 )
             else:
-                tkn_renderer = getattr(
-                    token_renderers, token.type, token_renderers.default
-                )
-                result = tkn_renderer(tokens, i, options, env)
+                tkn_renderer = getattr(token_renderers, token.type, None)
+                result = None
+                if tkn_renderer is not None:
+                    result = tkn_renderer(tokens, i, options, env)
+                else:
+                    # the token is rendered by the first plugin returning a string
+                    for plugin in options.get("parseplugins", []):
+                        result = plugin.render_token(tokens, i, options, env)
+                        if result is not None:
+                            break
+                if result is None:
+                    result = token_renderers.default(tokens, i, options, env)
 
             # If the token opens a new container block, create a new item for
             # it in the text stack.
