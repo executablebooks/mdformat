@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from markdown_it.token import Token
 
-from mdformat._renderer.util import (
+from mdformat.renderer._util import (
     MARKERS,
     RE_CHAR_REFERENCE,
     find_opening_token,

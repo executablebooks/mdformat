@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Mapping, Optional, Tuple
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
 
-from mdformat._renderer import MDRenderer
+from mdformat.renderer import MDRenderer
 
 if sys.version_info >= (3, 8):
     from importlib import metadata as importlib_metadata

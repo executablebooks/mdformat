@@ -7,8 +7,8 @@ from markdown_it.token import Token
 import yaml
 
 import mdformat
-from mdformat import MARKERS, MDRenderer
 from mdformat.plugins import PARSER_EXTENSIONS
+from mdformat.renderer import MARKERS, MDRenderer
 
 
 class ExampleFrontMatterPlugin:

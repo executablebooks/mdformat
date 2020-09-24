@@ -81,7 +81,7 @@ Mdformat parser extension plugins need to adhere to the `mdformat.plugins.Parser
 from typing import List, Optional, Tuple
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
-from mdformat import MDRenderer
+from mdformat.renderer import MDRenderer
 
 
 def update_mdit(mdit: MarkdownIt) -> None:

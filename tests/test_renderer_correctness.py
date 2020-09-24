@@ -4,7 +4,7 @@ from pathlib import Path
 from markdown_it import MarkdownIt
 import pytest
 
-from mdformat._renderer import MDRenderer
+from mdformat.renderer import MDRenderer
 
 SPECTESTS_PATH = Path(__file__).parent / "data" / "spec.json"
 SPECTESTS_CASES = tuple(

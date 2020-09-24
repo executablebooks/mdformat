@@ -5,7 +5,7 @@ from typing import List
 
 from markdown_it.token import Token
 
-from mdformat._renderer.util import (
+from mdformat.renderer._util import (
     MARKERS,
     find_opening_token,
     is_tight_list,
