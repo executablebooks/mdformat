@@ -3,8 +3,8 @@ from typing import Iterable, Union
 
 from markdown_it import MarkdownIt
 
-from mdformat._renderer import MDRenderer
 import mdformat.plugins
+from mdformat.renderer import MDRenderer
 
 
 def text(

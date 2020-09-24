@@ -1,7 +1,7 @@
 from markdown_it import MarkdownIt
 import pytest
 
-from mdformat._renderer import MDRenderer
+from mdformat.renderer import MDRenderer
 
 STYLE_CASES = (
     {

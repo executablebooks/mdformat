@@ -2,8 +2,10 @@ from typing import Any, List
 
 from markdown_it.token import Token
 
-from mdformat._renderer import container_renderers, token_renderers
-from mdformat._renderer.util import MARKERS, removesuffix
+from mdformat.renderer import _container_renderers, _token_renderers
+from mdformat.renderer._util import MARKERS, removesuffix
+
+__all__ = ("MDRenderer", "MARKERS")
 
 
 class MDRenderer:
@@ -69,7 +71,7 @@ class MDRenderer:
             else:
                 # otherwise use a built-in renderer
                 tkn_renderer = getattr(
-                    token_renderers, token.type, token_renderers.default
+                    _token_renderers, token.type, _token_renderers.default
                 )
                 result = tkn_renderer(tokens, i, options, env)
 
@@ -87,7 +89,7 @@ class MDRenderer:
             else:  # token.nesting == -1
                 container_result = text_stack.pop() + result
                 container_renderer = getattr(
-                    container_renderers, token.type, container_renderers.default
+                    _container_renderers, token.type, _container_renderers.default
                 )
                 container_result = container_renderer(
                     container_result, tokens, i, options, env
