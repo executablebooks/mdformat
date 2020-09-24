@@ -3,6 +3,13 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.3.1
+
+- Added
+  - Plugin system for extending the parser ([\#13](<https://github.com/executablebooks/mdformat/issues/13>)).
+    Thank you [chrisjsewell](<https://github.com/chrisjsewell>) for the issue and the PR.
+  - Exported `mdformat.renderer.MDRenderer` and `mdformat.renderer.MARKERS`
+
 ## 0.3.0
 
 - Changed
