@@ -7,7 +7,7 @@ from markdown_it.token import Token
 import yaml
 
 import mdformat
-from mdformat._renderer import MDRenderer
+from mdformat import MARKERS, MDRenderer
 from mdformat.plugins import EXTENDPLUGINS
 
 
@@ -28,7 +28,7 @@ class ExampleFrontMatterPlugin:
         token = tokens[index]
         if token.type == "front_matter":
             text = yaml.dump(yaml.safe_load(token.content))
-            return f"---\n{text.rstrip()}\n---\n", index
+            return f"---\n{text.rstrip()}\n---" + MARKERS.BLOCK_SEPARATOR, index
 
 
 def test_front_matter(monkeypatch):
@@ -50,6 +50,7 @@ def test_front_matter(monkeypatch):
     ---
     a: 1
     ---
+
     a
     """
     )
@@ -76,7 +77,7 @@ class ExampleTablePlugin:
                 index += 1
                 if tokens[index].type == "table_close":
                     break
-            return f"dummy {index}\n\n", index
+            return f"dummy {index}" + MARKERS.BLOCK_SEPARATOR, index
 
 
 def test_table(monkeypatch):
