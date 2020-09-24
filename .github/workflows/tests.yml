@@ -9,7 +9,6 @@ on:
 jobs:
 
   pre-commit:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +19,7 @@ jobs:
         python-version: 3.6
     - uses: pre-commit/action@v2.0.0
 
-  build:
+  tests:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -40,11 +39,6 @@ jobs:
         pip install "poetry==1.0.10"
         poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
-    - name: Run formatter on repo files
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.6'
-      run: |
-        mdformat --check CHANGELOG.md CONTRIBUTING.md README.md
-
     - name: Test with pytest
       run: |
         pytest --cov --cov-fail-under=95
@@ -52,3 +46,25 @@ jobs:
     - name: Report coverage
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.6'
       uses: codecov/codecov-action@v1.0.12
+
+  pre-commit-hook:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install pre-commit
+      run: |
+        python -m pip install --upgrade pip
+        pip install pre-commit
+
+    - name: run hook against repository
+      run: pre-commit try-repo . mdformat --verbose --all-files --show-diff-on-failure
+
