@@ -31,6 +31,8 @@ and
 The formatting style produced by mdformat may change in each version.
 It is recommended to pin mdformat dependency version.
 
+Mdformat also offers an extensible plugin system for both code fence content formatting and parser extensions (like tables).
+
 ## Installing
 
 ```bash
@@ -151,4 +153,28 @@ if you wish to implement a new code formatter plugin.
     <td><a href="https://github.com/hukkinj1/mdformat-beautysh">mdformat-beautysh</a></td>
     <td><code>bash</code>, <code>sh</code></td>
   </tr>
-</table> 
+</table>
+
+## Parser extension plugins
+
+Markdown-it-py offers a range of useful extensions to the base CommonMark parser (see the [documented list](<https://markdown-it-py.readthedocs.io/en/latest/plugins.html>)).
+
+Mdformat features a plugin system to support the loading and rendering of such extensions.
+
+For stability, mdformat Python API behavior will not change simply due to a plugin being installed.
+Extensions will have to be explicitly enabled in addition to being installed:
+
+```python
+import mdformat
+
+unformatted = "content...\n"
+# Pass in `extensions` here! It is an iterable of extensions that should be loaded
+formatted = mdformat.text(unformatted, extensions={"table"})
+```
+
+Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
+if you wish to implement a new parser extension plugin.
+
+### Existing formatter plugins
+
+Coming soon!

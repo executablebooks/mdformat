@@ -1,5 +1,5 @@
 from textwrap import dedent
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from markdown_it import MarkdownIt
 from markdown_it.extensions import front_matter
@@ -8,32 +8,33 @@ import yaml
 
 import mdformat
 from mdformat import MARKERS, MDRenderer
-from mdformat.plugins import EXTENDPLUGINS
+from mdformat.plugins import PARSER_EXTENSIONS
 
 
 class ExampleFrontMatterPlugin:
     """A class for extending the base parser."""
 
     @staticmethod
-    def update_mdit(mdit: MarkdownIt) -> MarkdownIt:
+    def update_mdit(mdit: MarkdownIt):
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
-        return mdit.use(front_matter.front_matter_plugin)
+        mdit.use(front_matter.front_matter_plugin)
 
     @staticmethod
     def render_token(
         renderer: MDRenderer, tokens: List[Token], index: int, options: dict, env: dict
-    ) -> Optional[str]:
+    ) -> Optional[Tuple[str, int]]:
         """Convert a token to a string, or return None if no render method
         available."""
         token = tokens[index]
         if token.type == "front_matter":
             text = yaml.dump(yaml.safe_load(token.content))
             return f"---\n{text.rstrip()}\n---" + MARKERS.BLOCK_SEPARATOR, index
+        return None
 
 
 def test_front_matter(monkeypatch):
     """Test the front matter plugin, as a single token extension example."""
-    monkeypatch.setitem(EXTENDPLUGINS, "front_matter", ExampleFrontMatterPlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, "front_matter", ExampleFrontMatterPlugin)
     text = mdformat.text(
         dedent(
             """\
@@ -43,7 +44,7 @@ def test_front_matter(monkeypatch):
     a
     """
         ),
-        plugins=["front_matter"],
+        extensions=["front_matter"],
     )
     assert text == dedent(
         """\
@@ -60,14 +61,14 @@ class ExampleTablePlugin:
     """A class for extending the base parser."""
 
     @staticmethod
-    def update_mdit(mdit: MarkdownIt) -> MarkdownIt:
+    def update_mdit(mdit: MarkdownIt):
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
-        return mdit.enable("table")
+        mdit.enable("table")
 
     @staticmethod
     def render_token(
         renderer: MDRenderer, tokens: List[Token], index: int, options: dict, env: dict
-    ) -> Optional[str]:
+    ) -> Optional[Tuple[str, int]]:
         """Convert a token to a string, or return None if no render method
         available."""
         token = tokens[index]
@@ -78,11 +79,12 @@ class ExampleTablePlugin:
                 if tokens[index].type == "table_close":
                     break
             return f"dummy {index}" + MARKERS.BLOCK_SEPARATOR, index
+        return None
 
 
 def test_table(monkeypatch):
     """Test the table plugin, as a multi-token extension example."""
-    monkeypatch.setitem(EXTENDPLUGINS, "table", ExampleTablePlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExampleTablePlugin)
     text = mdformat.text(
         dedent(
             """\
@@ -93,7 +95,7 @@ def test_table(monkeypatch):
     other text
     """
         ),
-        plugins=["table"],
+        extensions=["table"],
     )
     assert text == dedent(
         """\

@@ -49,7 +49,7 @@ class MDRenderer:
             result = None
 
             # first check plugins
-            for plugin in options.get("extendplugins", []):
+            for plugin in options.get("parser_extension", []):
                 output = plugin.render_token(self, tokens, i, options, env)
                 if output is not None:
                     result, i = output
