@@ -1,4 +1,4 @@
-## Contributing
+# Contributing
 
 1. Fork and clone the repository.
 
@@ -23,6 +23,12 @@
 
    Alternatively you can run the tests *via* `tox`,
    which will automate the poetry install into a virtual environment, before calling pytest.
+
+1. Test the pre-commit hook against the repository
+
+   ```bash
+   pre-commit try-repo . mdformat --verbose --all-files --show-diff-on-failure
+   ```
 
 1. Commit, push, and make a PR.
 
