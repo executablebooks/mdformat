@@ -40,26 +40,38 @@ class MDRenderer:
         }, "There should be no more than one level of recursion in tokens"
         text_stack = [""]
 
-        for i, token in enumerate(tokens):
+        i = -1
+        tokens_length = len(tokens)
+        while (i + 1) < tokens_length:
+            i += 1
+            token = tokens[i]
 
-            # Render text of the current token.
+            result = None
+
+            # first check plugins
+            for plugin in options.get("extendplugins", []):
+                output = plugin.render_token(self, tokens, i, options, env)
+                if output is not None:
+                    result, i = output
+                    break
+
+            if result is not None:
+                # if a plugin has handled the token,
+                # we assume that it does not need to open or close a container
+                text_stack[-1] = text_stack[-1] + result
+                continue
+
             if token.type == "inline":
+                # inline tokens require nested rendering
                 result = self.render(
                     token.children, options, env, _recursion_level=_recursion_level + 1
                 )
             else:
-                tkn_renderer = getattr(token_renderers, token.type, None)
-                result = None
-                if tkn_renderer is not None:
-                    result = tkn_renderer(tokens, i, options, env)
-                else:
-                    # the token is rendered by the first plugin returning a string
-                    for plugin in options.get("parseplugins", []):
-                        result = plugin.render_token(tokens, i, options, env)
-                        if result is not None:
-                            break
-                if result is None:
-                    result = token_renderers.default(tokens, i, options, env)
+                # otherwise use a built-in renderer
+                tkn_renderer = getattr(
+                    token_renderers, token.type, token_renderers.default
+                )
+                result = tkn_renderer(tokens, i, options, env)
 
             # If the token opens a new container block, create a new item for
             # it in the text stack.

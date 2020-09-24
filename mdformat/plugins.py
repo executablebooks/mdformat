@@ -1,8 +1,10 @@
 import sys
-from typing import Callable, Dict, List, Mapping, Optional
+from typing import Callable, Dict, List, Mapping, Optional, Tuple
 
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
+
+from mdformat._renderer import MDRenderer
 
 if sys.version_info >= (3, 8):
     from importlib import metadata as importlib_metadata
@@ -30,18 +32,21 @@ class ParsePluginAbstract:
 
     @staticmethod
     def render_token(
-        tokens: List[Token], index: int, options: dict, env: dict
-    ) -> Optional[str]:
+        renderer: MDRenderer, tokens: List[Token], index: int, options: dict, env: dict
+    ) -> Optional[Tuple[str, int]]:
         """Convert a token to a string, or return None if no render method
-        available."""
+        available.
+
+        :returns: (text, index) where index is of the final "consumed" token
+        """
         return None
 
 
-def _load_parseplugins() -> Mapping[str, ParsePluginAbstract]:
-    parseplugins_entrypoints = importlib_metadata.entry_points().get(
-        "mdformat.parseplugins", ()
+def _load_extendplugins() -> Mapping[str, ParsePluginAbstract]:
+    extendplugins_entrypoints = importlib_metadata.entry_points().get(
+        "mdformat.extendplugins", ()
     )
-    return {ep.name: ep.load() for ep in parseplugins_entrypoints}
+    return {ep.name: ep.load() for ep in extendplugins_entrypoints}
 
 
-PARSEPLUGINS: Mapping[str, ParsePluginAbstract] = _load_parseplugins()
+EXTENDPLUGINS: Mapping[str, ParsePluginAbstract] = _load_extendplugins()
