@@ -173,7 +173,7 @@ import mdformat
 
 unformatted = "content...\n"
 # Pass in `extensions` here! It is an iterable of extensions that should be loaded
-formatted = mdformat.text(unformatted, extensions={"table"})
+formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
 Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
