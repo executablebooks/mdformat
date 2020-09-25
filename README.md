@@ -110,6 +110,10 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
   rev: 0.3.1  # Use the ref you want to point at
   hooks:
   - id: mdformat
+    # optional
+    additional_dependencies:
+    - mdformat-tables
+    - mdformat-black
 ```
 
 ## Code formatter plugins
@@ -177,4 +181,13 @@ if you wish to implement a new parser extension plugin.
 
 ### Existing formatter plugins
 
-Coming soon!
+<table>
+  <tr>
+    <th>Plugin</th>
+    <th>Syntax Extensions</th>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-tables">mdformat-tables</a></td>
+    <td><code>table</code></td>
+  </tr>
+</table>
