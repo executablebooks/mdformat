@@ -1,4 +1,5 @@
 import argparse
+from ast import literal_eval
 from pathlib import Path
 import sys
 from typing import Iterable, List, Optional, Sequence
@@ -13,7 +14,17 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         description="CommonMark compliant Markdown formatter"
     )
     parser.add_argument("paths", nargs="*", help="Files to format")
-    parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--check", action="store_true", help="Do not apply changes to files"
+    )
+    parser.add_argument(
+        "-e",
+        dest="env",
+        metavar="key=value",
+        default=[],
+        action="append",
+        help="Pass env key:value to the renderer",
+    )
     args = parser.parse_args(cli_args)
 
     if not args.paths:
@@ -23,8 +34,21 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     try:
         file_paths = resolve_file_paths(args.paths)
     except InvalidPath as e:
-        sys.stderr.write(f'Error: File "{e.path}" does not exist.\n')
-        return 1
+        parser.error(f'File "{e.path}" does not exist.\n')
+
+    # convert env args to dict
+    env = {}
+    for val in args.env:
+        try:
+            key, val = val.split("=", 1)
+        except ValueError:
+            parser.error("-e option must be in the form key=value")
+        try:
+            # if possible, safely evaluate string to data type
+            val = literal_eval(val)
+        except ValueError:
+            pass
+        env[key] = val
 
     # Enable all parser plugins
     enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()
@@ -41,6 +65,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             original_str = sys.stdin.read()
         formatted_str = mdformat.text(
             original_str,
+            env=env,
             extensions=enabled_parserplugins,
             codeformatters=enabled_codeformatter_langs,
         )

@@ -1,7 +1,11 @@
 from io import StringIO
 import sys
+from unittest.mock import ANY, call, patch
+
+import pytest
 
 from mdformat._cli import run
+from mdformat.renderer import MDRenderer
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
 FORMATTED_MARKDOWN = "# A header\n"
@@ -31,8 +35,11 @@ def test_format__folder(tmp_path):
     assert file_path_3.read_text() == UNFORMATTED_MARKDOWN
 
 
-def test_invalid_file():
-    assert run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",)) == 1
+def test_invalid_file(capsys):
+    with pytest.raises(SystemExit):
+        run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",))
+    captured = capsys.readouterr()
+    assert "does not exist" in captured.err
 
 
 def test_check(tmp_path):
@@ -61,6 +68,31 @@ def test_check__multi_fail(capsys, tmp_path):
     captured = capsys.readouterr()
     assert str(file_path1) in captured.err
     assert str(file_path2) in captured.err
+
+
+def test_env(tmp_path):
+    """Test that env arguments are correctly passed as an env dict."""
+    file_path = tmp_path / "test_markdown.md"
+    file_path.touch()
+
+    with patch.object(MDRenderer, "render", return_value="") as mock_method:
+        assert (
+            run((str(file_path), "--check", "-e", "a=1", "-e", "b=c", "-e", "d=True"))
+            == 0
+        )
+
+    calls = mock_method.call_args_list
+    assert len(calls) == 1, calls
+    assert calls[0] == call([], ANY, {"a": 1, "b": "c", "d": True}), calls[0]
+
+
+def test_env_bad(tmp_path, capsys):
+    file_path = tmp_path / "test_markdown.md"
+    file_path.touch()
+    with pytest.raises(SystemExit):
+        run((str(file_path), "-e", "bad"))
+    captured = capsys.readouterr()
+    assert "-e option" in captured.err, captured.err
 
 
 def test_dash_stdin(capsys, monkeypatch):

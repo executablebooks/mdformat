@@ -1,14 +1,19 @@
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Iterable, Optional, Union
 
 from markdown_it import MarkdownIt
+from markdown_it.utils import AttrDict
 
 import mdformat.plugins
 from mdformat.renderer import MDRenderer
 
 
 def text(
-    md: str, *, extensions: Iterable[str] = (), codeformatters: Iterable[str] = ()
+    md: str,
+    *,
+    env: Optional[dict] = None,
+    extensions: Iterable[str] = (),
+    codeformatters: Iterable[str] = (),
 ) -> str:
     """Format a Markdown string."""
     markdown_it = MarkdownIt(renderer_cls=MDRenderer)
@@ -18,17 +23,19 @@ def text(
     markdown_it.options["parser_extension"] = []
     for name in extensions:
         plugin = mdformat.plugins.PARSER_EXTENSIONS[name]
-        plugin.update_mdit(markdown_it)
+        plugin.update_mdit(markdown_it, env)
         markdown_it.options["parser_extension"].append(plugin)
     markdown_it.options["codeformatters"] = {
         lang: mdformat.plugins.CODEFORMATTERS[lang] for lang in codeformatters
     }
-    return markdown_it.render(md)
+    env = env if env is None else AttrDict(env)
+    return markdown_it.render(md, env=env)
 
 
 def file(
     f: Union[str, Path],
     *,
+    env: Optional[dict] = None,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> None:
@@ -43,6 +50,6 @@ def file(
         raise ValueError(f'Can not format "{f}". It is not a file.')
     original_md = f.read_text(encoding="utf-8")
     formatted_md = text(
-        original_md, extensions=extensions, codeformatters=codeformatters
+        original_md, env=env, extensions=extensions, codeformatters=codeformatters
     )
     f.write_text(formatted_md, encoding="utf-8")
