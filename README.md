@@ -188,6 +188,6 @@ if you wish to implement a new parser extension plugin.
   </tr>
   <tr>
     <td><a href="https://github.com/executablebooks/mdformat-tables">mdformat-tables</a></td>
-    <td><code>table</code></td>
+    <td><code>tables</code></td>
   </tr>
 </table>
