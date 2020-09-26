@@ -1,21 +1,81 @@
-import re
-from typing import Iterable
+from html.parser import HTMLParser
+from typing import Iterable, List, Optional, Set
 
 from markdown_it import MarkdownIt
 
+import mdformat.plugins
 
-def is_md_equal(md1: str, md2: str, *, ignore_codeclasses: Iterable[str] = ()) -> bool:
+
+def is_md_equal(
+    md1: str,
+    md2: str,
+    *,
+    enabled_extensions: Iterable[str] = (),
+    enabled_codeformatters: Iterable[str] = (),
+) -> bool:
     """Check if two Markdown produce the same HTML.
 
-    Renders HTML from both Markdown strings, strips whitespace and
-    checks equality. Note that this is not a perfect solution, as there
-    can be meaningful whitespace in HTML, e.g. in a <code> block.
+    Renders HTML from both Markdown strings, strip content of tags with
+    specified classes, and checks equality.
     """
-    html1 = MarkdownIt().render(md1)
-    html2 = MarkdownIt().render(md2)
-    html1 = re.sub(r"\s+", "", html1)
-    html2 = re.sub(r"\s+", "", html2)
-    for codeclass in ignore_codeclasses:
-        html1 = re.sub(rf'<codeclass="language-{codeclass}">.*</pre>', "", html1)
-        html2 = re.sub(rf'<codeclass="language-{codeclass}">.*</pre>', "", html2)
+    ignore_classes = [f"language-{lang}" for lang in enabled_codeformatters]
+    mdit = MarkdownIt()
+    for name in enabled_extensions:
+        plugin = mdformat.plugins.PARSER_EXTENSIONS[name]
+        plugin.update_mdit(mdit)
+        ignore_classes.extend(getattr(plugin, "ignore_classes", []))
+    html1 = HTML2JSON().parse(mdit.render(md1), ignore_classes)
+    html2 = HTML2JSON().parse(mdit.render(md2), ignore_classes)
+
     return html1 == html2
+
+
+class HTML2JSON(HTMLParser):
+    """Parser HTML to JSON."""
+
+    def parse(self, text: str, strip_classes: Iterable[str] = ()) -> List[dict]:
+        self.tree: List[dict] = []
+        self.current: Optional[dict] = None
+        self.feed(text)
+        self.strip_classes(self.tree, set(strip_classes))
+        return self.tree
+
+    def strip_classes(self, tree: List[dict], classes: Set[str]) -> List[dict]:
+        """Strip content from tags with certain classes."""
+        items = []
+        for item in tree:
+            if set(item["attrs"].get("class", "").split()).intersection(classes):
+                items.append({"tag": item["tag"], "attrs": item["attrs"]})
+                continue
+            items.append(item)
+            item["children"] = self.strip_classes(item.get("children", []), classes)
+            if not item["children"]:
+                item.pop("children")
+
+        return items
+
+    def handle_starttag(self, tag: str, attrs: list) -> None:
+        tag_item = {"tag": tag, "attrs": dict(attrs), "parent": self.current}
+        if self.current is None:
+            self.tree.append(tag_item)
+        else:
+            children = self.current.setdefault("children", [])
+            children.append(tag_item)
+        self.current = tag_item
+
+    def handle_endtag(self, tag: str) -> None:
+        # walk up the tree to the tag's parent
+        while self.current is not None:
+            if self.current["tag"] == tag:
+                self.current = self.current.pop("parent")
+                break
+            self.current = self.current.pop("parent")
+
+    def handle_data(self, data: str) -> None:
+        if self.current:
+            self.current["data"] = data.rstrip()
+
+    def handle_comment(self, data: str) -> None:
+        if self.current:
+            self.current.setdefault("comments", [])
+            self.current["comments"].append(data)

@@ -53,7 +53,8 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             if not is_md_equal(
                 original_str,
                 formatted_str,
-                ignore_codeclasses=enabled_codeformatter_langs,
+                enabled_extensions=enabled_parserplugins,
+                enabled_codeformatters=enabled_codeformatter_langs,
             ):
                 sys.stderr.write(
                     f'Error: Could not format "{path_str}"\n'

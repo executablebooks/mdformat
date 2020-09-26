@@ -7,8 +7,33 @@ from markdown_it.token import Token
 import yaml
 
 import mdformat
-from mdformat.plugins import PARSER_EXTENSIONS
+from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
 from mdformat.renderer import MARKERS, MDRenderer
+
+
+def example_formatter(code, info):
+    return "dummy\n"
+
+
+def test_code_formatter(monkeypatch):
+    monkeypatch.setitem(CODEFORMATTERS, "lang", example_formatter)
+    text = mdformat.text(
+        dedent(
+            """\
+    ```lang
+    a
+    ```
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang
+    dummy
+    ```
+    """
+    )
 
 
 class ExampleFrontMatterPlugin:
