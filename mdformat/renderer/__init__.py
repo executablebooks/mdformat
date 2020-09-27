@@ -109,9 +109,7 @@ class MDRenderer:
             rendered_content = removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
             rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
-            if options.get("mdformat", {}).get("keep_references", False) and env.get(
-                "references", None
-            ):
+            if env.get("used_refs", None):
                 rendered_content += "\n\n"
                 rendered_content += self.write_references(env)
 
@@ -122,7 +120,7 @@ class MDRenderer:
     @staticmethod
     def write_references(env: dict) -> str:
         text = ""
-        for key in sorted(env.get("references", {}).keys()):
+        for key in sorted(env.get("used_refs", [])):
             ref = env["references"][key]
             item = f"[{key.lower()}]: {ref['href']}"
             if ref["title"]:
