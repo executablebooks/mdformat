@@ -81,14 +81,14 @@ numbered lists
 
 references:
 .
-[ref2]: link3
+[ref2]: link3 "title"
 
-[text](link1) [ref1] [text][ref1]
+[text](link1) [text](link2 "title") [ref1] [text][ref1]
 
-[ref1]: link2
+[ref1]: link4
 .
-[text](<link1>) [ref1][ref1] [text][ref1]
+[text](<link1>) [text](<link2> "title") [ref1][ref1] [text][ref1]
 
-[ref1]: link2
-[ref2]: link3
+[ref1]: link4
+[ref2]: link3 "title"
 .

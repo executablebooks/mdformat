@@ -14,7 +14,7 @@ The features/opinions of the formatter include:
 - Strip trailing and leading whitespace
 - Always use ATX style headings
 - Consistent indentation for contents of block quotes and list items
-- Reformat reference links as inline links
+- Move all link references to the bottom of the document (sorted by label)
 - Reformat indented code blocks as fenced code blocks
 - Separate blocks with a single empty line
   (an exception being tight lists where the separator is a single newline character)

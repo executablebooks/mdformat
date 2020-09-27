@@ -126,6 +126,6 @@ class MDRenderer:
             ref = env["references"][key]
             item = f"[{key.lower()}]: {ref['href']}"
             if ref["title"]:
-                item += f'"{ref["title"]}"'
+                item += f' "{ref["title"]}"'
             text += item + "\n"
         return text.rstrip()
