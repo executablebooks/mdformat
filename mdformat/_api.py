@@ -12,6 +12,10 @@ def text(
 ) -> str:
     """Format a Markdown string."""
     markdown_it = MarkdownIt(renderer_cls=MDRenderer)
+    # store reference labels in link/image tokens
+    markdown_it.options["store_labels"] = True
+    markdown_it.options["mdformat"] = {"keep_references": True}
+
     markdown_it.options["parser_extension"] = []
     for name in extensions:
         plugin = mdformat.plugins.PARSER_EXTENSIONS[name]
