@@ -19,4 +19,4 @@ def test_renderer_style(line, title, text, expected):
     md_new = mdit.render(text)
     if not md_new == expected:
         print(md_new)
-        assert md_new == expected
+    assert md_new == expected
