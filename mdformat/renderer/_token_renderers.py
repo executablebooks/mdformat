@@ -63,6 +63,8 @@ def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     if token.meta.get("label", None) and options.get("mdformat", {}).get(
         "keep_references", False
     ):
+        if label == token.meta["label"].lower():
+            return f"![{label}]"
         return f"![{label}][{token.meta['label'].lower()}]"
 
     uri = token.attrGet("src")
