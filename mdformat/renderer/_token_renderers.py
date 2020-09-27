@@ -60,6 +60,11 @@ def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     label = token.attrGet("alt")
     assert label is not None
 
+    if token.meta.get("label", None) and options.get("mdformat", {}).get(
+        "keep_references", False
+    ):
+        return f"![{label}][{token.meta['label'].lower()}]"
+
     uri = token.attrGet("src")
     assert uri is not None
     title = token.attrGet("title")
