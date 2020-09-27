@@ -16,7 +16,7 @@ def is_md_equal(
     """Check if two Markdown produce the same HTML.
 
     Renders HTML from both Markdown strings, strip content of tags with
-    specified classes, and checks equality.
+    specified classes, and checks equality of the generated ASTs.
     """
     ignore_classes = [f"language-{lang}" for lang in enabled_codeformatters]
     mdit = MarkdownIt()
@@ -24,13 +24,13 @@ def is_md_equal(
         plugin = mdformat.plugins.PARSER_EXTENSIONS[name]
         plugin.update_mdit(mdit)
         ignore_classes.extend(getattr(plugin, "ignore_classes", []))
-    html1 = HTML2JSON().parse(mdit.render(md1), ignore_classes)
-    html2 = HTML2JSON().parse(mdit.render(md2), ignore_classes)
+    html1 = HTML2AST().parse(mdit.render(md1), ignore_classes)
+    html2 = HTML2AST().parse(mdit.render(md2), ignore_classes)
 
     return html1 == html2
 
 
-class HTML2JSON(HTMLParser):
+class HTML2AST(HTMLParser):
     """Parser HTML to JSON."""
 
     def parse(self, text: str, strip_classes: Iterable[str] = ()) -> List[dict]:
@@ -72,10 +72,7 @@ class HTML2JSON(HTMLParser):
             self.current = self.current.pop("parent")
 
     def handle_data(self, data: str) -> None:
-        if self.current:
+        # ignore empty data
+        if data.strip():
+            assert self.current is not None, f"'{data}'"
             self.current["data"] = data.rstrip()
-
-    def handle_comment(self, data: str) -> None:
-        if self.current:
-            self.current.setdefault("comments", [])
-            self.current["comments"].append(data)

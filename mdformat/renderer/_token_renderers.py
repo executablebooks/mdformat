@@ -108,7 +108,6 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.
             LOGGER.warning(f"Code formatting of '{lang}' failed: {err}")
-            pass
 
     # The code block must not include as long or longer sequence of `fence_char`s
     # as the fence string itself

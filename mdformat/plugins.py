@@ -46,6 +46,11 @@ class ParserExtensionInterface(Protocol):
         """
         return None
 
+    def ignore_classes(self) -> List[str]:
+        """Return CSS classes to ignore when comparing the input/output HTML
+        equality."""
+        return []
+
 
 def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:
     parser_extension_entrypoints = importlib_metadata.entry_points().get(

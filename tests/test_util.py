@@ -1,8 +1,8 @@
-from mdformat._util import HTML2JSON
+from mdformat._util import HTML2AST
 
 
 def test_html2json():
-    data = HTML2JSON().parse('<div><p class="x">a<s>j</s></p></div><a>b</a>')
+    data = HTML2AST().parse('<div><p class="x">a<s>j</s></p></div><a>b</a>')
     assert data == [
         {
             "tag": "div",
@@ -20,8 +20,27 @@ def test_html2json():
     ]
 
 
+def test_html2json_nested():
+    data = HTML2AST().parse("<a d=1>b<a d=2>c<a d=3>e</a></a></a>")
+    assert data == [
+        {
+            "tag": "a",
+            "attrs": {"d": "1"},
+            "data": "b",
+            "children": [
+                {
+                    "tag": "a",
+                    "attrs": {"d": "2"},
+                    "data": "c",
+                    "children": [{"tag": "a", "attrs": {"d": "3"}, "data": "e"}],
+                }
+            ],
+        }
+    ]
+
+
 def test_html2json_strip():
-    data = HTML2JSON().parse('<div><p class="x y">a<s>j</s></p></div><a>b</a>', {"x"})
+    data = HTML2AST().parse('<div><p class="x y">a<s>j</s></p></div><a>b</a>', {"x"})
     assert data == [
         {
             "tag": "div",
