@@ -14,7 +14,7 @@ The features/opinions of the formatter include:
 - Strip trailing and leading whitespace
 - Always use ATX style headings
 - Consistent indentation for contents of block quotes and list items
-- Reformat reference links as inline links
+- Move all link references to the bottom of the document (sorted by label)
 - Reformat indented code blocks as fenced code blocks
 - Separate blocks with a single empty line
   (an exception being tight lists where the separator is a single newline character)
@@ -110,6 +110,10 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
   rev: 0.3.1  # Use the ref you want to point at
   hooks:
   - id: mdformat
+    # optional
+    additional_dependencies:
+    - mdformat-tables
+    - mdformat-black
 ```
 
 ## Code formatter plugins
@@ -169,7 +173,7 @@ import mdformat
 
 unformatted = "content...\n"
 # Pass in `extensions` here! It is an iterable of extensions that should be loaded
-formatted = mdformat.text(unformatted, extensions={"table"})
+formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
 Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
@@ -177,4 +181,13 @@ if you wish to implement a new parser extension plugin.
 
 ### Existing formatter plugins
 
-Coming soon!
+<table>
+  <tr>
+    <th>Plugin</th>
+    <th>Syntax Extensions</th>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-tables">mdformat-tables</a></td>
+    <td><code>tables</code></td>
+  </tr>
+</table>

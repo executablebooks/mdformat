@@ -14,6 +14,9 @@ STYLE_CASES = read_fixture_file(Path(__file__).parent / "data" / "fixtures.md")
 )
 def test_renderer_style(line, title, text, expected):
     """Test Markdown renderer renders expected style."""
-    md_new = MarkdownIt(renderer_cls=MDRenderer).render(text)
-    print(md_new)
+    mdit = MarkdownIt(renderer_cls=MDRenderer)
+    mdit.options["store_labels"] = True
+    md_new = mdit.render(text)
+    if not md_new == expected:
+        print(md_new)
     assert md_new == expected

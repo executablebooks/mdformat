@@ -75,6 +75,8 @@ which formats Python code blocks with Black.
 
 ## Developing parser extension plugins
 
+The easiest way to get started on a plugin, is to use the <https://github.com/executablebooks/mdformat-plugin> template repository.
+
 Mdformat parser extension plugins need to adhere to the `mdformat.plugins.ParserExtensionInterface`:
 
 ```python
@@ -120,10 +122,13 @@ setuptools.setup(
 )
 ```
 
-If using Poetry for packaging, the entry point configuration in `pyproject.toml` would need to be like:
+If using Poetry or Flit for packaging, the entry point configuration in `pyproject.toml` would need to be like:
 
 ```toml
 # other config here...
 [tool.poetry.plugins."mdformat.parser_extension"]
+"myextension" = "my_package:ext_module_or_class"
+# or
+[tool.flit.plugins."mdformat.parser_extension"]
 "myextension" = "my_package:ext_module_or_class"
 ```
