@@ -36,7 +36,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     except InvalidPath as e:
         parser.error(f'File "{e.path}" does not exist.\n')
 
-    # convert env args to dict
+    # convert args.options to dict
     options = {}
     for val in args.options:
         try:
