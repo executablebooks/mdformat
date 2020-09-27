@@ -1,6 +1,6 @@
 from io import StringIO
 import sys
-from unittest.mock import ANY, call, patch
+from unittest.mock import call, patch
 
 import pytest
 
@@ -70,29 +70,45 @@ def test_check__multi_fail(capsys, tmp_path):
     assert str(file_path2) in captured.err
 
 
-def test_env(tmp_path):
-    """Test that env arguments are correctly passed as an env dict."""
+def test_options(tmp_path):
+    """Test that -o arguments are correctly added to the options dict."""
     file_path = tmp_path / "test_markdown.md"
     file_path.touch()
 
     with patch.object(MDRenderer, "render", return_value="") as mock_method:
         assert (
-            run((str(file_path), "--check", "-e", "a=1", "-e", "b=c", "-e", "d=True"))
+            run((str(file_path), "--check", "-o", "a=1", "-o", "b=c", "-o", "d=True"))
             == 0
         )
 
     calls = mock_method.call_args_list
     assert len(calls) == 1, calls
-    assert calls[0] == call([], ANY, {"a": 1, "b": "c", "d": True}), calls[0]
+    expected = {
+        "maxNesting": 20,
+        "html": True,
+        "linkify": False,
+        "typographer": False,
+        "quotes": "“”‘’",
+        "xhtmlOut": True,
+        "breaks": False,
+        "langPrefix": "language-",
+        "highlight": None,
+        "a": 1,
+        "b": "c",
+        "d": True,
+        "parser_extension": [],
+        "codeformatters": {},
+    }
+    assert calls[0] == call([], expected, {}), calls[0]
 
 
 def test_env_bad(tmp_path, capsys):
     file_path = tmp_path / "test_markdown.md"
     file_path.touch()
     with pytest.raises(SystemExit):
-        run((str(file_path), "-e", "bad"))
+        run((str(file_path), "-o", "bad"))
     captured = capsys.readouterr()
-    assert "-e option" in captured.err, captured.err
+    assert "-o option must be in the form key=value" in captured.err, captured.err
 
 
 def test_dash_stdin(capsys, monkeypatch):

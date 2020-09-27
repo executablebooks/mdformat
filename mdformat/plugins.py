@@ -27,7 +27,7 @@ CODEFORMATTERS: Mapping[str, Callable[[str, str], str]] = _load_codeformatters()
 class ParserExtensionInterface(Protocol):
     """A interface for parser extension plugins."""
 
-    def update_mdit(self, mdit: MarkdownIt, env: Optional[dict] = None) -> None:
+    def update_mdit(self, mdit: MarkdownIt) -> None:
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
         pass
 

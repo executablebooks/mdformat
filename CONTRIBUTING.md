@@ -86,7 +86,7 @@ from markdown_it.token import Token
 from mdformat.renderer import MDRenderer
 
 
-def update_mdit(mdit: MarkdownIt, env: Optional[dict] = None) -> None:
+def update_mdit(mdit: MarkdownIt) -> None:
    """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
    pass
 

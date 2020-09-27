@@ -18,12 +18,12 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         "--check", action="store_true", help="Do not apply changes to files"
     )
     parser.add_argument(
-        "-e",
-        dest="env",
+        "-o",
+        dest="options",
         metavar="key=value",
         default=[],
         action="append",
-        help="Pass env key:value to the renderer",
+        help="Set key:value options on the parser",
     )
     args = parser.parse_args(cli_args)
 
@@ -37,18 +37,18 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         parser.error(f'File "{e.path}" does not exist.\n')
 
     # convert env args to dict
-    env = {}
-    for val in args.env:
+    options = {}
+    for val in args.options:
         try:
             key, val = val.split("=", 1)
         except ValueError:
-            parser.error("-e option must be in the form key=value")
+            parser.error("-o option must be in the form key=value")
         try:
             # if possible, safely evaluate string to data type
             val = literal_eval(val)
         except ValueError:
             pass
-        env[key] = val
+        options[key] = val
 
     # Enable all parser plugins
     enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()
@@ -65,7 +65,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             original_str = sys.stdin.read()
         formatted_str = mdformat.text(
             original_str,
-            env=env,
+            options=options,
             extensions=enabled_parserplugins,
             codeformatters=enabled_codeformatter_langs,
         )

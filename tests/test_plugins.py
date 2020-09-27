@@ -15,7 +15,7 @@ class ExampleFrontMatterPlugin:
     """A class for extending the base parser."""
 
     @staticmethod
-    def update_mdit(mdit: MarkdownIt, env: Optional[dict] = None):
+    def update_mdit(mdit: MarkdownIt):
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
         mdit.use(front_matter.front_matter_plugin)
 
@@ -61,7 +61,7 @@ class ExampleTablePlugin:
     """A class for extending the base parser."""
 
     @staticmethod
-    def update_mdit(mdit: MarkdownIt, env: Optional[dict] = None):
+    def update_mdit(mdit: MarkdownIt):
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
         mdit.enable("table")
 
