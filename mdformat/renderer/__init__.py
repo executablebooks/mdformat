@@ -111,14 +111,14 @@ class MDRenderer:
 
             if env.get("used_refs", None):
                 rendered_content += "\n\n"
-                rendered_content += self.write_references(env)
+                rendered_content += self._write_references(env)
 
             rendered_content += "\n"
 
         return rendered_content
 
     @staticmethod
-    def write_references(env: dict) -> str:
+    def _write_references(env: dict) -> str:
         text = ""
         for key in sorted(env.get("used_refs", [])):
             ref = env["references"][key]
