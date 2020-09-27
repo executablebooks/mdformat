@@ -27,6 +27,7 @@ class MDRenderer:
         options: dict,
         env: dict,
         *,
+        finalize: bool = True,
         _recursion_level: int = 0,
     ) -> str:
         """Takes token stream and generates Markdown.
@@ -35,6 +36,7 @@ class MDRenderer:
             tokens: A list of block tokens to render
             options: Params of parser instance
             env: Additional data from parsed input
+            finalize: replace markers and write references
         """
         assert _recursion_level in {
             0,
@@ -66,7 +68,11 @@ class MDRenderer:
             if token.type == "inline":
                 # inline tokens require nested rendering
                 result = self.render(
-                    token.children, options, env, _recursion_level=_recursion_level + 1
+                    token.children,
+                    options,
+                    env,
+                    finalize=finalize,
+                    _recursion_level=_recursion_level + 1,
                 )
             else:
                 # otherwise use a built-in renderer
@@ -99,8 +105,25 @@ class MDRenderer:
         rendered_content = text_stack.pop()
         assert not text_stack, "Text stack should be empty before returning"
 
-        if not _recursion_level:
+        if finalize and not _recursion_level:
             rendered_content = removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
             rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
+
+            if env.get("used_refs", None):
+                rendered_content += "\n\n"
+                rendered_content += self._write_references(env)
+
             rendered_content += "\n"
+
         return rendered_content
+
+    @staticmethod
+    def _write_references(env: dict) -> str:
+        text = ""
+        for key in sorted(env.get("used_refs", [])):
+            ref = env["references"][key]
+            item = f"[{key.lower()}]: {ref['href']}"
+            if ref["title"]:
+                item += f' "{ref["title"]}"'
+            text += item + "\n"
+        return text.rstrip()
