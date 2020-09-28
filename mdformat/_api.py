@@ -28,7 +28,6 @@ def text(
     markdown_it.options["codeformatters"] = {
         lang: mdformat.plugins.CODEFORMATTERS[lang] for lang in codeformatters
     }
-
     return markdown_it.render(md)
 
 
