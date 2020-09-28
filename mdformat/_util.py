@@ -31,7 +31,7 @@ def is_md_equal(
 
 
 class HTML2AST(HTMLParser):
-    """Parser HTML to JSON."""
+    """Parser HTML to AST."""
 
     def parse(self, text: str, strip_classes: Iterable[str] = ()) -> List[dict]:
         self.tree: List[dict] = []
@@ -72,7 +72,9 @@ class HTML2AST(HTMLParser):
             self.current = self.current.pop("parent")
 
     def handle_data(self, data: str) -> None:
-        # ignore empty data
-        if data.strip():
-            assert self.current is not None, f"'{data}'"
-            self.current["data"] = data.rstrip()
+        # ignore data outside tabs
+        if self.current is not None:
+            # ignore empty lines and trailing whitespace
+            self.current["data"] = [
+                li.rstrip() for li in data.splitlines() if li.strip()
+            ]
