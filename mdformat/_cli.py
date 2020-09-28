@@ -1,5 +1,4 @@
 import argparse
-from ast import literal_eval
 from pathlib import Path
 import sys
 from typing import Iterable, List, Optional, Sequence
@@ -17,14 +16,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     parser.add_argument(
         "--check", action="store_true", help="Do not apply changes to files"
     )
-    parser.add_argument(
-        "-o",
-        dest="options",
-        metavar="key=value",
-        default=[],
-        action="append",
-        help="Set key:value options on the parser",
-    )
+    for plugin in mdformat.plugins.PARSER_EXTENSIONS.values():
+        if hasattr(plugin, "add_cli_options"):
+            plugin.add_cli_options(parser)
+
     args = parser.parse_args(cli_args)
 
     if not args.paths:
@@ -36,20 +31,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     except InvalidPath as e:
         parser.error(f'File "{e.path}" does not exist.\n')
 
-    # convert args.options to dict
-    options = {}
-    for val in args.options:
-        try:
-            key, val = val.split("=", 1)
-        except ValueError:
-            parser.error("-o option must be in the form key=value")
-        try:
-            # if possible, safely evaluate string to data type
-            val = literal_eval(val)
-        except ValueError:
-            pass
-        options[key] = val
-
+    # convert args to dict
+    options = dict(args._get_kwargs())
+    options.pop("paths")
     # Enable all parser plugins
     enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()
     # Enable code formatting for all languages that have a plugin installed
@@ -78,7 +62,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             if not is_md_equal(
                 original_str,
                 formatted_str,
-                ignore_codeclasses=enabled_codeformatter_langs,
+                options,
+                extensions=enabled_parserplugins,
+                codeformatters=enabled_codeformatter_langs,
             ):
                 sys.stderr.write(
                     f'Error: Could not format "{path_str}"\n'
