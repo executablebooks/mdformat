@@ -29,10 +29,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     try:
         file_paths = resolve_file_paths(args.paths)
     except InvalidPath as e:
-        parser.error(f'File "{e.path}" does not exist.\n')
+        parser.error(f'File "{e.path}" does not exist.')
 
     # convert args to dict
-    options = dict(args._get_kwargs())
+    options = vars(args)
     options.pop("paths")
     # Enable all parser plugins
     enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()

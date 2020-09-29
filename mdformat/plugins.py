@@ -30,12 +30,10 @@ class ParserExtensionInterface(Protocol):
 
     def add_cli_options(self, parser: argparse.ArgumentParser) -> None:
         """Add options to the mdformat CLI, to be stored in
-        mdit.options["mdformat"]"""
-        pass
+        mdit.options["mdformat"] (optional)"""
 
     def update_mdit(self, mdit: MarkdownIt) -> None:
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
-        pass
 
     def render_token(
         self,

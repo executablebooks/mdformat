@@ -18,7 +18,7 @@ def text(
     markdown_it = MarkdownIt(renderer_cls=MDRenderer)
     # store reference labels in link/image tokens
     markdown_it.options["store_labels"] = True
-    markdown_it.options["mdformat"] = options
+    markdown_it.options["mdformat"] = options or {}
 
     markdown_it.options["parser_extension"] = []
     for name in extensions:
