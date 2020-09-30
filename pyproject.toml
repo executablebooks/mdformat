@@ -21,7 +21,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup",
     "Typing :: Typed",
 ]
-keywords = ["markdown", "commonmark", "formatter"]
+keywords = ["mdformat", "markdown", "commonmark", "formatter", "pre-commit"]
 
 packages = [
     {include = "mdformat"},
