@@ -6,6 +6,7 @@ from typing import Iterable, List, Optional, Sequence
 import mdformat
 from mdformat._util import is_md_equal
 import mdformat.plugins
+from mdformat.renderer._util import CONSECUTIVE_KEY
 
 
 def run(cli_args: Sequence[str]) -> int:  # noqa: C901
@@ -15,6 +16,11 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     parser.add_argument("paths", nargs="*", help="Files to format")
     parser.add_argument(
         "--check", action="store_true", help="Do not apply changes to files"
+    )
+    parser.add_argument(
+        f"--{CONSECUTIVE_KEY}",
+        action="store_true",
+        help="Apply consecutive numbering to ordered lists",
     )
     for plugin in mdformat.plugins.PARSER_EXTENSIONS.values():
         if hasattr(plugin, "add_cli_options"):
