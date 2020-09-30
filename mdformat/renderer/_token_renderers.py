@@ -69,8 +69,8 @@ def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     assert uri is not None
     title = token.attrGet("title")
     if title is not None:
-        return f'![{label}]({uri} "{title}")'
-    return f"![{label}]({uri})"
+        return f'![{label}](<{uri}> "{title}")'
+    return f"![{label}](<{uri}>)"
 
 
 def code_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
