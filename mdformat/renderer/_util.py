@@ -16,6 +16,9 @@ RE_CHAR_REFERENCE = re.compile(
     "|" + "|".join({c.rstrip(";") for c in html.entities.html5}) + ");"
 )
 
+# key to indicate consecutive numbering of ordered lists
+CONSECUTIVE_KEY = "number"
+
 
 class MARKERS:
     """A container for markers for unprocessed Markdown.

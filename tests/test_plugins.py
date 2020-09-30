@@ -12,6 +12,7 @@ import mdformat
 from mdformat._cli import run
 from mdformat.plugins import PARSER_EXTENSIONS
 from mdformat.renderer import MARKERS, MDRenderer
+from mdformat.renderer._util import CONSECUTIVE_KEY
 
 
 class ExampleFrontMatterPlugin:
@@ -153,6 +154,7 @@ def test_cli_options(monkeypatch, tmp_path):
         "mdformat": {
             "arg_name": 4,
             "check": False,
+            CONSECUTIVE_KEY: False,
             "o1": "other",
             "o2": "a",
             "paths": [str(file_path)],
