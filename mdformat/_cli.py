@@ -33,7 +33,6 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
 
     # convert args to dict
     options = vars(args)
-    options.pop("paths")
     # Enable all parser plugins
     enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()
     # Enable code formatting for all languages that have a plugin installed

@@ -150,6 +150,12 @@ def test_cli_options(monkeypatch, tmp_path):
         "store_labels": True,
         "parser_extension": [ExamplePluginWithCli],
         "codeformatters": {},
-        "mdformat": {"arg_name": 4, "check": False, "o1": "other", "o2": "a"},
+        "mdformat": {
+            "arg_name": 4,
+            "check": False,
+            "o1": "other",
+            "o2": "a",
+            "paths": [str(file_path)],
+        },
     }
     assert calls[0] == call([], expected, {}), calls[0]
