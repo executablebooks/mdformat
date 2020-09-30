@@ -13,7 +13,13 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         description="CommonMark compliant Markdown formatter"
     )
     parser.add_argument("paths", nargs="*", help="Files to format")
-    parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--check", action="store_true", help="Do not apply changes to files"
+    )
+    for plugin in mdformat.plugins.PARSER_EXTENSIONS.values():
+        if hasattr(plugin, "add_cli_options"):
+            plugin.add_cli_options(parser)
+
     args = parser.parse_args(cli_args)
 
     if not args.paths:
@@ -23,9 +29,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     try:
         file_paths = resolve_file_paths(args.paths)
     except InvalidPath as e:
-        sys.stderr.write(f'Error: File "{e.path}" does not exist.\n')
-        return 1
+        parser.error(f'File "{e.path}" does not exist.')
 
+    # convert args to dict
+    options = vars(args)
     # Enable all parser plugins
     enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()
     # Enable code formatting for all languages that have a plugin installed
@@ -41,6 +48,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             original_str = sys.stdin.read()
         formatted_str = mdformat.text(
             original_str,
+            options=options,
             extensions=enabled_parserplugins,
             codeformatters=enabled_codeformatter_langs,
         )
@@ -53,7 +61,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             if not is_md_equal(
                 original_str,
                 formatted_str,
-                ignore_codeclasses=enabled_codeformatter_langs,
+                options,
+                extensions=enabled_parserplugins,
+                codeformatters=enabled_codeformatter_langs,
             ):
                 sys.stderr.write(
                     f'Error: Could not format "{path_str}"\n'

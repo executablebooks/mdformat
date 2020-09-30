@@ -1,6 +1,8 @@
 from io import StringIO
 import sys
 
+import pytest
+
 from mdformat._cli import run
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
@@ -31,8 +33,11 @@ def test_format__folder(tmp_path):
     assert file_path_3.read_text() == UNFORMATTED_MARKDOWN
 
 
-def test_invalid_file():
-    assert run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",)) == 1
+def test_invalid_file(capsys):
+    with pytest.raises(SystemExit):
+        run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",))
+    captured = capsys.readouterr()
+    assert "does not exist" in captured.err
 
 
 def test_check(tmp_path):
