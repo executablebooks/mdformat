@@ -1,6 +1,6 @@
-[![Build Status](https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master)](<https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
-[![codecov.io](https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg)](<https://codecov.io/gh/executablebooks/mdformat>)
-[![PyPI version](https://badge.fury.io/py/mdformat.svg)](<https://badge.fury.io/py/mdformat>)
+[![Build Status](<https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master>)](<https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
+[![codecov.io](<https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg>)](<https://codecov.io/gh/executablebooks/mdformat>)
+[![PyPI version](<https://badge.fury.io/py/mdformat.svg>)](<https://badge.fury.io/py/mdformat>)
 
 # mdformat
 
