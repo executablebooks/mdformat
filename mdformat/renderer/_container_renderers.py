@@ -1,7 +1,7 @@
 """A namespace for functions that render the markdown of complete container
 blocks."""
 import re
-from typing import List
+from typing import Any, Mapping, Sequence
 
 from markdown_it.token import Token
 
@@ -15,13 +15,15 @@ from mdformat.renderer._util import (
 )
 
 
-def default(text: str, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def default(
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     """Default formatter for containers that don't have one implemented."""
     return text
 
 
 def blockquote_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
     text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
@@ -34,7 +36,7 @@ def blockquote_close(
 
 
 def list_item_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     """Return one list item as string.
 
@@ -61,7 +63,7 @@ def list_item_close(
 
 
 def bullet_list_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     last_item_closing_tkn = tokens[idx - 1]
 
@@ -79,7 +81,7 @@ def bullet_list_close(
 
 
 def ordered_list_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     last_item_closing_tkn = tokens[idx - 1]
     number_marker = last_item_closing_tkn.markup
@@ -131,7 +133,7 @@ def ordered_list_close(
 
 
 def paragraph_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     lines = text.split("\n")
 
@@ -158,7 +160,7 @@ def paragraph_close(
 
 
 def heading_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     opener_token = find_opening_token(tokens, idx)
     if opener_token.markup == "=":
@@ -176,12 +178,14 @@ def heading_close(
 
 
 def strong_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     indicator = tokens[idx].markup
     return indicator + text + indicator
 
 
-def em_close(text: str, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def em_close(
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     indicator = tokens[idx].markup
     return indicator + text + indicator

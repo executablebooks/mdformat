@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Mapping, Sequence
 
 from markdown_it.token import Token
 
@@ -23,8 +23,8 @@ class MDRenderer:
 
     def render(
         self,
-        tokens: List[Token],
-        options: dict,
+        tokens: Sequence[Token],
+        options: Mapping[str, Any],
         env: dict,
         *,
         finalize: bool = True,

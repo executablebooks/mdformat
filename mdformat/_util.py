@@ -1,5 +1,5 @@
 import re
-from typing import Iterable
+from typing import Any, Iterable, Mapping
 
 from markdown_it import MarkdownIt
 
@@ -9,7 +9,7 @@ import mdformat.plugins
 def is_md_equal(
     md1: str,
     md2: str,
-    options: dict,
+    options: Mapping[str, Any],
     *,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
