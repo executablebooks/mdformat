@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Any, Iterable, Mapping, Optional, Union
 
 from markdown_it import MarkdownIt
 
@@ -10,7 +10,7 @@ from mdformat.renderer import MDRenderer
 def text(
     md: str,
     *,
-    options: Optional[dict] = None,
+    options: Optional[Mapping[str, Any]] = None,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> str:
@@ -34,7 +34,7 @@ def text(
 def file(
     f: Union[str, Path],
     *,
-    options: Optional[dict] = None,
+    options: Optional[Mapping[str, Any]] = None,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> None:

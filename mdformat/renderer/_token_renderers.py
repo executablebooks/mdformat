@@ -1,6 +1,6 @@
 """A namespace for functions that render the Markdown of tokens from markdown-
 it-py."""
-from typing import List, Optional
+from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
 
@@ -13,19 +13,25 @@ from mdformat.renderer._util import (
 )
 
 
-def default(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def default(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     """Default formatter for tokens that don't have one implemented."""
     return ""
 
 
-def link_open(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def link_open(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
     if token.markup == "autolink":
         return "<"
     return "["
 
 
-def link_close(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def link_close(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
     if token.markup == "autolink":
         return ">"
@@ -42,11 +48,13 @@ def link_close(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return f'](<{uri}> "{title}")'
 
 
-def hr(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def hr(tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict) -> str:
     return "___" + MARKERS.BLOCK_SEPARATOR
 
 
-def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def image(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
 
     # "alt" attr MUST be set, even if empty. Because it's mandatory and
@@ -73,7 +81,9 @@ def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return f"![{label}](<{uri}>)"
 
 
-def code_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def code_inline(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     code = tokens[idx].content
     all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
@@ -83,7 +93,9 @@ def code_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return f"{separator} {code} {separator}"
 
 
-def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def fence(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
     info_str = token.info.strip() if token.info else ""
     lang = info_str.split()[0] if info_str.split() else ""
@@ -114,27 +126,39 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return f"{fence_str}{info_str}\n{code_block}{fence_str}" + MARKERS.BLOCK_SEPARATOR
 
 
-def code_block(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def code_block(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return fence(tokens, idx, options, env)
 
 
-def html_block(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def html_block(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return tokens[idx].content.rstrip("\n") + MARKERS.BLOCK_SEPARATOR
 
 
-def html_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def html_inline(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return tokens[idx].content
 
 
-def hardbreak(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def hardbreak(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return "\\" + "\n"
 
 
-def softbreak(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def softbreak(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return "\n"
 
 
-def text(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def text(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     """Process a text token.
 
     Text should always be a child of an inline token enclosed by a
@@ -199,7 +223,7 @@ def text(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
 
 
 def _render_inline_as_text(
-    tokens: Optional[List[Token]], options: dict, env: dict
+    tokens: Optional[Sequence[Token]], options: Mapping[str, Any], env: dict
 ) -> str:
     """Special kludge for image `alt` attributes to conform CommonMark spec.
 

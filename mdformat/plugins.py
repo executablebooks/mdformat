@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Callable, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple
 
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
@@ -38,9 +38,9 @@ class ParserExtensionInterface(Protocol):
     def render_token(
         self,
         renderer: MDRenderer,
-        tokens: List[Token],
+        tokens: Sequence[Token],
         index: int,
-        options: dict,
+        options: Mapping[str, Any],
         env: dict,
     ) -> Optional[Tuple[str, int]]:
         """Convert token(s) to a string, or return None if no render method
@@ -48,7 +48,6 @@ class ParserExtensionInterface(Protocol):
 
         :returns: (text, index) where index is of the final "consumed" token
         """
-        return None
 
 
 def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:
