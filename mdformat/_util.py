@@ -27,9 +27,9 @@ def is_md_equal(
         mdformat.plugins.PARSER_EXTENSIONS[extension].update_mdit(mdit)
     for key, text in [("md1", md1), ("md2", md2)]:
         html = mdit.render(text)
-        html = re.sub(r"\s+", "", html)
         for codeclass in codeformatters:
-            html = re.sub(rf'<codeclass="language-{codeclass}">.*</pre>', "", html)
+            html = re.sub(f'<code class="language-{codeclass}">.*</code>', "", html)
+        html = re.sub(r"\s+", "", html)
         html_texts[key] = html
 
     return html_texts["md1"] == html_texts["md2"]
