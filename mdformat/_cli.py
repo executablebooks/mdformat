@@ -22,9 +22,12 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         action="store_true",
         help="Apply consecutive numbering to ordered lists",
     )
+    changes_ast = False
     for plugin in mdformat.plugins.PARSER_EXTENSIONS.values():
         if hasattr(plugin, "add_cli_options"):
             plugin.add_cli_options(parser)
+        if getattr(plugin, "CHANGES_AST", False):
+            changes_ast = True
 
     args = parser.parse_args(cli_args)
 
@@ -64,7 +67,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 format_errors_found = True
                 sys.stderr.write(f'Error: File "{path_str}" is not formatted.\n')
         else:
-            if not is_md_equal(
+            if not changes_ast and not is_md_equal(
                 original_str,
                 formatted_str,
                 options,
