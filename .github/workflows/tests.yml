@@ -54,7 +54,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.0.10"
+        pip install "poetry==1.1.0"
         poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
     - name: Test with pytest
