@@ -188,7 +188,6 @@ class ExampleASTChangingPlugin:
 
 
 def test_ast_changing_plugin(monkeypatch, tmp_path):
-    """Test that -o arguments are correctly added to the options dict."""
     plugin = ExampleASTChangingPlugin()
     monkeypatch.setitem(PARSER_EXTENSIONS, "ast_changer", plugin)
     file_path = tmp_path / "test_markdown.md"
