@@ -28,15 +28,21 @@ CODEFORMATTERS: Mapping[str, Callable[[str, str], str]] = _load_codeformatters()
 class ParserExtensionInterface(Protocol):
     """A interface for parser extension plugins."""
 
-    def add_cli_options(self, parser: argparse.ArgumentParser) -> None:
+    # Does the plugin's formatting change Markdown AST or not?
+    # (optional, default: False)
+    CHANGES_AST: bool = False
+
+    @staticmethod
+    def add_cli_options(parser: argparse.ArgumentParser) -> None:
         """Add options to the mdformat CLI, to be stored in
         mdit.options["mdformat"] (optional)"""
 
-    def update_mdit(self, mdit: MarkdownIt) -> None:
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt) -> None:
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
 
+    @staticmethod
     def render_token(
-        self,
         renderer: MDRenderer,
         tokens: Sequence[Token],
         index: int,
