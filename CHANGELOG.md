@@ -3,6 +3,13 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.3.3
+
+- Added
+  - `CHANGES_AST` to extension plugin API.
+    The feature allows plugins that alter Markdown AST to skip validation
+    ([\#49](<https://github.com/executablebooks/mdformat/pull/49>)).
+
 ## 0.3.2
 
 - Changed
