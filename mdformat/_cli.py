@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Iterable, List, Optional, Sequence
+from typing import Iterable, List, Optional, Sequence, Tuple
 
 import mdformat
 from mdformat._util import is_md_equal
@@ -10,27 +10,17 @@ from mdformat.renderer._util import CONSECUTIVE_KEY
 
 
 def run(cli_args: Sequence[str]) -> int:  # noqa: C901
-    parser = argparse.ArgumentParser(
-        description="CommonMark compliant Markdown formatter"
-    )
-    parser.add_argument("paths", nargs="*", help="Files to format")
-    parser.add_argument(
-        "--check", action="store_true", help="Do not apply changes to files"
-    )
-    parser.add_argument(
-        f"--{CONSECUTIVE_KEY}",
-        action="store_true",
-        help="Apply consecutive numbering to ordered lists",
-    )
-    changes_ast = False
-    for plugin in mdformat.plugins.PARSER_EXTENSIONS.values():
-        if hasattr(plugin, "add_cli_options"):
-            plugin.add_cli_options(parser)
-        if getattr(plugin, "CHANGES_AST", False):
-            changes_ast = True
+    # Enable all parser plugins
+    enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.values()
+    enabled_parserplugin_names = mdformat.plugins.PARSER_EXTENSIONS.keys()
+    # Enable code formatting for all languages that have a plugin installed
+    enabled_codeformatter_langs = mdformat.plugins.CODEFORMATTERS.keys()
 
-    args = parser.parse_args(cli_args)
+    changes_ast = any(
+        getattr(plugin, "CHANGES_AST", False) for plugin in enabled_parserplugins
+    )
 
+    args, arg_parser = parse_args(cli_args, enabled_parserplugins)
     if not args.paths:
         sys.stderr.write("No files have been passed in. Doing nothing.\n")
         return 0
@@ -38,14 +28,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     try:
         file_paths = resolve_file_paths(args.paths)
     except InvalidPath as e:
-        parser.error(f'File "{e.path}" does not exist.')
+        arg_parser.error(f'File "{e.path}" does not exist.')
 
     # convert args to dict
     options = vars(args)
-    # Enable all parser plugins
-    enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()
-    # Enable code formatting for all languages that have a plugin installed
-    enabled_codeformatter_langs = mdformat.plugins.CODEFORMATTERS.keys()
 
     format_errors_found = False
     for path in file_paths:
@@ -58,7 +44,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         formatted_str = mdformat.text(
             original_str,
             options=options,
-            extensions=enabled_parserplugins,
+            extensions=enabled_parserplugin_names,
             codeformatters=enabled_codeformatter_langs,
         )
 
@@ -71,7 +57,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 original_str,
                 formatted_str,
                 options,
-                extensions=enabled_parserplugins,
+                extensions=enabled_parserplugin_names,
                 codeformatters=enabled_codeformatter_langs,
             ):
                 sys.stderr.write(
@@ -89,6 +75,29 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     if format_errors_found:
         return 1
     return 0
+
+
+def parse_args(
+    cli_args: Sequence[str],
+    parser_plugins: Iterable[mdformat.plugins.ParserExtensionInterface],
+) -> Tuple[argparse.Namespace, argparse.ArgumentParser]:
+    parser = argparse.ArgumentParser(
+        description="CommonMark compliant Markdown formatter"
+    )
+    parser.add_argument("paths", nargs="*", help="Files to format")
+    parser.add_argument(
+        "--check", action="store_true", help="Do not apply changes to files"
+    )
+    parser.add_argument(
+        f"--{CONSECUTIVE_KEY}",
+        action="store_true",
+        help="Apply consecutive numbering to ordered lists",
+    )
+    for plugin in parser_plugins:
+        if hasattr(plugin, "add_cli_options"):
+            plugin.add_cli_options(parser)
+
+    return parser.parse_args(cli_args), parser
 
 
 class InvalidPath(Exception):
