@@ -3,7 +3,7 @@ import sys
 
 import pytest
 
-from mdformat._cli import run
+from mdformat._cli import run, wrap_paragraphs
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
 FORMATTED_MARKDOWN = "# A header\n"
@@ -73,3 +73,22 @@ def test_dash_stdin(capsys, monkeypatch):
     run(("-",))
     captured = capsys.readouterr()
     assert captured.out == FORMATTED_MARKDOWN
+
+
+def test_wrap_paragraphs():
+    assert wrap_paragraphs(
+        [
+            'Error: Could not format "/home/user/file_name_longer_than_wrap_width--------------------------------------.md".',  # noqa: E501
+            "The formatted Markdown renders to different HTML than the input Markdown. "
+            "This is likely a bug in mdformat. "
+            "Please create an issue report here: "
+            "https://github.com/executablebooks/mdformat/issues",
+        ]
+    ) == (
+        "Error: Could not format\n"
+        '"/home/user/file_name_longer_than_wrap_width--------------------------------------.md".\n'  # noqa: E501
+        "\n"
+        "The formatted Markdown renders to different HTML than the input\n"
+        "Markdown. This is likely a bug in mdformat. Please create an issue\n"
+        "report here: https://github.com/executablebooks/mdformat/issues\n"
+    )
