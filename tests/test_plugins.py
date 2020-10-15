@@ -157,6 +157,7 @@ def test_cli_options(monkeypatch, tmp_path):
             "o1": "other",
             "o2": "a",
             "paths": [str(file_path)],
+            "version": False,
         },
     }
     assert calls[0] == call([], expected, {}), calls[0]
