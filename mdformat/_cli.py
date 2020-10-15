@@ -87,9 +87,9 @@ def make_arg_parser(
     parser = argparse.ArgumentParser(
         description="CommonMark compliant Markdown formatter"
     )
-    parser.add_argument("paths", nargs="*", help="Files to format")
+    parser.add_argument("paths", nargs="*", help="files to format")
     parser.add_argument(
-        "--check", action="store_true", help="Do not apply changes to files"
+        "--check", action="store_true", help="do not apply changes to files"
     )
     parser.add_argument(
         "--version", action="version", version=f"mdformat {mdformat.__version__}"
@@ -97,7 +97,7 @@ def make_arg_parser(
     parser.add_argument(
         f"--{CONSECUTIVE_KEY}",
         action="store_true",
-        help="Apply consecutive numbering to ordered lists",
+        help="apply consecutive numbering to ordered lists",
     )
     for plugin in parser_plugins:
         if hasattr(plugin, "add_cli_options"):
