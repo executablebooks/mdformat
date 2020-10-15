@@ -23,6 +23,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
 
     arg_parser = make_arg_parser(enabled_parserplugins.values())
     args = arg_parser.parse_args(cli_args)
+    if args.version:
+        sys.stdout.write(f"mdformat {mdformat.__version__}\n")
+        return 0
     if not args.paths:
         print_paragraphs(["No files have been passed in. Doing nothing."])
         return 0
@@ -90,6 +93,9 @@ def make_arg_parser(
     parser.add_argument("paths", nargs="*", help="Files to format")
     parser.add_argument(
         "--check", action="store_true", help="Do not apply changes to files"
+    )
+    parser.add_argument(
+        "--version", action="store_true", help="Show the version and exit"
     )
     parser.add_argument(
         f"--{CONSECUTIVE_KEY}",

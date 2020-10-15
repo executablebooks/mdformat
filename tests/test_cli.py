@@ -3,6 +3,7 @@ import sys
 
 import pytest
 
+import mdformat
 from mdformat._cli import run, wrap_paragraphs
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
@@ -62,7 +63,7 @@ def test_check__multi_fail(capsys, tmp_path):
     file_path2 = tmp_path / "test_markdown2.md"
     file_path1.write_text(UNFORMATTED_MARKDOWN)
     file_path2.write_text(UNFORMATTED_MARKDOWN)
-    run((str(tmp_path), "--check"))
+    assert run((str(tmp_path), "--check")) == 1
     captured = capsys.readouterr()
     assert str(file_path1) in captured.err
     assert str(file_path2) in captured.err
@@ -70,7 +71,7 @@ def test_check__multi_fail(capsys, tmp_path):
 
 def test_dash_stdin(capsys, monkeypatch):
     monkeypatch.setattr(sys, "stdin", StringIO(UNFORMATTED_MARKDOWN))
-    run(("-",))
+    assert run(("-",)) == 0
     captured = capsys.readouterr()
     assert captured.out == FORMATTED_MARKDOWN
 
@@ -92,3 +93,9 @@ def test_wrap_paragraphs():
         "Markdown. This is likely a bug in mdformat. Please create an issue\n"
         "report here: https://github.com/executablebooks/mdformat/issues\n"
     )
+
+
+def test_version(capsys):
+    assert run(["--version"]) == 0
+    captured = capsys.readouterr()
+    assert captured.out == f"mdformat {mdformat.__version__}\n"
