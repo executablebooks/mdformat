@@ -35,8 +35,9 @@ def test_format__folder(tmp_path):
 
 
 def test_invalid_file(capsys):
-    with pytest.raises(SystemExit):
+    with pytest.raises(SystemExit) as exc_info:
         run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",))
+    assert exc_info.value.code == 2
     captured = capsys.readouterr()
     assert "does not exist" in captured.err
 
@@ -96,6 +97,8 @@ def test_wrap_paragraphs():
 
 
 def test_version(capsys):
-    assert run(["--version"]) == 0
+    with pytest.raises(SystemExit) as exc_info:
+        run(["--version"])
+    assert exc_info.value.code == 0
     captured = capsys.readouterr()
     assert captured.out == f"mdformat {mdformat.__version__}\n"
