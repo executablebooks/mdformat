@@ -3,6 +3,8 @@ name: Tests
 on:
   push:
     branches: [ master ]
+    tags:
+      - '*.*.*'
   pull_request:
     branches: [ master ]
 
@@ -14,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: 3.7
     - uses: pre-commit/action@v2.0.0
@@ -82,3 +84,29 @@ jobs:
 
     - name: run hook against repository
       run: pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md
+
+  pypi-publish:
+    # Only publish if all other jobs succeed
+    needs:
+    - pre-commit
+    - mypy
+    - tests
+    - pre-commit-hook
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install Poetry
+      run: |
+        pip install "poetry==1.1.3"
+    - name: Build and publish
+      run: |
+        # TODO: Remove the first command as soon as this Poetry bug is fixed: https://github.com/python-poetry/poetry/issues/2210
+        poetry config http-basic.pypi "__token__" "${POETRY_PYPI_TOKEN_PYPI}"
+        poetry build
+        poetry publish
+      env:
+        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
