@@ -1,4 +1,5 @@
 import argparse
+import json
 from textwrap import dedent
 from typing import Any, Mapping, Optional, Sequence, Tuple
 from unittest.mock import call, patch
@@ -10,7 +11,7 @@ import yaml
 
 import mdformat
 from mdformat._cli import run
-from mdformat.plugins import PARSER_EXTENSIONS
+from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
 from mdformat.renderer import MARKERS, MDRenderer
 from mdformat.renderer._util import CONSECUTIVE_KEY
 
@@ -205,3 +206,24 @@ def test_ast_changing_plugin(monkeypatch, tmp_path):
     file_path.write_text("Some markdown here\n")
     assert run((str(file_path),)) == 1
     assert file_path.read_text() == "Some markdown here\n"
+
+
+class JSONFormatterPlugin:
+    """A code formatter plugin that formats JSON."""
+
+    @staticmethod
+    def format_json(unformatted: str, _info_str: str) -> str:
+        parsed = json.loads(unformatted)
+        return json.dumps(parsed, indent=2) + "\n"
+
+
+def test_code_format_warnings(monkeypatch, tmp_path, capsys):
+    monkeypatch.setitem(CODEFORMATTERS, "json", JSONFormatterPlugin.format_json)
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text("```json\nthis is invalid json\n```\n")
+    assert run([str(file_path)]) == 0
+    captured = capsys.readouterr()
+    assert (
+        captured.err
+        == "Warning: Failed formatting content of a json code block (line 1 before formatting)\n"  # noqa: E501
+    )

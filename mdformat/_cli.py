@@ -1,14 +1,23 @@
 import argparse
+import contextlib
+import logging
 from pathlib import Path
 import shutil
 import sys
 import textwrap
-from typing import Any, Iterable, List, Mapping, Optional, Sequence
+from typing import Any, Generator, Iterable, List, Mapping, Optional, Sequence
 
 import mdformat
 from mdformat._util import is_md_equal
 import mdformat.plugins
+import mdformat.renderer
 from mdformat.renderer._util import CONSECUTIVE_KEY
+
+
+class RendererWarningPrinter(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:
+        if record.levelno >= logging.WARNING:
+            sys.stderr.write(f"Warning: {record.msg}\n")
 
 
 def run(cli_args: Sequence[str]) -> int:  # noqa: C901
@@ -37,6 +46,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     options: Mapping[str, Any] = vars(args)
 
     format_errors_found = False
+    renderer_warning_printer = RendererWarningPrinter()
     for path in file_paths:
         if path:
             path_str = str(path)
@@ -44,12 +54,14 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         else:
             path_str = "-"
             original_str = sys.stdin.read()
-        formatted_str = mdformat.text(
-            original_str,
-            options=options,
-            extensions=enabled_parserplugins,
-            codeformatters=enabled_codeformatters,
-        )
+
+        with log_handler_applied(mdformat.renderer.LOGGER, renderer_warning_printer):
+            formatted_str = mdformat.text(
+                original_str,
+                options=options,
+                extensions=enabled_parserplugins,
+                codeformatters=enabled_codeformatters,
+            )
 
         if args.check:
             if formatted_str != original_str:
@@ -165,3 +177,14 @@ def wrap_paragraphs(paragraphs: Iterable[str]) -> str:
         break_long_words=False, break_on_hyphens=False, width=min(terminal_width, 80)
     )
     return "\n\n".join(wrapper.fill(p) for p in paragraphs) + "\n"
+
+
+@contextlib.contextmanager
+def log_handler_applied(
+    logger: logging.Logger, handler: logging.Handler
+) -> Generator[None, None, None]:
+    logger.addHandler(handler)
+    try:
+        yield
+    finally:
+        logger.removeHandler(handler)
