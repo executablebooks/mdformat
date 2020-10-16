@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+import shutil
 import sys
 import textwrap
 from typing import Any, Iterable, List, Mapping, Optional, Sequence
@@ -159,5 +160,8 @@ def wrap_paragraphs(paragraphs: Iterable[str]) -> str:
     paragraphs are concatenated (empty line as separator) and wrapped.
     End the string in a newline.
     """
-    wrapper = textwrap.TextWrapper(break_long_words=False, break_on_hyphens=False)
+    terminal_width, _ = shutil.get_terminal_size()
+    wrapper = textwrap.TextWrapper(
+        break_long_words=False, break_on_hyphens=False, width=min(terminal_width, 80)
+    )
     return "\n\n".join(wrapper.fill(p) for p in paragraphs) + "\n"

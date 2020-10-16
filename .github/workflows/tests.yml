@@ -31,7 +31,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.2"
+        pip install "poetry==1.1.3"
         poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
     - name: run mypy
@@ -54,7 +54,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.2"
+        pip install "poetry==1.1.3"
         poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
     - name: Test with pytest

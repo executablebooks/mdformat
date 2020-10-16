@@ -1,5 +1,6 @@
 from io import StringIO
 import sys
+from unittest.mock import patch
 
 import pytest
 
@@ -78,22 +79,23 @@ def test_dash_stdin(capsys, monkeypatch):
 
 
 def test_wrap_paragraphs():
-    assert wrap_paragraphs(
-        [
-            'Error: Could not format "/home/user/file_name_longer_than_wrap_width--------------------------------------.md".',  # noqa: E501
-            "The formatted Markdown renders to different HTML than the input Markdown. "
-            "This is likely a bug in mdformat. "
-            "Please create an issue report here: "
-            "https://github.com/executablebooks/mdformat/issues",
-        ]
-    ) == (
-        "Error: Could not format\n"
-        '"/home/user/file_name_longer_than_wrap_width--------------------------------------.md".\n'  # noqa: E501
-        "\n"
-        "The formatted Markdown renders to different HTML than the input\n"
-        "Markdown. This is likely a bug in mdformat. Please create an issue\n"
-        "report here: https://github.com/executablebooks/mdformat/issues\n"
-    )
+    with patch("shutil.get_terminal_size", return_value=(72, 24)):
+        assert wrap_paragraphs(
+            [
+                'Error: Could not format "/home/user/file_name_longer_than_wrap_width--------------------------------------.md".',  # noqa: E501
+                "The formatted Markdown renders to different HTML than the input Markdown. "  # noqa: E501
+                "This is likely a bug in mdformat. "
+                "Please create an issue report here: "
+                "https://github.com/executablebooks/mdformat/issues",
+            ]
+        ) == (
+            "Error: Could not format\n"
+            '"/home/user/file_name_longer_than_wrap_width--------------------------------------.md".\n'  # noqa: E501
+            "\n"
+            "The formatted Markdown renders to different HTML than the input\n"
+            "Markdown. This is likely a bug in mdformat. Please create an issue\n"
+            "report here: https://github.com/executablebooks/mdformat/issues\n"
+        )
 
 
 def test_version(capsys):
