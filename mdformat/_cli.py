@@ -16,7 +16,7 @@ from mdformat.renderer._util import CONSECUTIVE_KEY
 
 class RendererWarningPrinter(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
-        if record.levelno >= 30:
+        if record.levelno >= logging.WARNING:
             sys.stderr.write(f"Warning: {record.msg}\n")
 
 
