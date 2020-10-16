@@ -1,5 +1,6 @@
 """A namespace for functions that render the Markdown of tokens from markdown-
 it-py."""
+import logging
 from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
@@ -11,6 +12,8 @@ from mdformat.renderer._util import (
     is_text_inside_autolink,
     longest_consecutive_sequence,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 
 def default(
@@ -116,7 +119,10 @@ def fence(
         except Exception:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.
-            pass
+            LOGGER.warning(
+                f"Failed formatting content of a {lang} code block "
+                f"(line {token.map[0] + 1} before formatting)"
+            )
 
     # The code block must not include as long or longer sequence of `fence_char`s
     # as the fence string itself
