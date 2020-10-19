@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.3.5
+
+- Fixed
+  - Markdown equality validation falsely triggering when code formatter plugins were used.
+    Thanks [chrisjsewell](<https://github.com/chrisjsewell>) for writing the tests to find the bug.
+
 ## 0.3.3
 
 - Added
