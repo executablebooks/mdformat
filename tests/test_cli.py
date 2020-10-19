@@ -1,7 +1,11 @@
 from io import StringIO
 import sys
+from unittest.mock import patch
 
-from mdformat._cli import run
+import pytest
+
+import mdformat
+from mdformat._cli import run, wrap_paragraphs
 from mdformat.plugins import CODEFORMATTERS
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
@@ -32,8 +36,12 @@ def test_format__folder(tmp_path):
     assert file_path_3.read_text() == UNFORMATTED_MARKDOWN
 
 
-def test_invalid_file():
-    assert run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",)) == 1
+def test_invalid_file(capsys):
+    with pytest.raises(SystemExit) as exc_info:
+        run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",))
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert "does not exist" in captured.err
 
 
 def test_check(tmp_path):
@@ -58,7 +66,7 @@ def test_check__multi_fail(capsys, tmp_path):
     file_path2 = tmp_path / "test_markdown2.md"
     file_path1.write_text(UNFORMATTED_MARKDOWN)
     file_path2.write_text(UNFORMATTED_MARKDOWN)
-    run((str(tmp_path), "--check"))
+    assert run((str(tmp_path), "--check")) == 1
     captured = capsys.readouterr()
     assert str(file_path1) in captured.err
     assert str(file_path2) in captured.err
@@ -78,6 +86,34 @@ def test_formatter_plugin(tmp_path, monkeypatch):
 
 def test_dash_stdin(capsys, monkeypatch):
     monkeypatch.setattr(sys, "stdin", StringIO(UNFORMATTED_MARKDOWN))
-    run(("-",))
+    assert run(("-",)) == 0
     captured = capsys.readouterr()
     assert captured.out == FORMATTED_MARKDOWN
+
+
+def test_wrap_paragraphs():
+    with patch("shutil.get_terminal_size", return_value=(72, 24)):
+        assert wrap_paragraphs(
+            [
+                'Error: Could not format "/home/user/file_name_longer_than_wrap_width--------------------------------------.md".',  # noqa: E501
+                "The formatted Markdown renders to different HTML than the input Markdown. "  # noqa: E501
+                "This is likely a bug in mdformat. "
+                "Please create an issue report here: "
+                "https://github.com/executablebooks/mdformat/issues",
+            ]
+        ) == (
+            "Error: Could not format\n"
+            '"/home/user/file_name_longer_than_wrap_width--------------------------------------.md".\n'  # noqa: E501
+            "\n"
+            "The formatted Markdown renders to different HTML than the input\n"
+            "Markdown. This is likely a bug in mdformat. Please create an issue\n"
+            "report here: https://github.com/executablebooks/mdformat/issues\n"
+        )
+
+
+def test_version(capsys):
+    with pytest.raises(SystemExit) as exc_info:
+        run(["--version"])
+    assert exc_info.value.code == 0
+    captured = capsys.readouterr()
+    assert captured.out == f"mdformat {mdformat.__version__}\n"

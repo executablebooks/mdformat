@@ -1,4 +1,5 @@
-from typing import Any, List
+import logging
+from typing import Any, Mapping, Sequence
 
 from markdown_it.token import Token
 
@@ -6,6 +7,8 @@ from mdformat.renderer import _container_renderers, _token_renderers
 from mdformat.renderer._util import MARKERS, removesuffix
 
 __all__ = ("MDRenderer", "MARKERS")
+
+LOGGER = logging.getLogger(__name__)
 
 
 class MDRenderer:
@@ -23,8 +26,8 @@ class MDRenderer:
 
     def render(
         self,
-        tokens: List[Token],
-        options: dict,
+        tokens: Sequence[Token],
+        options: Mapping[str, Any],
         env: dict,
         *,
         finalize: bool = True,
@@ -109,7 +112,7 @@ class MDRenderer:
             rendered_content = removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
             rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
-            if env.get("used_refs", None):
+            if env.get("used_refs"):
                 rendered_content += "\n\n"
                 rendered_content += self._write_references(env)
 

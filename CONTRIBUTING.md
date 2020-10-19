@@ -32,7 +32,7 @@ Below are the basic development steps, and for further information also see the 
 1. Test the pre-commit hook against the repository
 
    ```bash
-   pre-commit try-repo . mdformat --verbose --all-files --show-diff-on-failure
+   pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md
    ```
 
 1. Commit, push, and make a PR.

@@ -1,5 +1,6 @@
+import argparse
 import sys
-from typing import Callable, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple
 
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
@@ -27,16 +28,25 @@ CODEFORMATTERS: Mapping[str, Callable[[str, str], str]] = _load_codeformatters()
 class ParserExtensionInterface(Protocol):
     """A interface for parser extension plugins."""
 
-    def update_mdit(self, mdit: MarkdownIt) -> None:
-        """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
-        pass
+    # Does the plugin's formatting change Markdown AST or not?
+    # (optional, default: False)
+    CHANGES_AST: bool = False
 
+    @staticmethod
+    def add_cli_options(parser: argparse.ArgumentParser) -> None:
+        """Add options to the mdformat CLI, to be stored in
+        mdit.options["mdformat"] (optional)"""
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt) -> None:
+        """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
+
+    @staticmethod
     def render_token(
-        self,
         renderer: MDRenderer,
-        tokens: List[Token],
+        tokens: Sequence[Token],
         index: int,
-        options: dict,
+        options: Mapping[str, Any],
         env: dict,
     ) -> Optional[Tuple[str, int]]:
         """Convert token(s) to a string, or return None if no render method
@@ -44,12 +54,6 @@ class ParserExtensionInterface(Protocol):
 
         :returns: (text, index) where index is of the final "consumed" token
         """
-        return None
-
-    def ignore_classes(self) -> List[str]:
-        """Return CSS classes to ignore when comparing the input/output HTML
-        equality."""
-        return []
 
 
 def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:

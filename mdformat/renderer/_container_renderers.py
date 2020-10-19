@@ -1,11 +1,12 @@
 """A namespace for functions that render the markdown of complete container
 blocks."""
 import re
-from typing import List
+from typing import Any, Mapping, Sequence
 
 from markdown_it.token import Token
 
 from mdformat.renderer._util import (
+    CONSECUTIVE_KEY,
     MARKERS,
     find_opening_token,
     is_tight_list,
@@ -14,13 +15,15 @@ from mdformat.renderer._util import (
 )
 
 
-def default(text: str, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def default(
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     """Default formatter for containers that don't have one implemented."""
     return text
 
 
 def blockquote_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
     text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
@@ -33,7 +36,7 @@ def blockquote_close(
 
 
 def list_item_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     """Return one list item as string.
 
@@ -60,7 +63,7 @@ def list_item_close(
 
 
 def bullet_list_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     last_item_closing_tkn = tokens[idx - 1]
 
@@ -78,7 +81,7 @@ def bullet_list_close(
 
 
 def ordered_list_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     last_item_closing_tkn = tokens[idx - 1]
     number_marker = last_item_closing_tkn.markup
@@ -89,31 +92,48 @@ def ordered_list_close(
     else:
         text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
-    # Replace first MARKERS.LIST_ITEM with the starting number of the list.
-    # Replace following MARKERS.LIST_ITEMs with number one prefixed by zeros
-    # to make the marker of even length with the first one.
-    # E.g.
-    #   5321. This is the first list item
-    #   0001. Second item
-    #   0001. Third item
     opening_token = find_opening_token(tokens, idx)
     starting_number = opening_token.attrGet("start")
     if starting_number is None:
         starting_number = 1
-    first_item_marker = f"{starting_number}{number_marker} "
-    other_item_marker = (
-        "0" * (len(str(starting_number)) - 1) + "1" + number_marker + " "
-    )
-    indentation = " " * len(first_item_marker)
-    text = text.replace(MARKERS.LIST_ITEM, first_item_marker, 1)
-    text = text.replace(MARKERS.LIST_ITEM, other_item_marker)
+
+    if options.get("mdformat", {}).get(CONSECUTIVE_KEY, False):
+        # Replace MARKERS.LIST_ITEM with consecutive numbering,
+        # padded with zeros to make all markers of even length.
+        # E.g.
+        #   002. This is the first list item
+        #   003. Second item
+        #   ...
+        #   112. Last item
+        pad = len(str(text.count(MARKERS.LIST_ITEM) + starting_number - 1))
+        indentation = " " * (pad + len(f"{number_marker} "))
+        while MARKERS.LIST_ITEM in text:
+            number = str(starting_number).rjust(pad, "0")
+            text = text.replace(MARKERS.LIST_ITEM, f"{number}{number_marker} ", 1)
+            starting_number += 1
+    else:
+        # Replace first MARKERS.LIST_ITEM with the starting number of the list.
+        # Replace following MARKERS.LIST_ITEMs with number one prefixed by zeros
+        # to make the marker of even length with the first one.
+        # E.g.
+        #   5321. This is the first list item
+        #   0001. Second item
+        #   0001. Third item
+        first_item_marker = f"{starting_number}{number_marker} "
+        other_item_marker = (
+            "0" * (len(str(starting_number)) - 1) + "1" + number_marker + " "
+        )
+        indentation = " " * len(first_item_marker)
+        text = text.replace(MARKERS.LIST_ITEM, first_item_marker, 1)
+        text = text.replace(MARKERS.LIST_ITEM, other_item_marker)
+
     text = text.replace(MARKERS.INDENTATION, indentation)
 
     return text + MARKERS.BLOCK_SEPARATOR
 
 
 def paragraph_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     lines = text.split("\n")
 
@@ -140,7 +160,7 @@ def paragraph_close(
 
 
 def heading_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     opener_token = find_opening_token(tokens, idx)
     if opener_token.markup == "=":
@@ -158,12 +178,14 @@ def heading_close(
 
 
 def strong_close(
-    text: str, tokens: List[Token], idx: int, options: dict, env: dict
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     indicator = tokens[idx].markup
     return indicator + text + indicator
 
 
-def em_close(text: str, tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def em_close(
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     indicator = tokens[idx].markup
     return indicator + text + indicator

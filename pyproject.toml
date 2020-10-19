@@ -1,11 +1,11 @@
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry]
 name = "mdformat"
-version = "0.3.1"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
+version = "0.3.4"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 authors = ["Taneli Hukkinen <hukkinj1@users.noreply.github.com>"]
 description = "CommonMark compliant Markdown formatter"
 repository = "https://github.com/executablebooks/mdformat"
@@ -21,7 +21,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup",
     "Typing :: Typed",
 ]
-keywords = ["markdown", "commonmark", "formatter"]
+keywords = ["mdformat", "markdown", "commonmark", "formatter", "pre-commit"]
 
 packages = [
     {include = "mdformat"},
@@ -100,5 +100,8 @@ commands = mypy {posargs:.}
 [testenv:py{36,37,38}-hook]
 deps = pre-commit
 commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md
+
+[testenv:py{36,37,38}-cli]
+commands = mdformat {posargs}
 
 """

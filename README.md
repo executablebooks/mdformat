@@ -1,6 +1,6 @@
-[![Build Status](https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master)](<https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
-[![codecov.io](https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg)](<https://codecov.io/gh/executablebooks/mdformat>)
-[![PyPI version](https://badge.fury.io/py/mdformat.svg)](<https://badge.fury.io/py/mdformat>)
+[![Build Status](<https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master>)](<https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
+[![codecov.io](<https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg>)](<https://codecov.io/gh/executablebooks/mdformat>)
+[![PyPI version](<https://img.shields.io/pypi/v/mdformat>)](<https://pypi.org/project/mdformat>)
 
 # mdformat
 
@@ -107,7 +107,7 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ```yaml
 - repo: https://github.com/executablebooks/mdformat
-  rev: 0.3.1  # Use the ref you want to point at
+  rev: 0.3.4  # Use the ref you want to point at
   hooks:
   - id: mdformat
     # optional
@@ -138,7 +138,7 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
 Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
 if you wish to implement a new code formatter plugin.
 
-### Existing formatter plugins
+### Existing plugins
 
 <table>
   <tr>
@@ -179,15 +179,22 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
 Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
 if you wish to implement a new parser extension plugin.
 
-### Existing formatter plugins
+### Existing plugins
 
 <table>
   <tr>
     <th>Plugin</th>
     <th>Syntax Extensions</th>
+    <th>Description</th>
   </tr>
   <tr>
     <td><a href="https://github.com/executablebooks/mdformat-tables">mdformat-tables</a></td>
     <td><code>tables</code></td>
+    <td>Adds support for GitHub Flavored Markdown style tables</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-toc">mdformat-toc</a></td>
+    <td><code>toc</code></td>
+    <td>Adds the capability to auto-generate a table of contents</td>
   </tr>
 </table>

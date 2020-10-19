@@ -74,9 +74,82 @@ numbered lists
 .
 1. a
 2. b
+3. c
+   d
 .
 1. a
 1. b
+1. c
+   d
+.
+
+numbered lists starting number
+.
+099. a
+100. b
+101. c
+     d
+.
+99. a
+01. b
+01. c
+    d
+.
+
+numbered lists nested
+.
+1. a
+2. b
+   1. x
+   2. y
+      z
+.
+1. a
+1. b
+   1. x
+   1. y
+      z
+.
+
+numbered lists [consecutive]
+.
+1. a
+2. b
+3. c
+   d
+.
+1. a
+2. b
+3. c
+   d
+.
+
+numbered lists starting number [consecutive]
+.
+099. a
+100. b
+101. c
+     d
+.
+099. a
+100. b
+101. c
+     d
+.
+
+numbered lists nested [consecutive]
+.
+1. a
+2. b
+   1. x
+   2. y
+      z
+.
+1. a
+2. b
+   1. x
+   2. y
+      z
 .
 
 references:
@@ -92,7 +165,7 @@ references:
 .
 [text](<link1>) [text](<link2> "title") [ref1][ref1] [ref2][ref2] [text][ref1]
 
-![text](link1) ![text](link2 "title") ![ref1] ![ref2] ![text][ref1]
+![text](<link1>) ![text](<link2> "title") ![ref1] ![ref2] ![text][ref1]
 
 [ref1]: link4
 [ref2]: link3 "title"

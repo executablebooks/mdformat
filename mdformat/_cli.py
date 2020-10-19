@@ -1,37 +1,52 @@
 import argparse
+import contextlib
+import logging
 from pathlib import Path
+import shutil
 import sys
-from typing import Iterable, List, Optional, Sequence
+import textwrap
+from typing import Any, Generator, Iterable, List, Mapping, Optional, Sequence
 
 import mdformat
 from mdformat._util import is_md_equal
 import mdformat.plugins
+import mdformat.renderer
+from mdformat.renderer._util import CONSECUTIVE_KEY
+
+
+class RendererWarningPrinter(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:
+        if record.levelno >= logging.WARNING:
+            sys.stderr.write(f"Warning: {record.msg}\n")
 
 
 def run(cli_args: Sequence[str]) -> int:  # noqa: C901
-    parser = argparse.ArgumentParser(
-        description="CommonMark compliant Markdown formatter"
-    )
-    parser.add_argument("paths", nargs="*", help="Files to format")
-    parser.add_argument("--check", action="store_true")
-    args = parser.parse_args(cli_args)
+    # Enable all parser plugins
+    enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS
+    # Enable code formatting for all languages that have a plugin installed
+    enabled_codeformatters = mdformat.plugins.CODEFORMATTERS
 
+    changes_ast = any(
+        getattr(plugin, "CHANGES_AST", False)
+        for plugin in enabled_parserplugins.values()
+    )
+
+    arg_parser = make_arg_parser(enabled_parserplugins.values())
+    args = arg_parser.parse_args(cli_args)
     if not args.paths:
-        sys.stderr.write("No files have been passed in. Doing nothing.\n")
+        print_paragraphs(["No files have been passed in. Doing nothing."])
         return 0
 
     try:
         file_paths = resolve_file_paths(args.paths)
     except InvalidPath as e:
-        sys.stderr.write(f'Error: File "{e.path}" does not exist.\n')
-        return 1
+        arg_parser.error(f'File "{e.path}" does not exist.')
 
-    # Enable all parser plugins
-    enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS.keys()
-    # Enable code formatting for all languages that have a plugin installed
-    enabled_codeformatter_langs = mdformat.plugins.CODEFORMATTERS.keys()
+    # Convert args to a mapping
+    options: Mapping[str, Any] = vars(args)
 
     format_errors_found = False
+    renderer_warning_printer = RendererWarningPrinter()
     for path in file_paths:
         if path:
             path_str = str(path)
@@ -39,29 +54,35 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         else:
             path_str = "-"
             original_str = sys.stdin.read()
-        formatted_str = mdformat.text(
-            original_str,
-            extensions=enabled_parserplugins,
-            codeformatters=enabled_codeformatter_langs,
-        )
+
+        with log_handler_applied(mdformat.renderer.LOGGER, renderer_warning_printer):
+            formatted_str = mdformat.text(
+                original_str,
+                options=options,
+                extensions=enabled_parserplugins,
+                codeformatters=enabled_codeformatters,
+            )
 
         if args.check:
             if formatted_str != original_str:
                 format_errors_found = True
-                sys.stderr.write(f'Error: File "{path_str}" is not formatted.\n')
+                print_error(f'File "{path_str}" is not formatted.')
         else:
-            if not is_md_equal(
+            if not changes_ast and not is_md_equal(
                 original_str,
                 formatted_str,
-                enabled_extensions=enabled_parserplugins,
-                enabled_codeformatters=enabled_codeformatter_langs,
+                options,
+                extensions=enabled_parserplugins,
+                codeformatters=enabled_codeformatters,
             ):
-                sys.stderr.write(
-                    f'Error: Could not format "{path_str}"\n'
-                    "\n"
-                    "The formatted Markdown renders to different HTML than the input Markdown.\n"  # noqa: E501
-                    "This is likely a bug in mdformat. Please create an issue report here:\n"  # noqa: E501
-                    "https://github.com/executablebooks/mdformat/issues\n"
+                print_error(
+                    f'Could not format "{path_str}".',
+                    paragraphs=[
+                        "The formatted Markdown renders to different HTML than the input Markdown. "  # noqa: E501
+                        "This is likely a bug in mdformat. "
+                        "Please create an issue report here, including the input Markdown: "  # noqa: E501
+                        "https://github.com/executablebooks/mdformat/issues",
+                    ],
                 )
                 return 1
             if path:
@@ -71,6 +92,30 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     if format_errors_found:
         return 1
     return 0
+
+
+def make_arg_parser(
+    parser_plugins: Iterable[mdformat.plugins.ParserExtensionInterface],
+) -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="CommonMark compliant Markdown formatter"
+    )
+    parser.add_argument("paths", nargs="*", help="files to format")
+    parser.add_argument(
+        "--check", action="store_true", help="do not apply changes to files"
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"mdformat {mdformat.__version__}"
+    )
+    parser.add_argument(
+        f"--{CONSECUTIVE_KEY}",
+        action="store_true",
+        help="apply consecutive numbering to ordered lists",
+    )
+    for plugin in parser_plugins:
+        if hasattr(plugin, "add_cli_options"):
+            plugin.add_cli_options(parser)
+    return parser
 
 
 class InvalidPath(Exception):
@@ -105,3 +150,41 @@ def resolve_file_paths(path_strings: Iterable[str]) -> List[Optional[Path]]:
         else:
             file_paths.append(path_obj)
     return file_paths
+
+
+def print_paragraphs(paragraphs: Iterable[str]) -> None:
+    assert not isinstance(paragraphs, str)
+    sys.stderr.write(wrap_paragraphs(paragraphs))
+
+
+def print_error(title: str, paragraphs: Iterable[str] = ()) -> None:
+    assert not isinstance(paragraphs, str)
+    assert not title.lower().startswith("error")
+    title = "Error: " + title
+    paragraphs = [title] + list(paragraphs)
+    print_paragraphs(paragraphs)
+
+
+def wrap_paragraphs(paragraphs: Iterable[str]) -> str:
+    """Wrap and concatenate paragraphs.
+
+    Take an iterable of paragraphs as input. Return a string where the
+    paragraphs are concatenated (empty line as separator) and wrapped.
+    End the string in a newline.
+    """
+    terminal_width, _ = shutil.get_terminal_size()
+    wrapper = textwrap.TextWrapper(
+        break_long_words=False, break_on_hyphens=False, width=min(terminal_width, 80)
+    )
+    return "\n\n".join(wrapper.fill(p) for p in paragraphs) + "\n"
+
+
+@contextlib.contextmanager
+def log_handler_applied(
+    logger: logging.Logger, handler: logging.Handler
+) -> Generator[None, None, None]:
+    logger.addHandler(handler)
+    try:
+        yield
+    finally:
+        logger.removeHandler(handler)

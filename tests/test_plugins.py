@@ -1,5 +1,8 @@
+import argparse
+import json
 from textwrap import dedent
-from typing import List, Optional, Tuple
+from typing import Any, Mapping, Optional, Sequence, Tuple
+from unittest.mock import call, patch
 
 from markdown_it import MarkdownIt
 from markdown_it.extensions import front_matter
@@ -7,8 +10,10 @@ from markdown_it.token import Token
 import yaml
 
 import mdformat
+from mdformat._cli import run
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
 from mdformat.renderer import MARKERS, MDRenderer
+from mdformat.renderer._util import CONSECUTIVE_KEY
 
 
 def example_formatter(code, info):
@@ -37,19 +42,20 @@ def test_code_formatter(monkeypatch):
 
 
 class ExampleFrontMatterPlugin:
-    """A class for extending the base parser."""
+    """A plugin that adds front_matter extension to the parser."""
 
     @staticmethod
     def update_mdit(mdit: MarkdownIt):
-        """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
         mdit.use(front_matter.front_matter_plugin)
 
     @staticmethod
     def render_token(
-        renderer: MDRenderer, tokens: List[Token], index: int, options: dict, env: dict
+        renderer: MDRenderer,
+        tokens: Sequence[Token],
+        index: int,
+        options: Mapping[str, Any],
+        env: dict,
     ) -> Optional[Tuple[str, int]]:
-        """Convert a token to a string, or return None if no render method
-        available."""
         token = tokens[index]
         if token.type == "front_matter":
             text = yaml.dump(yaml.safe_load(token.content))
@@ -83,19 +89,20 @@ def test_front_matter(monkeypatch):
 
 
 class ExampleTablePlugin:
-    """A class for extending the base parser."""
+    """A plugin that adds table extension to the parser."""
 
     @staticmethod
     def update_mdit(mdit: MarkdownIt):
-        """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
         mdit.enable("table")
 
     @staticmethod
     def render_token(
-        renderer: MDRenderer, tokens: List[Token], index: int, options: dict, env: dict
+        renderer: MDRenderer,
+        tokens: Sequence[Token],
+        index: int,
+        options: Mapping[str, Any],
+        env: dict,
     ) -> Optional[Tuple[str, int]]:
-        """Convert a token to a string, or return None if no render method
-        available."""
         token = tokens[index]
         if token.type == "table_open":
             # search for the table close, and return a dummy output
@@ -128,4 +135,120 @@ def test_table(monkeypatch):
 
     other text
     """
+    )
+
+
+class ExamplePluginWithCli:
+    """A plugin that adds CLI options."""
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        mdit.enable("table")
+
+    @staticmethod
+    def add_cli_options(parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("--o1", type=str)
+        parser.add_argument("--o2", type=str, default="a")
+        parser.add_argument("--o3", dest="arg_name", type=int)
+
+
+def test_cli_options(monkeypatch, tmp_path):
+    """Test that -o arguments are correctly added to the options dict."""
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExamplePluginWithCli)
+    file_path = tmp_path / "test_markdown.md"
+    file_path.touch()
+
+    with patch.object(MDRenderer, "render", return_value="") as mock_method:
+        assert run((str(file_path), "--o1", "other", "--o3", "4")) == 0
+
+    calls = mock_method.call_args_list
+    assert len(calls) == 1, calls
+    expected = {
+        "maxNesting": 20,
+        "html": True,
+        "linkify": False,
+        "typographer": False,
+        "quotes": "“”‘’",
+        "xhtmlOut": True,
+        "breaks": False,
+        "langPrefix": "language-",
+        "highlight": None,
+        "store_labels": True,
+        "parser_extension": [ExamplePluginWithCli],
+        "codeformatters": {},
+        "mdformat": {
+            "arg_name": 4,
+            "check": False,
+            CONSECUTIVE_KEY: False,
+            "o1": "other",
+            "o2": "a",
+            "paths": [str(file_path)],
+        },
+    }
+    assert calls[0] == call([], expected, {}), calls[0]
+
+
+class ExampleASTChangingPlugin:
+    """A plugin that makes AST breaking formatting changes."""
+
+    CHANGES_AST = True
+
+    TEXT_REPLACEMENT = "Content replaced completely. AST is now broken!"
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        pass
+
+    @staticmethod
+    def render_token(
+        renderer: MDRenderer,
+        tokens: Sequence[Token],
+        index: int,
+        options: Mapping[str, Any],
+        env: dict,
+    ) -> Optional[Tuple[str, int]]:
+        token = tokens[index]
+        if token.type == "text":
+            return ExampleASTChangingPlugin.TEXT_REPLACEMENT, index
+        return None
+
+
+def test_ast_changing_plugin(monkeypatch, tmp_path):
+    plugin = ExampleASTChangingPlugin()
+    monkeypatch.setitem(PARSER_EXTENSIONS, "ast_changer", plugin)
+    file_path = tmp_path / "test_markdown.md"
+
+    # Test that the AST changing formatting is applied successfully
+    # under normal operation.
+    file_path.write_text("Some markdown here\n")
+    assert run((str(file_path),)) == 0
+    assert file_path.read_text() == plugin.TEXT_REPLACEMENT + "\n"
+
+    # Set the plugin's `CHANGES_AST` flag to False and test that the
+    # equality check triggers, notices the AST breaking changes and a
+    # non-zero error code is returned.
+    plugin.CHANGES_AST = False
+    file_path.write_text("Some markdown here\n")
+    assert run((str(file_path),)) == 1
+    assert file_path.read_text() == "Some markdown here\n"
+
+
+class JSONFormatterPlugin:
+    """A code formatter plugin that formats JSON."""
+
+    @staticmethod
+    def format_json(unformatted: str, _info_str: str) -> str:
+        parsed = json.loads(unformatted)
+        return json.dumps(parsed, indent=2) + "\n"
+
+
+def test_code_format_warnings(monkeypatch, tmp_path, capsys):
+    monkeypatch.setitem(CODEFORMATTERS, "json", JSONFormatterPlugin.format_json)
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text("```json\nthis is invalid json\n```\n")
+    assert run([str(file_path)]) == 0
+    captured = capsys.readouterr()
+    assert (
+        captured.err
+        == "Warning: Failed formatting content of a json code block (line 1 before formatting)\n"  # noqa: E501
     )

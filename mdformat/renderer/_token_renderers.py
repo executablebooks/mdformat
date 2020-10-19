@@ -1,7 +1,7 @@
 """A namespace for functions that render the Markdown of tokens from markdown-
 it-py."""
 import logging
-from typing import List, Optional
+from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
 
@@ -16,24 +16,30 @@ from mdformat.renderer._util import (
 LOGGER = logging.getLogger(__name__)
 
 
-def default(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def default(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     """Default formatter for tokens that don't have one implemented."""
     return ""
 
 
-def link_open(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def link_open(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
     if token.markup == "autolink":
         return "<"
     return "["
 
 
-def link_close(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def link_close(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
     if token.markup == "autolink":
         return ">"
     open_tkn = find_opening_token(tokens, idx)
-    if open_tkn.meta.get("label", None):
+    if open_tkn.meta.get("label"):
         env.setdefault("used_refs", set()).add(open_tkn.meta["label"])
         return f"][{open_tkn.meta['label'].lower()}]"
     attrs = dict(open_tkn.attrs)
@@ -45,11 +51,13 @@ def link_close(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return f'](<{uri}> "{title}")'
 
 
-def hr(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def hr(tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict) -> str:
     return "___" + MARKERS.BLOCK_SEPARATOR
 
 
-def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def image(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
 
     # "alt" attr MUST be set, even if empty. Because it's mandatory and
@@ -62,7 +70,7 @@ def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     label = token.attrGet("alt")
     assert label is not None
 
-    if token.meta.get("label", None):
+    if token.meta.get("label"):
         env.setdefault("used_refs", set()).add(token.meta["label"])
         if label == token.meta["label"].lower():
             return f"![{label}]"
@@ -72,11 +80,13 @@ def image(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     assert uri is not None
     title = token.attrGet("title")
     if title is not None:
-        return f'![{label}]({uri} "{title}")'
-    return f"![{label}]({uri})"
+        return f'![{label}](<{uri}> "{title}")'
+    return f"![{label}](<{uri}>)"
 
 
-def code_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def code_inline(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     code = tokens[idx].content
     all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
@@ -86,7 +96,9 @@ def code_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return f"{separator} {code} {separator}"
 
 
-def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def fence(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     token = tokens[idx]
     info_str = token.info.strip() if token.info else ""
     lang = info_str.split()[0] if info_str.split() else ""
@@ -104,10 +116,13 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
         fmt_func = options["codeformatters"][lang]
         try:
             code_block = fmt_func(code_block, info_str)
-        except Exception as err:
+        except Exception:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.
-            LOGGER.warning(f"Code formatting of '{lang}' failed: {err}")
+            LOGGER.warning(
+                f"Failed formatting content of a {lang} code block "
+                f"(line {token.map[0] + 1} before formatting)"
+            )
 
     # The code block must not include as long or longer sequence of `fence_char`s
     # as the fence string itself
@@ -117,27 +132,39 @@ def fence(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
     return f"{fence_str}{info_str}\n{code_block}{fence_str}" + MARKERS.BLOCK_SEPARATOR
 
 
-def code_block(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def code_block(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return fence(tokens, idx, options, env)
 
 
-def html_block(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def html_block(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return tokens[idx].content.rstrip("\n") + MARKERS.BLOCK_SEPARATOR
 
 
-def html_inline(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def html_inline(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return tokens[idx].content
 
 
-def hardbreak(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def hardbreak(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return "\\" + "\n"
 
 
-def softbreak(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def softbreak(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     return "\n"
 
 
-def text(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
+def text(
+    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
     """Process a text token.
 
     Text should always be a child of an inline token enclosed by a
@@ -202,7 +229,7 @@ def text(tokens: List[Token], idx: int, options: dict, env: dict) -> str:
 
 
 def _render_inline_as_text(
-    tokens: Optional[List[Token]], options: dict, env: dict
+    tokens: Optional[Sequence[Token]], options: Mapping[str, Any], env: dict
 ) -> str:
     """Special kludge for image `alt` attributes to conform CommonMark spec.
 

@@ -1,6 +1,6 @@
 import html
 import re
-from typing import List
+from typing import Sequence
 
 from markdown_it.token import Token
 
@@ -15,6 +15,9 @@ RE_CHAR_REFERENCE = re.compile(
     "|#[Xx][0-9A-Fa-f]{1,6}"
     "|" + "|".join({c.rstrip(";") for c in html.entities.html5}) + ");"
 )
+
+# key to indicate consecutive numbering of ordered lists
+CONSECUTIVE_KEY = "number"
 
 
 class MARKERS:
@@ -36,7 +39,7 @@ class MARKERS:
     BLOCK_SEPARATOR = "\x00 2 block-separator"
 
 
-def index_opening_token(tokens: List[Token], closing_token_idx: int) -> int:
+def index_opening_token(tokens: Sequence[Token], closing_token_idx: int) -> int:
     """Return index of an opening token.
 
     Takes token stream and closing token index of a container block as
@@ -51,7 +54,7 @@ def index_opening_token(tokens: List[Token], closing_token_idx: int) -> int:
     raise ValueError("Invalid token list. Closing token not found.")
 
 
-def find_opening_token(tokens: List[Token], closing_token_idx: int) -> Token:
+def find_opening_token(tokens: Sequence[Token], closing_token_idx: int) -> Token:
     """Return an opening token.
 
     Takes token stream and closing token index of a container block as
@@ -61,7 +64,7 @@ def find_opening_token(tokens: List[Token], closing_token_idx: int) -> Token:
     return tokens[opening_token_idx]
 
 
-def is_tight_list(tokens: List[Token], closing_token_idx: int) -> bool:
+def is_tight_list(tokens: Sequence[Token], closing_token_idx: int) -> bool:
     closing_tkn = tokens[closing_token_idx]
     assert closing_tkn.type in {"bullet_list_close", "ordered_list_close"}
 
@@ -80,7 +83,7 @@ def is_tight_list(tokens: List[Token], closing_token_idx: int) -> bool:
     return True
 
 
-def is_tight_list_item(tokens: List[Token], closing_token_idx: int) -> bool:
+def is_tight_list_item(tokens: Sequence[Token], closing_token_idx: int) -> bool:
     list_item_closing_tkn = tokens[closing_token_idx]
     assert list_item_closing_tkn.type == "list_item_close"
 
@@ -106,7 +109,7 @@ def longest_consecutive_sequence(seq: str, char: str) -> int:
     return longest
 
 
-def is_text_inside_autolink(tokens: List[Token], idx: int) -> bool:
+def is_text_inside_autolink(tokens: Sequence[Token], idx: int) -> bool:
     assert tokens[idx].type == "text"
     if idx == 0:
         return False
@@ -118,17 +121,3 @@ def removesuffix(string: str, suffix: str) -> str:
     if suffix and string.endswith(suffix):
         return string[: -len(suffix)]
     return string
-
-
-# def is_in_block(tokens: List[Token], idx: int, block_closing_tkn_type: str) -> bool:
-#     """Is tokens[idx] in a block closed by block_closing_tkn_type?"""
-#     assert tokens[idx].type == "text"
-#     if tokens[idx].level == 0:
-#         return False
-#     current_lvl = tokens[idx].level
-#     for i in range(idx + 1, len(tokens)):
-#         if tokens[i].level < current_lvl:
-#             current_lvl = tokens[i].level
-#             if tokens[i].type == block_closing_tkn_type:
-#                 return True
-#     return False

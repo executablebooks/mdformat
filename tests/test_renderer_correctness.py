@@ -62,6 +62,11 @@ EXTRA_CASES = (
         "\\- not a list\n"
         "\\+ not a list\n",
     },
+    {"name": "image link with brackets 1", "md": "![link](<foo(and(bar)>)\n"},
+    {"name": "image link with brackets 2", "md": "![link](foo\\(and\\(bar\\))\n"},
+    {"name": "image link with brackets 3", "md": "![link](foo\\)\\:)\n"},
+    {"name": "image link with brackets 4", "md": "![a](<b)c>)\n"},
+    {"name": "image link with brackets 5", "md": '![a](<b)c> "some title")\n'},
 )
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 
