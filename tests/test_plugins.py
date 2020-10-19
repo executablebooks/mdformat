@@ -16,6 +16,31 @@ from mdformat.renderer import MARKERS, MDRenderer
 from mdformat.renderer._util import CONSECUTIVE_KEY
 
 
+def example_formatter(code, info):
+    return "dummy\n"
+
+
+def test_code_formatter(monkeypatch):
+    monkeypatch.setitem(CODEFORMATTERS, "lang", example_formatter)
+    text = mdformat.text(
+        dedent(
+            """\
+    ```lang
+    a
+    ```
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang
+    dummy
+    ```
+    """
+    )
+
+
 class ExampleFrontMatterPlugin:
     """A plugin that adds front_matter extension to the parser."""
 

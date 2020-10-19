@@ -28,7 +28,12 @@ def is_md_equal(
     for key, text in [("md1", md1), ("md2", md2)]:
         html = mdit.render(text)
         for codeclass in codeformatters:
-            html = re.sub(f'<code class="language-{codeclass}">.*</code>', "", html)
+            html = re.sub(
+                f'<code class="language-{codeclass}">.*</code>',
+                "",
+                html,
+                flags=re.DOTALL,
+            )
         html = re.sub(r"\s+", "", html)
         html_texts[key] = html
 

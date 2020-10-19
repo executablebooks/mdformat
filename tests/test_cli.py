@@ -6,6 +6,7 @@ import pytest
 
 import mdformat
 from mdformat._cli import run, wrap_paragraphs
+from mdformat.plugins import CODEFORMATTERS
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
 FORMATTED_MARKDOWN = "# A header\n"
@@ -69,6 +70,18 @@ def test_check__multi_fail(capsys, tmp_path):
     captured = capsys.readouterr()
     assert str(file_path1) in captured.err
     assert str(file_path2) in captured.err
+
+
+def example_formatter(code, info):
+    return "dummy\n"
+
+
+def test_formatter_plugin(tmp_path, monkeypatch):
+    monkeypatch.setitem(CODEFORMATTERS, "lang", example_formatter)
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text("```lang\nother\n```\n")
+    assert run((str(file_path),)) == 0
+    assert file_path.read_text() == "```lang\ndummy\n```\n"
 
 
 def test_dash_stdin(capsys, monkeypatch):
