@@ -185,9 +185,16 @@ if you wish to implement a new parser extension plugin.
   <tr>
     <th>Plugin</th>
     <th>Syntax Extensions</th>
+    <th>Description</th>
   </tr>
   <tr>
     <td><a href="https://github.com/executablebooks/mdformat-tables">mdformat-tables</a></td>
     <td><code>tables</code></td>
+    <td>Adds support for GitHub Flavored Markdown style tables</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-toc">mdformat-toc</a></td>
+    <td><code>toc</code></td>
+    <td>Adds the capability to auto-generate a table of contents</td>
   </tr>
 </table>
