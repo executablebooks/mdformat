@@ -112,7 +112,7 @@ class MDRenderer:
             rendered_content = removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
             rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
-            if env.get("used_refs", None):
+            if env.get("used_refs"):
                 rendered_content += "\n\n"
                 rendered_content += self._write_references(env)
 

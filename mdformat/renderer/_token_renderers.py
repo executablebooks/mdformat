@@ -39,7 +39,7 @@ def link_close(
     if token.markup == "autolink":
         return ">"
     open_tkn = find_opening_token(tokens, idx)
-    if open_tkn.meta.get("label", None):
+    if open_tkn.meta.get("label"):
         env.setdefault("used_refs", set()).add(open_tkn.meta["label"])
         return f"][{open_tkn.meta['label'].lower()}]"
     attrs = dict(open_tkn.attrs)
@@ -70,7 +70,7 @@ def image(
     label = token.attrGet("alt")
     assert label is not None
 
-    if token.meta.get("label", None):
+    if token.meta.get("label"):
         env.setdefault("used_refs", set()).add(token.meta["label"])
         if label == token.meta["label"].lower():
             return f"![{label}]"
