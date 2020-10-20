@@ -146,6 +146,10 @@ if you wish to implement a new code formatter plugin.
     <th>Supported languages</th>
   </tr>
   <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-beautysh">mdformat-beautysh</a></td>
+    <td><code>bash</code>, <code>sh</code></td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-black">mdformat-black</a></td>
     <td><code>python</code></td>
   </tr>
@@ -154,8 +158,8 @@ if you wish to implement a new code formatter plugin.
     <td><code>json</code>, <code>toml</code>, <code>yaml</code></td>
   </tr>
   <tr>
-    <td><a href="https://github.com/hukkinj1/mdformat-beautysh">mdformat-beautysh</a></td>
-    <td><code>bash</code>, <code>sh</code></td>
+    <td><a href="https://github.com/hukkinj1/mdformat-gofmt">mdformat-gofmt</a></td>
+    <td><code>go</code></td>
   </tr>
 </table>
 
