@@ -99,7 +99,7 @@ commands = mypy {posargs:.}
 
 [testenv:py{36,37,38}-hook]
 deps = pre-commit
-commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md
+commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
 
 [testenv:py{36,37,38}-cli]
 commands = mdformat {posargs}

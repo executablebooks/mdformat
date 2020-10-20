@@ -5,12 +5,14 @@ The style attempts to minimize diffs (for ease of reviewing changes) and be cons
 sometimes at the cost of some readability.
 
 ## Headings
+
 For consistency, only ATX headings are used.
 Setext headings are reformatted using the ATX style.
 ATX headings are used because they can be consistently used for any heading level,
 whereas setext headings only allow level 1 and 2 headings.
 
 For example these setext headings
+
 ```markdown
 First level heading
 ===
@@ -18,7 +20,9 @@ First level heading
 Second level heading
 ---
 ```
+
 will be reformatted in ATX style
+
 ```markdown
 # First level heading
 
@@ -26,8 +30,10 @@ will be reformatted in ATX style
 ```
 
 ## Ordered lists
+
 Mdformat uses `1.` or `1)` as the ordered list marker, also for noninital list items.
 For example:
+
 ```markdown
 1. Item 1
 1. Item 2
@@ -35,6 +41,7 @@ For example:
 ```
 
 This "non-numbering" style was chosen to minimize diffs. But how exactly? Lets imagine we are listing the alphabets, using a proper consecutive numbering style:
+
 ```markdown
 1. b
 2. c
@@ -50,6 +57,7 @@ The non-numbering style solves this issue: only the added line will show up in t
 Mdformat allows consecutive numbering via configuration.
 
 ## Code blocks
+
 Only fenced code blocks are allowed.
 Indented code blocks are reformatted as fenced code blocks.
 
@@ -57,6 +65,7 @@ Fenced code blocks are preferred because they allow setting an info string,
 which indented code blocks do not support.
 
 ## Word wrap
+
 Mdformat by default will not change word wrapping.
 The rationale for this is to encourage and support [Semantic Line Breaks](<https://sembr.org/>),
 a technique described by Brian Kernighan in the early 1970s:
