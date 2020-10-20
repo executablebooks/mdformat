@@ -167,10 +167,8 @@ def text(
 ) -> str:
     """Process a text token.
 
-    Text should always be a child of an inline token enclosed by a
-      - heading
-      - paragraph
-      - autolink (any link?)
+    Text should always be a child of an inline token. An inline token
+    should always be enclosed by a heading or a paragraph.
     """
     text = tokens[idx].content
     if is_text_inside_autolink(tokens, idx):
@@ -194,14 +192,6 @@ def text(
     for char_refs_found, char_ref in enumerate(RE_CHAR_REFERENCE.finditer(text)):
         start = char_ref.start() + char_refs_found
         text = text[:start] + "\\" + text[start:]
-
-    # Replace line starting tabs with numeric decimal representation.
-    # A normal tab character would start a code block.
-    lines = text.split("\n")
-    starting_tabs_replaced = (
-        "&#9;" + line[1:] if line.startswith("\t") else line for line in lines
-    )
-    text = "\n".join(starting_tabs_replaced)
 
     # Replace no-break space with its decimal representation
     text = text.replace(chr(160), "&#160;")

@@ -137,6 +137,9 @@ def paragraph_close(
 ) -> str:
     lines = text.split("\n")
 
+    # Replace line starting tabs with numeric decimal representation.
+    # A normal tab character would start a code block.
+    lines = ["&#9;" + line[1:] if line.startswith("\t") else line for line in lines]
     # Make sure a paragraph line does not start with "-" or "+"
     # (otherwise it will be interpreted as list item).
     lines = [
