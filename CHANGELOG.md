@@ -7,6 +7,7 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 
 - Changed
   - Style: Only surround link destination with angle brackets if required by CommonMark spec
+  - Style: Thematic breaks are now 70 characters wide
 
 ## 0.3.5
 
