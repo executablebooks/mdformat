@@ -54,7 +54,8 @@ def link_close(
 
 
 def hr(tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict) -> str:
-    return "___" + MARKERS.BLOCK_SEPARATOR
+    thematic_break_width = 70
+    return "_" * thematic_break_width + MARKERS.BLOCK_SEPARATOR
 
 
 def image(

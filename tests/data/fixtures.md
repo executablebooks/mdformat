@@ -170,3 +170,18 @@ references:
 [ref1]: link4
 [ref2]: link3 "title"
 .
+
+thematic breaks
+.
+something something
+
+---
+
+something something
+.
+something something
+
+______________________________________________________________________
+
+something something
+.
