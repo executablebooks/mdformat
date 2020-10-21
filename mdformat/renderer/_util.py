@@ -4,6 +4,9 @@ from typing import Sequence
 
 from markdown_it.token import Token
 
+ASCII_SPACE_CHARS = frozenset({chr(9), chr(10), chr(11), chr(12), chr(13), chr(32)})
+ASCII_CTRL_CHARS = frozenset(chr(i) for i in range(32))
+
 # Regex that finds character references.
 # The reference can be either
 #   1. decimal representation, e.g. &#11;
@@ -121,3 +124,15 @@ def removesuffix(string: str, suffix: str) -> str:
     if suffix and string.endswith(suffix):
         return string[: -len(suffix)]
     return string
+
+
+def maybe_add_link_brackets(link: str) -> str:
+    """Surround URI with brackets if required by spec."""
+    if (
+        not link
+        or any(char in ASCII_CTRL_CHARS | ASCII_SPACE_CHARS for char in link)
+        or "(" in link
+        or ")" in link
+    ):
+        return "<" + link + ">"
+    return link

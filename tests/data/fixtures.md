@@ -163,9 +163,9 @@ references:
 [ref1]: link4
 [unused]: link5
 .
-[text](<link1>) [text](<link2> "title") [ref1][ref1] [ref2][ref2] [text][ref1]
+[text](link1) [text](link2 "title") [ref1][ref1] [ref2][ref2] [text][ref1]
 
-![text](<link1>) ![text](<link2> "title") ![ref1] ![ref2] ![text][ref1]
+![text](link1) ![text](link2 "title") ![ref1] ![ref2] ![text][ref1]
 
 [ref1]: link4
 [ref2]: link3 "title"

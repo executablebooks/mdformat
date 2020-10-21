@@ -11,6 +11,7 @@ from mdformat.renderer._util import (
     find_opening_token,
     is_text_inside_autolink,
     longest_consecutive_sequence,
+    maybe_add_link_brackets,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -44,11 +45,12 @@ def link_close(
         return f"][{open_tkn.meta['label'].lower()}]"
     attrs = dict(open_tkn.attrs)
     uri = attrs["href"]
+    uri = maybe_add_link_brackets(uri)
     title = attrs.get("title")
     if title is None:
-        return f"](<{uri}>)"
+        return f"]({uri})"
     title = title.replace('"', '\\"')
-    return f'](<{uri}> "{title}")'
+    return f']({uri} "{title}")'
 
 
 def hr(tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict) -> str:
@@ -78,10 +80,11 @@ def image(
 
     uri = token.attrGet("src")
     assert uri is not None
+    uri = maybe_add_link_brackets(uri)
     title = token.attrGet("title")
     if title is not None:
-        return f'![{label}](<{uri}> "{title}")'
-    return f"![{label}](<{uri}>)"
+        return f'![{label}]({uri} "{title}")'
+    return f"![{label}]({uri})"
 
 
 def code_inline(
