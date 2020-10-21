@@ -1,8 +1,14 @@
 # Formatting style
 
-Mdformat's formatting style is crafted so that writing, editing and collaborating on Markdown files is as smooth as possible.
-The style attempts to minimize diffs (for ease of reviewing changes) and be consistent,
+This document describes, demonstrates, and rationalizes the formatting style that mdformat follows.
+
+Mdformat's formatting style is crafted so that writing, editing and collaborating on Markdown documents is as smooth as possible.
+The style is consistent, and minimizes diffs (for ease of reviewing changes),
 sometimes at the cost of some readability.
+
+Mdformat makes sure to only change style, not content.
+Once converted to HTML and rendered on screen,
+formatted Markdown should yield a result that is visually identical to the unformatted document.
 
 ## Headings
 
@@ -11,7 +17,7 @@ Setext headings are reformatted using the ATX style.
 ATX headings are used because they can be consistently used for any heading level,
 whereas setext headings only allow level 1 and 2 headings.
 
-For example these setext headings
+Input:
 
 ```markdown
 First level heading
@@ -21,7 +27,7 @@ Second level heading
 ---
 ```
 
-will be reformatted in ATX style
+Output:
 
 ```markdown
 # First level heading
@@ -35,9 +41,9 @@ Mdformat uses `1.` or `1)` as the ordered list marker, also for noninital list i
 For example:
 
 ```markdown
-1. Item 1
-1. Item 2
-1. Item 3
+1. Item A
+1. Item B
+1. Item C
 ```
 
 This "non-numbering" style was chosen to minimize diffs. But how exactly? Lets imagine we are listing the alphabets, using a proper consecutive numbering style:
@@ -64,11 +70,51 @@ Indented code blocks are reformatted as fenced code blocks.
 Fenced code blocks are preferred because they allow setting an info string,
 which indented code blocks do not support.
 
-## Word wrap
+## Inline links
+
+Redundant angle brackets surrounding a link destination will be removed.
+
+Input:
+
+```markdown
+[Python](<https://python.org>)
+```
+
+Output:
+
+```markdown
+[Python](https://python.org)
+```
+
+## Reference links
+
+All link reference definitions are moved to the bottom of the document,
+sorted by label. Unused and duplicate references are removed.
+
+Input:
+
+```markdown
+[dupe ref]: https://gitlab.com
+[dupe ref]: link1
+[unused ref]: link2
+
+Here's a link to [GitLab][dupe ref]
+```
+
+Output:
+
+```markdown
+Here's a link to [GitLab][dupe ref]
+
+[dupe ref]: https://gitlab.com
+```
+
+## Paragraph word wrapping
 
 Mdformat by default will not change word wrapping.
 The rationale for this is to encourage and support [Semantic Line Breaks](https://sembr.org/),
-a technique described by Brian Kernighan in the early 1970s:
+a technique described by Brian Kernighan in the early 1970s,
+yet still as relevant as ever today:
 
 > **Hints for Preparing Documents**
 >
@@ -86,3 +132,40 @@ a technique described by Brian Kernighan in the early 1970s:
 > have to do later.
 >
 > _— Brian W. Kernighan. "UNIX for Beginners". 1974_
+
+## Thematic breaks
+
+Thematic breaks are formatted as a 70 character wide string of underscores.
+A wide thematic break is distinguishable,
+and visually resembles how a corresponding HTML `<hr>` tag is typically rendered.
+
+## Whitespace
+
+Mdformat applies consistent whitespace across the board:
+
+- Paragraph trailing and leading whitespace is stripped
+- Consistent indentation for contents of block quotes and list items
+- Blocks always separated with a single empty line
+  (an exception being tight lists where the separator is a single newline character)
+- Document always ends in a single newline character
+
+## Hard line breaks
+
+Hard line breaks are always a backslash preceding a line ending.
+The alternative syntax,
+two or more spaces before a line ending,
+is not used because it is not visible.
+
+Input:
+
+```markdown
+Hard line break is here:   
+Can you see it?
+```
+
+Output:
+
+```markdown
+Hard line break is here:\
+Can you see it?
+```

@@ -6,26 +6,23 @@
 
 > CommonMark compliant Markdown formatter
 
-Mdformat is an opinionated Markdown formatter that can be used to enforce a consistent style in Markdown files.
+Mdformat is an opinionated Markdown formatter
+that can be used to enforce a consistent style in Markdown files.
 Mdformat is a Unix-style command-line tool as well as a Python library.
 
 The features/opinions of the formatter include:
 
-- Strip trailing and leading whitespace
+- Consistent indentation and whitespace across the board
 - Always use ATX style headings
-- Consistent indentation for contents of block quotes and list items
 - Move all link references to the bottom of the document (sorted by label)
 - Reformat indented code blocks as fenced code blocks
-- Separate blocks with a single empty line
-  (an exception being tight lists where the separator is a single newline character)
-- End the file in a single newline character
 - Use `1.` as the ordered list marker if possible, also for noninitial list items
 
 Mdformat by default will not change word wrapping.
-The rationale for this is to support techniques like
-[One Sentence Per Line](https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line)
-and
-[Semantic Line Breaks](https://sembr.org/).
+The rationale for this is to support [Semantic Line Breaks](https://sembr.org/).
+
+For a comprehensive description and rationalization of the style,
+read [the style guide](https://github.com/executablebooks/mdformat/blob/master/STYLE.md).
 
 **NOTE:**
 The formatting style produced by mdformat may change in each version.
