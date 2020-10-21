@@ -3,6 +3,11 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.4.0
+
+- Changed
+  - Style: Only surround link destination with angle brackets if required by CommonMark spec
+
 ## 0.3.5
 
 - Fixed
