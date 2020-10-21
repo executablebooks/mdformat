@@ -28,3 +28,17 @@ def test_fmt_file__invalid_filename():
 
 def test_fmt_string():
     assert mdformat.text(UNFORMATTED_MARKDOWN) == FORMATTED_MARKDOWN
+
+
+def test_api_options():
+    non_numbered = """\
+0. a
+0. b
+0. c
+"""
+    numbered = """\
+0. a
+1. b
+2. c
+"""
+    assert mdformat.text(non_numbered, options={"number": True}) == numbered
