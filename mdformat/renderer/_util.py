@@ -1,3 +1,4 @@
+import curses.ascii
 import html
 import re
 from typing import Sequence
@@ -121,3 +122,16 @@ def removesuffix(string: str, suffix: str) -> str:
     if suffix and string.endswith(suffix):
         return string[: -len(suffix)]
     return string
+
+
+def maybe_add_link_brackets(link: str) -> str:
+    """Surround URI with brackets if required by spec."""
+    if (
+        not link
+        or any(curses.ascii.isctrl(char) for char in link)
+        or any(curses.ascii.isspace(char) for char in link)
+        or "(" in link
+        or ")" in link
+    ):
+        return "<" + link + ">"
+    return link

@@ -1,6 +1,6 @@
-[![Build Status](<https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master>)](<https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush>)
-[![codecov.io](<https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg>)](<https://codecov.io/gh/executablebooks/mdformat>)
-[![PyPI version](<https://img.shields.io/pypi/v/mdformat>)](<https://pypi.org/project/mdformat>)
+[![Build Status](https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master)](https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
+[![codecov.io](https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg)](https://codecov.io/gh/executablebooks/mdformat)
+[![PyPI version](https://img.shields.io/pypi/v/mdformat)](https://pypi.org/project/mdformat)
 
 # mdformat
 
@@ -23,9 +23,9 @@ The features/opinions of the formatter include:
 
 Mdformat by default will not change word wrapping.
 The rationale for this is to support techniques like
-[One Sentence Per Line](<https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line>)
+[One Sentence Per Line](https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line)
 and
-[Semantic Line Breaks](<https://sembr.org/>).
+[Semantic Line Breaks](https://sembr.org/).
 
 **NOTE:**
 The formatting style produced by mdformat may change in each version.
@@ -102,7 +102,7 @@ mdformat.file(filepath)
 
 ## Usage as a pre-commit hook
 
-`mdformat` can be used as a [pre-commit](<https://github.com/pre-commit/pre-commit>) hook.
+`mdformat` can be used as a [pre-commit](https://github.com/pre-commit/pre-commit) hook.
 Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ```yaml
@@ -119,8 +119,8 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
 ## Code formatter plugins
 
 Mdformat features a plugin system to support formatting of Markdown code blocks where the coding language has been labeled.
-For instance, if [`mdformat-black`](<https://github.com/hukkinj1/mdformat-black>) plugin is installed in the environment,
-mdformat CLI will automatically format Python code blocks with [Black](<https://github.com/psf/black>).
+For instance, if [`mdformat-black`](https://github.com/hukkinj1/mdformat-black) plugin is installed in the environment,
+mdformat CLI will automatically format Python code blocks with [Black](https://github.com/psf/black).
 
 For stability, mdformat Python API behavior will not change simply due to a plugin being installed.
 Code formatters will have to be explicitly enabled in addition to being installed:
@@ -135,7 +135,7 @@ formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
 
-Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
+Read the [contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
 if you wish to implement a new code formatter plugin.
 
 ### Existing plugins
@@ -165,7 +165,7 @@ if you wish to implement a new code formatter plugin.
 
 ## Parser extension plugins
 
-Markdown-it-py offers a range of useful extensions to the base CommonMark parser (see the [documented list](<https://markdown-it-py.readthedocs.io/en/latest/plugins.html>)).
+Markdown-it-py offers a range of useful extensions to the base CommonMark parser (see the [documented list](https://markdown-it-py.readthedocs.io/en/latest/plugins.html)).
 
 Mdformat features a plugin system to support the loading and rendering of such extensions.
 
@@ -180,7 +180,7 @@ unformatted = "content...\n"
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
-Read the [contribution guide](<https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins>)
+Read the [contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
 if you wish to implement a new parser extension plugin.
 
 ### Existing plugins

@@ -3,7 +3,7 @@
 Welcome to the `mdformat` repository!
 We're excited you're here and want to contribute. ✨
 
-Below are the basic development steps, and for further information also see the [EPB organisation guidelines](<https://github.com/executablebooks/.github/blob/master/CONTRIBUTING.md>).
+Below are the basic development steps, and for further information also see the [EPB organisation guidelines](https://github.com/executablebooks/.github/blob/master/CONTRIBUTING.md).
 
 1. Fork and clone the repository.
 
@@ -70,7 +70,7 @@ If using Poetry for packaging, the entry point configuration in `pyproject.toml`
 "python" = "my_package.some_module:format_python"
 ```
 
-For a real-world example plugin, see [mdformat-black](<https://github.com/hukkinj1/mdformat-black>),
+For a real-world example plugin, see [mdformat-black](https://github.com/hukkinj1/mdformat-black),
 which formats Python code blocks with Black.
 
 ## Developing parser extension plugins
