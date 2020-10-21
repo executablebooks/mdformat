@@ -68,6 +68,24 @@ mdformat --check README.md CHANGELOG.md
 This will not apply any changes to the files.
 If a file is not properly formatted, the exit code will be non-zero.
 
+### Options
+
+```console
+foo@bar:~$ mdformat --help
+usage: mdformat [-h] [--check] [--version] [--number] [paths [paths ...]]
+
+CommonMark compliant Markdown formatter
+
+positional arguments:
+  paths       files to format
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --check     do not apply changes to files
+  --version   show program's version number and exit
+  --number    apply consecutive numbering to ordered lists
+```
+
 ## Python API usage
 
 ### Format text
@@ -95,6 +113,18 @@ import pathlib
 
 filepath = pathlib.Path("README.md")
 mdformat.file(filepath)
+```
+
+### Options
+
+Any options available in the CLI are also available in the Python API,
+with equivalent option names.
+
+For instance, to switch on consecutive numbering for ordered lists, do
+
+```python
+import mdformat
+mdformat.file("FILENAME.md", options={"number": True})
 ```
 
 ## Usage as a pre-commit hook
