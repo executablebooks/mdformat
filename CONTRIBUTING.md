@@ -3,6 +3,11 @@
 Welcome to the `mdformat` repository!
 We're excited you're here and want to contribute. ✨
 
+Please discuss new features in an issue before submitting a PR
+to make sure that the feature is wanted and will be merged.
+Note that mdformat is an opinionated tool that attempts to keep formatting style changing configuration to its minimum.
+New configuration will only be added for a very good reason and use case.
+
 Below are the basic development steps, and for further information also see the [EPB organisation guidelines](https://github.com/executablebooks/.github/blob/master/CONTRIBUTING.md).
 
 1. Fork and clone the repository.
@@ -32,7 +37,7 @@ Below are the basic development steps, and for further information also see the 
 1. Test the pre-commit hook against the repository
 
    ```bash
-   pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md
+   pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
    ```
 
 1. Commit, push, and make a PR.

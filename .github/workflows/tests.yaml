@@ -83,7 +83,7 @@ jobs:
         pip install pre-commit
 
     - name: run hook against repository
-      run: pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md
+      run: pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
 
   pypi-publish:
     # Only publish if all other jobs succeed
