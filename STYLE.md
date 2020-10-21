@@ -67,7 +67,7 @@ which indented code blocks do not support.
 ## Word wrap
 
 Mdformat by default will not change word wrapping.
-The rationale for this is to encourage and support [Semantic Line Breaks](<https://sembr.org/>),
+The rationale for this is to encourage and support [Semantic Line Breaks](https://sembr.org/),
 a technique described by Brian Kernighan in the early 1970s:
 
 > **Hints for Preparing Documents**
