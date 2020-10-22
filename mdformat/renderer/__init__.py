@@ -123,9 +123,9 @@ class MDRenderer:
     @staticmethod
     def _write_references(env: dict) -> str:
         text = ""
-        for key in sorted(env.get("used_refs", [])):
-            ref = env["references"][key]
-            item = f"[{key.lower()}]: {ref['href']}"
+        for label in sorted(env.get("used_refs", [])):
+            ref = env["references"][label]
+            item = f"[{label.lower()}]: {ref['href']}"
             if ref["title"]:
                 item += f' "{ref["title"]}"'
             text += item + "\n"

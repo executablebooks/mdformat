@@ -40,9 +40,12 @@ def link_close(
     if token.markup == "autolink":
         return ">"
     open_tkn = find_opening_token(tokens, idx)
-    if open_tkn.meta.get("label"):
-        env.setdefault("used_refs", set()).add(open_tkn.meta["label"])
-        return f"][{open_tkn.meta['label'].lower()}]"
+
+    ref_label = open_tkn.meta.get("label")
+    if ref_label:
+        env.setdefault("used_refs", set()).add(ref_label)
+        return f"][{ref_label.lower()}]"
+
     attrs = dict(open_tkn.attrs)
     uri = attrs["href"]
     uri = maybe_add_link_brackets(uri)
@@ -70,22 +73,24 @@ def image(
     token.attrs[token.attrIndex("alt")][1] = _render_inline_as_text(
         token.children, options, env
     )
-    label = token.attrGet("alt")
-    assert label is not None
+    description = token.attrGet("alt")
+    assert description is not None
 
-    if token.meta.get("label"):
-        env.setdefault("used_refs", set()).add(token.meta["label"])
-        if label == token.meta["label"].lower():
-            return f"![{label}]"
-        return f"![{label}][{token.meta['label'].lower()}]"
+    ref_label = token.meta.get("label")
+    if ref_label:
+        env.setdefault("used_refs", set()).add(ref_label)
+        ref_label_repr = ref_label.lower()
+        if description == ref_label_repr:
+            return f"![{description}]"
+        return f"![{description}][{ref_label_repr}]"
 
     uri = token.attrGet("src")
     assert uri is not None
     uri = maybe_add_link_brackets(uri)
     title = token.attrGet("title")
     if title is not None:
-        return f'![{label}]({uri} "{title}")'
-    return f"![{label}]({uri})"
+        return f'![{description}]({uri} "{title}")'
+    return f"![{description}]({uri})"
 
 
 def code_inline(
