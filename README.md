@@ -188,6 +188,10 @@ if you wish to implement a new code formatter plugin.
     <td><a href="https://github.com/hukkinj1/mdformat-gofmt">mdformat-gofmt</a></td>
     <td><code>go</code></td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-web">mdformat-web</a></td>
+    <td><code>javascript</code>, <code>js</code>, <code>css</code>, <code>html</code>, <code>xml</code></td>
+  </tr>
 </table>
 
 ## Parser extension plugins
