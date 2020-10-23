@@ -190,7 +190,7 @@ if you wish to implement a new code formatter plugin.
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-web">mdformat-web</a></td>
-    <td><code>javascript</code>, <code>js</code>, <code>css</code></td>
+    <td><code>javascript</code>, <code>js</code>, <code>css</code>, <code>html</code>, <code>xml</code></td>
   </tr>
 </table>
 
