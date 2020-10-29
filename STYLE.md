@@ -36,11 +36,13 @@ Output:
 ```
 
 ## Bullet lists
+
 Mdformat uses `-` as the bullet list marker.
 In the case of consecutive bullet lists,
 mdformat alternates between `-` and `*` markers.
 
 ## Ordered lists
+
 Mdformat uses `.` as ordered list marker type.
 In the case of consecutive ordered lists,
 mdformat alternates between `.` and `)` types.
