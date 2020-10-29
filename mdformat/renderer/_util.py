@@ -152,17 +152,14 @@ def get_list_marker_type(tokens: Sequence[Token], closing_token_idx: int) -> str
     while True:
         assert current_closing_idx, "Closing token index can not be 0"
         opening_token_idx = index_opening_token(tokens, current_closing_idx)
-        if opening_token_idx:
-            prev_idx = opening_token_idx - 1
-            prev_type = tokens[prev_idx].type
-            if (mode == "bullet" and prev_type == "bullet_list_close") or (
-                mode == "ordered" and prev_type == "ordered_list_close"
-            ):
-                consecutive_lists_count += 1
-                current_closing_idx = prev_idx
-            else:
-                return (
-                    primary_marker if consecutive_lists_count % 2 else secondary_marker
-                )
+        if opening_token_idx == 0:
+            return primary_marker if consecutive_lists_count % 2 else secondary_marker
+        prev_idx = opening_token_idx - 1
+        prev_type = tokens[prev_idx].type
+        if (mode == "bullet" and prev_type == "bullet_list_close") or (
+            mode == "ordered" and prev_type == "ordered_list_close"
+        ):
+            consecutive_lists_count += 1
+            current_closing_idx = prev_idx
         else:
             return primary_marker if consecutive_lists_count % 2 else secondary_marker
