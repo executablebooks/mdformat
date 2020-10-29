@@ -1,11 +1,11 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: e1668fe86af3810fbca72b8653fe478e66a0afdc  # frozen: v3.2.0
+  rev: 9136088a246768144165fcc3ecc3d31bb686920a  # frozen: v3.3.0
   hooks:
   - id: check-yaml
   - id: check-toml
 - repo: https://github.com/pre-commit/pygrep-hooks
-  rev: eae6397e4c259ed3d057511f6dd5330b92867e62  # frozen: v1.6.0
+  rev: 4f4c0a4cda27980be153cca2cb7710c9fec57ba3  # frozen: v1.7.0
   hooks:
   - id: python-use-type-annotations
   - id: python-check-blanket-noqa

@@ -33,7 +33,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.3"
+        pip install "poetry==1.1.4"
         poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
     - name: run mypy
@@ -56,7 +56,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.3"
+        pip install "poetry==1.1.4"
         poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
     - name: Test with pytest
@@ -101,7 +101,7 @@ jobs:
         python-version: 3.7
     - name: Install Poetry
       run: |
-        pip install "poetry==1.1.3"
+        pip install "poetry==1.1.4"
     - name: Build and publish
       run: |
         # TODO: Remove the first command as soon as this Poetry bug is fixed: https://github.com/python-poetry/poetry/issues/2210
