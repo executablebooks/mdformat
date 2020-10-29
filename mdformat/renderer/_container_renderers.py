@@ -9,6 +9,7 @@ from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     MARKERS,
     find_opening_token,
+    get_list_marker_type,
     is_tight_list,
     is_tight_list_item,
     removesuffix,
@@ -65,15 +66,13 @@ def list_item_close(
 def bullet_list_close(
     text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
-    last_item_closing_tkn = tokens[idx - 1]
-
     text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
     if is_tight_list(tokens, idx):
         text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n")
     else:
         text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
-    bullet_marker = last_item_closing_tkn.markup + " "
+    bullet_marker = get_list_marker_type(tokens, idx) + " "
     indentation = " " * len(bullet_marker)
     text = text.replace(MARKERS.LIST_ITEM, bullet_marker)
     text = text.replace(MARKERS.INDENTATION, indentation)
@@ -83,8 +82,7 @@ def bullet_list_close(
 def ordered_list_close(
     text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
-    last_item_closing_tkn = tokens[idx - 1]
-    number_marker = last_item_closing_tkn.markup
+    marker_type = get_list_marker_type(tokens, idx)
 
     text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
     if is_tight_list(tokens, idx):
@@ -106,10 +104,10 @@ def ordered_list_close(
         #   ...
         #   112. Last item
         pad = len(str(text.count(MARKERS.LIST_ITEM) + starting_number - 1))
-        indentation = " " * (pad + len(f"{number_marker} "))
+        indentation = " " * (pad + len(f"{marker_type} "))
         while MARKERS.LIST_ITEM in text:
             number = str(starting_number).rjust(pad, "0")
-            text = text.replace(MARKERS.LIST_ITEM, f"{number}{number_marker} ", 1)
+            text = text.replace(MARKERS.LIST_ITEM, f"{number}{marker_type} ", 1)
             starting_number += 1
     else:
         # Replace first MARKERS.LIST_ITEM with the starting number of the list.
@@ -119,9 +117,9 @@ def ordered_list_close(
         #   5321. This is the first list item
         #   0001. Second item
         #   0001. Third item
-        first_item_marker = f"{starting_number}{number_marker} "
+        first_item_marker = f"{starting_number}{marker_type} "
         other_item_marker = (
-            "0" * (len(str(starting_number)) - 1) + "1" + number_marker + " "
+            "0" * (len(str(starting_number)) - 1) + "1" + marker_type + " "
         )
         indentation = " " * len(first_item_marker)
         text = text.replace(MARKERS.LIST_ITEM, first_item_marker, 1)

@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## **unreleased**
+
+- Changed
+  - Style: Convert list marker types.
+    Prefer "-" for bullet lists and "." for ordered lists.
+
 ## 0.4.0
 
 - Changed

@@ -35,10 +35,27 @@ Output:
 ## Second level heading
 ```
 
+## Bullet lists
+Mdformat uses `-` as the bullet list marker.
+In the case of consecutive bullet lists,
+mdformat alternates between `-` and `*` markers.
+
 ## Ordered lists
+Mdformat uses `.` as ordered list marker type.
+In the case of consecutive ordered lists,
+mdformat alternates between `.` and `)` types.
 
 Mdformat uses `1.` or `1)` as the ordered list marker, also for noninital list items.
-For example:
+
+Input:
+
+```markdown
+1. Item A
+2. Item B
+3. Item C
+```
+
+Output:
 
 ```markdown
 1. Item A

@@ -54,7 +54,7 @@ def index_opening_token(tokens: Sequence[Token], closing_token_idx: int) -> int:
         opening_tkn_candidate = tokens[i]
         if opening_tkn_candidate.level == closing_tkn.level:
             return i
-    raise ValueError("Invalid token list. Closing token not found.")
+    raise ValueError("Invalid token list. Opening token not found.")
 
 
 def find_opening_token(tokens: Sequence[Token], closing_token_idx: int) -> Token:
@@ -136,3 +136,33 @@ def maybe_add_link_brackets(link: str) -> str:
     ):
         return "<" + link + ">"
     return link
+
+
+def get_list_marker_type(tokens: Sequence[Token], closing_token_idx: int) -> str:
+    if tokens[closing_token_idx].type == "bullet_list_close":
+        mode = "bullet"
+        primary_marker = "-"
+        secondary_marker = "*"
+    else:
+        mode = "ordered"
+        primary_marker = "."
+        secondary_marker = ")"
+    consecutive_lists_count = 1
+    current_closing_idx = closing_token_idx
+    while True:
+        assert current_closing_idx, "Closing token index can not be 0"
+        opening_token_idx = index_opening_token(tokens, current_closing_idx)
+        if opening_token_idx:
+            prev_idx = opening_token_idx - 1
+            prev_type = tokens[prev_idx].type
+            if (mode == "bullet" and prev_type == "bullet_list_close") or (
+                mode == "ordered" and prev_type == "ordered_list_close"
+            ):
+                consecutive_lists_count += 1
+                current_closing_idx = prev_idx
+            else:
+                return (
+                    primary_marker if consecutive_lists_count % 2 else secondary_marker
+                )
+        else:
+            return primary_marker if consecutive_lists_count % 2 else secondary_marker
