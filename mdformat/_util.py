@@ -16,9 +16,10 @@ def is_md_equal(
 ) -> bool:
     """Check if two Markdown produce the same HTML.
 
-    Renders HTML from both Markdown strings, strips whitespace and
-    checks equality. Note that this is not a perfect solution, as there
-    can be meaningful whitespace in HTML, e.g. in a <code> block.
+    Renders HTML from both Markdown strings, reduces consecutive
+    whitespace to a single space and checks equality. Note that this is
+    not a perfect solution, as there can be meaningful whitespace in
+    HTML, e.g. in a <code> block.
     """
     html_texts = {}
     mdit = MarkdownIt()
@@ -30,7 +31,7 @@ def is_md_equal(
         for codeclass in codeformatters:
             html = re.sub(
                 f'<code class="language-{codeclass}">.*</code>',
-                "",
+                " ",
                 html,
                 flags=re.DOTALL,
             )
