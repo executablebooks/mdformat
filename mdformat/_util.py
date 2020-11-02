@@ -31,11 +31,11 @@ def is_md_equal(
         for codeclass in codeformatters:
             html = re.sub(
                 f'<code class="language-{codeclass}">.*</code>',
-                " ",
+                "",
                 html,
                 flags=re.DOTALL,
             )
-        html = re.sub(r"\s+", "", html)
+        html = re.sub(r"\s+", " ", html)
         html_texts[key] = html
 
     return html_texts["md1"] == html_texts["md2"]
