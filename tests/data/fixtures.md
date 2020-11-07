@@ -223,3 +223,22 @@ Bullet list marker type
 * e
 * f
 .
+
+Empty list item
+.
+- next item is empty
+- 
+- whitespace should be stripped
+
+1. next item is empty
+1. 
+1. whitespace should be stripped
+.
+- next item is empty
+-
+- whitespace should be stripped
+
+1. next item is empty
+1.
+1. whitespace should be stripped
+.

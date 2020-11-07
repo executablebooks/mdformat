@@ -41,8 +41,9 @@ def list_item_close(
 ) -> str:
     """Return one list item as string.
 
-    The string contains MARKERS.LIST_ITEMs and MARKERS.INDENTATIONs
-    which have to be replaced in later processing.
+    The string contains MARKERS.LIST_ITEMs, MARKERS.LIST_INDENTs and
+    MARKERS.LIST_INDENT_FIRST_LINEs which have to be replaced in later
+    processing.
     """
     text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
     if is_tight_list_item(tokens, idx):
@@ -56,9 +57,13 @@ def list_item_close(
     indented = []
     for i, line in enumerate(lines):
         if i == 0:
-            indented.append(MARKERS.LIST_ITEM + line)
+            indented.append(
+                MARKERS.LIST_ITEM + MARKERS.LIST_INDENT_FIRST_LINE + line
+                if line
+                else MARKERS.LIST_ITEM
+            )
         else:
-            indented.append(MARKERS.INDENTATION + line if line else line)
+            indented.append(MARKERS.LIST_INDENT + line if line else line)
     tabbed_str = "\n".join(indented) + MARKERS.BLOCK_SEPARATOR
     return tabbed_str
 
@@ -72,10 +77,12 @@ def bullet_list_close(
     else:
         text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
-    bullet_marker = get_list_marker_type(tokens, idx) + " "
-    indentation = " " * len(bullet_marker)
-    text = text.replace(MARKERS.LIST_ITEM, bullet_marker)
-    text = text.replace(MARKERS.INDENTATION, indentation)
+    marker_type = get_list_marker_type(tokens, idx)
+    first_line_indent = " "
+    indent = " " * len(marker_type + first_line_indent)
+    text = text.replace(MARKERS.LIST_ITEM, marker_type)
+    text = text.replace(MARKERS.LIST_INDENT_FIRST_LINE, first_line_indent)
+    text = text.replace(MARKERS.LIST_INDENT, indent)
     return text + MARKERS.BLOCK_SEPARATOR
 
 
@@ -83,6 +90,7 @@ def ordered_list_close(
     text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     marker_type = get_list_marker_type(tokens, idx)
+    first_line_indent = " "
 
     text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
     if is_tight_list(tokens, idx):
@@ -95,7 +103,7 @@ def ordered_list_close(
     if starting_number is None:
         starting_number = 1
 
-    if options.get("mdformat", {}).get(CONSECUTIVE_KEY, False):
+    if options.get("mdformat", {}).get(CONSECUTIVE_KEY):
         # Replace MARKERS.LIST_ITEM with consecutive numbering,
         # padded with zeros to make all markers of even length.
         # E.g.
@@ -104,10 +112,10 @@ def ordered_list_close(
         #   ...
         #   112. Last item
         pad = len(str(text.count(MARKERS.LIST_ITEM) + starting_number - 1))
-        indentation = " " * (pad + len(f"{marker_type} "))
+        indentation = " " * (pad + len(f"{marker_type}{first_line_indent}"))
         while MARKERS.LIST_ITEM in text:
             number = str(starting_number).rjust(pad, "0")
-            text = text.replace(MARKERS.LIST_ITEM, f"{number}{marker_type} ", 1)
+            text = text.replace(MARKERS.LIST_ITEM, f"{number}{marker_type}", 1)
             starting_number += 1
     else:
         # Replace first MARKERS.LIST_ITEM with the starting number of the list.
@@ -117,15 +125,14 @@ def ordered_list_close(
         #   5321. This is the first list item
         #   0001. Second item
         #   0001. Third item
-        first_item_marker = f"{starting_number}{marker_type} "
-        other_item_marker = (
-            "0" * (len(str(starting_number)) - 1) + "1" + marker_type + " "
-        )
-        indentation = " " * len(first_item_marker)
+        first_item_marker = f"{starting_number}{marker_type}"
+        other_item_marker = "0" * (len(str(starting_number)) - 1) + "1" + marker_type
+        indentation = " " * len(first_item_marker + first_line_indent)
         text = text.replace(MARKERS.LIST_ITEM, first_item_marker, 1)
         text = text.replace(MARKERS.LIST_ITEM, other_item_marker)
 
-    text = text.replace(MARKERS.INDENTATION, indentation)
+    text = text.replace(MARKERS.LIST_INDENT_FIRST_LINE, first_line_indent)
+    text = text.replace(MARKERS.LIST_INDENT, indentation)
 
     return text + MARKERS.BLOCK_SEPARATOR
 
