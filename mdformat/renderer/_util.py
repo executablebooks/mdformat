@@ -31,15 +31,16 @@ class MARKERS:
     contains it can not naturally exist in Markdown.
     """
 
-    LIST_ITEM = "\x00 0 list-item"
-    INDENTATION = "\x00 1 indentation"
+    LIST_ITEM = "\x000"
+    LIST_INDENT_FIRST_LINE = "\x001"
+    LIST_INDENT = "\x002"
     # We add BLOCK_SEPARATOR instead of newlines at the end of every block.
     # We convert it to newlines when closing
     #   - a list item
     #   - a list
     #   - a blockquote
     #   - the root document
-    BLOCK_SEPARATOR = "\x00 2 block-separator"
+    BLOCK_SEPARATOR = "\x003"
 
 
 def index_opening_token(tokens: Sequence[Token], closing_token_idx: int) -> int:
