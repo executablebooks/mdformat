@@ -1,6 +1,6 @@
 import html
 import re
-from typing import Sequence
+from typing import Callable, Sequence
 
 from markdown_it.token import Token
 
@@ -27,20 +27,45 @@ class MARKERS:
     """A container for markers for unprocessed Markdown.
 
     Temporary markers that can be used for markdown that is not yet
-    fully processed. "\x00" is invalid Markdown so a string that
-    contains it can not naturally exist in Markdown.
+    fully processed.
     """
 
-    LIST_ITEM = "\x000"
-    LIST_INDENT_FIRST_LINE = "\x001"
-    LIST_INDENT = "\x002"
+    # Type ignore, because mypy thinks this is a method. This is not
+    # a method, just a function in the namespace.
+    def _make_autovalue_func() -> Callable[[], str]:  # type: ignore
+        """A closure to make a function that creates unique, even length MARKER
+        values.
+
+        "\x00" is invalid Markdown so a string that contains it can not
+        naturally exist in Markdown. This is why we prefix all markers
+        with it.
+        """
+        count = 0
+        max_val = 99
+        number_len = len(str(max_val))
+
+        def next_value() -> str:
+            nonlocal count
+            if count > max_val:
+                raise Exception("Tried to create too many marker values")
+            marker = "\x00" + str(count).rjust(number_len, "0")
+            count += 1
+            return marker
+
+        return next_value
+
+    _autovalue = _make_autovalue_func()
+
+    LIST_ITEM = _autovalue()
+    LIST_INDENT_FIRST_LINE = _autovalue()
+    LIST_INDENT = _autovalue()
     # We add BLOCK_SEPARATOR instead of newlines at the end of every block.
     # We convert it to newlines when closing
     #   - a list item
     #   - a list
     #   - a blockquote
     #   - the root document
-    BLOCK_SEPARATOR = "\x003"
+    BLOCK_SEPARATOR = _autovalue()
 
 
 def index_opening_token(tokens: Sequence[Token], closing_token_idx: int) -> int:
