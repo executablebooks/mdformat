@@ -120,7 +120,7 @@ mdformat.file(filepath)
 Any options available in the CLI are also available in the Python API,
 with equivalent option names.
 
-For instance, to switch on consecutive numbering for ordered lists, do
+For instance, to switch on consecutive numbering of ordered lists, do
 
 ```python
 import mdformat
