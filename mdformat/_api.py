@@ -1,9 +1,7 @@
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Optional, Union
 
-from markdown_it import MarkdownIt
-
-import mdformat.plugins
+from mdformat._util import build_mdit
 from mdformat.renderer import MDRenderer
 
 
@@ -15,20 +13,13 @@ def text(
     codeformatters: Iterable[str] = (),
 ) -> str:
     """Format a Markdown string."""
-    markdown_it = MarkdownIt(renderer_cls=MDRenderer)
-    # store reference labels in link/image tokens
-    markdown_it.options["store_labels"] = True
-    markdown_it.options["mdformat"] = options or {}
-
-    markdown_it.options["parser_extension"] = []
-    for name in extensions:
-        plugin = mdformat.plugins.PARSER_EXTENSIONS[name]
-        plugin.update_mdit(markdown_it)
-        markdown_it.options["parser_extension"].append(plugin)
-    markdown_it.options["codeformatters"] = {
-        lang: mdformat.plugins.CODEFORMATTERS[lang] for lang in codeformatters
-    }
-    return markdown_it.render(md)
+    mdit = build_mdit(
+        MDRenderer,
+        mdformat_opts=options,
+        extensions=extensions,
+        codeformatters=codeformatters,
+    )
+    return mdit.render(md)
 
 
 def file(
