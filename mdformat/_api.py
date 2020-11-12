@@ -1,14 +1,14 @@
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Optional, Union
+from typing import Any, Iterable, Mapping, Union
 
-from mdformat._util import build_mdit
+from mdformat._util import EMPTY_MAP, build_mdit
 from mdformat.renderer import MDRenderer
 
 
 def text(
     md: str,
     *,
-    options: Optional[Mapping[str, Any]] = None,
+    options: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> str:
@@ -25,7 +25,7 @@ def text(
 def file(
     f: Union[str, Path],
     *,
-    options: Optional[Mapping[str, Any]] = None,
+    options: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> None:

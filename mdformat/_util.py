@@ -1,22 +1,22 @@
 import re
-from typing import Any, Iterable, Mapping, Optional
+from types import MappingProxyType
+from typing import Any, Iterable, Mapping
 
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
 
 import mdformat.plugins
 
+EMPTY_MAP: MappingProxyType = MappingProxyType({})
+
 
 def build_mdit(
     renderer_cls: Any,
     *,
-    mdformat_opts: Optional[Mapping[str, Any]] = None,
+    mdformat_opts: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> MarkdownIt:
-    if mdformat_opts is None:
-        mdformat_opts = {}
-
     mdit = MarkdownIt(renderer_cls=renderer_cls)
     mdit.options["mdformat"] = mdformat_opts
     # store reference labels in link/image tokens
