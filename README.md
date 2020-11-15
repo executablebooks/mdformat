@@ -120,7 +120,7 @@ mdformat.file(filepath)
 Any options available in the CLI are also available in the Python API,
 with equivalent option names.
 
-For instance, to switch on consecutive numbering for ordered lists, do
+For instance, to switch on consecutive numbering of ordered lists, do
 
 ```python
 import mdformat
@@ -134,7 +134,7 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
 
 ```yaml
 - repo: https://github.com/executablebooks/mdformat
-  rev: 0.5.0  # Use the ref you want to point at
+  rev: 0.5.1  # Use the ref you want to point at
   hooks:
   - id: mdformat
     # optional
