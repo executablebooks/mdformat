@@ -242,3 +242,14 @@ Empty list item
 1.
 1. whitespace should be stripped
 .
+
+Empty ref link destination
+.
+[foo]: <>
+
+[foo]
+.
+[foo][foo]
+
+[foo]: <>
+.
