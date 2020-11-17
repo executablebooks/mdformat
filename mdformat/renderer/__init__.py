@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
 
@@ -24,12 +24,14 @@ class MDRenderer:
         """__init__ must have `parser` parameter for markdown-it-py
         compatibility."""
 
-    def render(
+    def render(  # noqa: C901
         self,
         tokens: Sequence[Token],
         options: Mapping[str, Any],
         env: dict,
         *,
+        start: int = 0,
+        stop: Optional[int] = None,
         finalize: bool = True,
         _recursion_level: int = 0,
     ) -> str:
@@ -39,6 +41,8 @@ class MDRenderer:
             tokens: A list of block tokens to render
             options: Params of parser instance
             env: Additional data from parsed input
+            start: Start rendering from this index
+            stop: Stop rendering before this index
             finalize: replace markers and write references
         """
         assert _recursion_level in {
@@ -47,9 +51,10 @@ class MDRenderer:
         }, "There should be no more than one level of recursion in tokens"
         text_stack = [""]
 
-        i = -1
-        tokens_length = len(tokens)
-        while (i + 1) < tokens_length:
+        i = start - 1
+        if stop is None:
+            stop = len(tokens)
+        while (i + 1) < stop:
             i += 1
             token = tokens[i]
 
