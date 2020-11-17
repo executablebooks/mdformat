@@ -136,7 +136,6 @@ class MDRenderer:
             item = f"[{label.lower()}]: {destination}"
             title = ref["title"]
             if title:
-                title = unescape_string(title)
                 title = title.replace('"', '\\"')
                 item += f' "{title}"'
             text += item + "\n"
