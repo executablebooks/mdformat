@@ -130,7 +130,8 @@ class MDRenderer:
         text = ""
         for label in sorted(env.get("used_refs", [])):
             ref = env["references"][label]
-            item = f"[{label.lower()}]: {ref['href']}"
+            link_dest = ref["href"] if ref["href"] else "<>"
+            item = f"[{label.lower()}]: {link_dest}"
             if ref["title"]:
                 item += f' "{ref["title"]}"'
             text += item + "\n"
