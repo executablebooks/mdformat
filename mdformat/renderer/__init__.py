@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Mapping, Optional, Sequence
 
+from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
 from mdformat.renderer import _container_renderers, _token_renderers
@@ -130,9 +131,13 @@ class MDRenderer:
         text = ""
         for label in sorted(env.get("used_refs", [])):
             ref = env["references"][label]
-            link_dest = ref["href"] if ref["href"] else "<>"
-            item = f"[{label.lower()}]: {link_dest}"
-            if ref["title"]:
-                item += f' "{ref["title"]}"'
+            destination = ref["href"] if ref["href"] else "<>"
+            destination = unescape_string(destination)
+            item = f"[{label.lower()}]: {destination}"
+            title = ref["title"]
+            if title:
+                title = unescape_string(title)
+                title = title.replace('"', '\\"')
+                item += f' "{title}"'
             text += item + "\n"
         return text.rstrip()
