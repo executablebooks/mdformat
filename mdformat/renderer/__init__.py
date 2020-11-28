@@ -1,3 +1,6 @@
+__all__ = ("MDRenderer", "MARKERS", "LOGGER")
+
+
 import logging
 from typing import Any, Mapping, Optional, Sequence
 
@@ -6,8 +9,6 @@ from markdown_it.token import Token
 
 from mdformat.renderer import _container_renderers, _token_renderers
 from mdformat.renderer._util import MARKERS, removesuffix
-
-__all__ = ("MDRenderer", "MARKERS", "LOGGER")
 
 LOGGER = logging.getLogger(__name__)
 
