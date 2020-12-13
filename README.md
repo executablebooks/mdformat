@@ -223,6 +223,11 @@ if you wish to implement a new parser extension plugin.
     <th>Description</th>
   </tr>
   <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-gfm">mdformat-gfm</a></td>
+    <td><code>gfm</code></td>
+    <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/executablebooks/mdformat-tables">mdformat-tables</a></td>
     <td><code>tables</code></td>
     <td>Adds support for GitHub Flavored Markdown style tables</td>
