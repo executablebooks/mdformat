@@ -1,4 +1,4 @@
-import html
+import html.entities
 import re
 from typing import Callable, Sequence
 
