@@ -5,9 +5,7 @@ from typing import Any, Mapping, Optional, Sequence, Tuple
 from unittest.mock import call, patch
 
 from markdown_it import MarkdownIt
-from markdown_it.extensions import front_matter
 from markdown_it.token import Token
-import yaml
 
 import mdformat
 from mdformat._cli import run
@@ -41,12 +39,12 @@ def test_code_formatter(monkeypatch):
     )
 
 
-class ExampleFrontMatterPlugin:
-    """A plugin that adds front_matter extension to the parser."""
+class TextEditorPlugin:
+    """A plugin that makes all text the same."""
 
     @staticmethod
     def update_mdit(mdit: MarkdownIt):
-        mdit.use(front_matter.front_matter_plugin)
+        pass
 
     @staticmethod
     def render_token(
@@ -57,33 +55,30 @@ class ExampleFrontMatterPlugin:
         env: dict,
     ) -> Optional[Tuple[str, int]]:
         token = tokens[index]
-        if token.type == "front_matter":
-            text = yaml.dump(yaml.safe_load(token.content))
-            return f"---\n{text.rstrip()}\n---" + MARKERS.BLOCK_SEPARATOR, index
+        if token.type == "text":
+            return "All text is like this now!", index
         return None
 
 
-def test_front_matter(monkeypatch):
+def test_single_token_extension(monkeypatch):
     """Test the front matter plugin, as a single token extension example."""
-    monkeypatch.setitem(PARSER_EXTENSIONS, "front_matter", ExampleFrontMatterPlugin)
+    plugin_name = "text_editor"
+    monkeypatch.setitem(PARSER_EXTENSIONS, plugin_name, TextEditorPlugin)
     text = mdformat.text(
         dedent(
             """\
-    ---
-    a:          1
-    ---
-    a
+    # Example Heading
+
+    Example paragraph.
     """
         ),
-        extensions=["front_matter"],
+        extensions=[plugin_name],
     )
     assert text == dedent(
         """\
-    ---
-    a: 1
-    ---
+    # All text is like this now!
 
-    a
+    All text is like this now!
     """
     )
 

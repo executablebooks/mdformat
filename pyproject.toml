@@ -46,7 +46,6 @@ typing-extensions= { version = "*", python = "<3.8" }
 pytest = "*"
 pytest-randomly = "*"
 pytest-cov = "*"
-pyyaml = "*"
 
 # Tools
 pre-commit = "*"
@@ -85,7 +84,6 @@ deps =
     pytest
     pytest-randomly
     pytest-cov
-    pyyaml
 commands = pytest {posargs}
 
 [testenv:py{36,37,38}-pre-commit]
