@@ -39,8 +39,8 @@ def build_mdit(
 def is_md_equal(
     md1: str,
     md2: str,
-    options: Mapping[str, Any],
     *,
+    options: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> bool:

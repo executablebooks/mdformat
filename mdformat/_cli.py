@@ -71,7 +71,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             if not changes_ast and not is_md_equal(
                 original_str,
                 formatted_str,
-                options,
+                options=options,
                 extensions=enabled_parserplugins,
                 codeformatters=enabled_codeformatters,
             ):
