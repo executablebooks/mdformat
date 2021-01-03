@@ -1,12 +1,12 @@
 import json
 from pathlib import Path
 
-from markdown_it import MarkdownIt
 import pytest
 
-from mdformat.renderer import MDRenderer
+import mdformat
+from mdformat._util import is_md_equal
 
-SPECTESTS_PATH = Path(__file__).parent / "data" / "spec.json"
+SPECTESTS_PATH = Path(__file__).parent / "data" / "commonmark_spec_v0.29.json"
 SPECTESTS_CASES = tuple(
     {"name": str(entry["example"]), "md": entry["markdown"]}
     for entry in json.loads(SPECTESTS_PATH.read_text(encoding="utf-8"))
@@ -71,32 +71,18 @@ EXTRA_CASES = (
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 
 
+@pytest.mark.parametrize("number", [True, False])
 @pytest.mark.parametrize("entry", ALL_CASES, ids=[c["name"] for c in ALL_CASES])
-def test_renderer_correctness(entry):
-    """Test Markdown renderer against the Commonmark spec.
+def test_commonmark_spec(number, entry):
+    """mdformat.text() against the Commonmark spec.
 
     Test that:
-    1. HTML is the same before and after MDRenderer
-    2. Markdown after 1st pass and 2nd pass of MDRenderer are equal
+    1. Markdown AST is the same before and after 1 pass of formatting
+    2. Markdown after 1st pass and 2nd pass of formatting are equal
     """
+    options = {"number": number}
     md_original = entry["md"]
-    html_original = MarkdownIt().render(md_original)
-    md_new = MarkdownIt(renderer_cls=MDRenderer).render(md_original)
-    md_2nd_pass = MarkdownIt(renderer_cls=MDRenderer).render(md_new)
-    html_new = MarkdownIt().render(md_new)
-
-    equal_html = html_original == html_new
-    equal_md_2nd_pass = md_new == md_2nd_pass
-
-    if not equal_html:
-        # These tests have only insignificant whitespace diff in HTML.
-        # Lets make the whitespace equal and see if HTML is equal then.
-        if entry["name"] == "51":
-            equal_html = html_original.replace("bar\nbaz", "bar baz") == html_new
-        elif entry["name"] == "52":
-            equal_html = html_original.replace("bar\nbaz", "bar baz") == html_new
-        elif entry["name"] == "65":
-            equal_html = html_original.replace("Foo\nBar", "Foo Bar") == html_new
-
-    assert equal_html
-    assert equal_md_2nd_pass
+    md_new = mdformat.text(md_original, options=options)
+    md_2nd_pass = mdformat.text(md_new, options=options)
+    assert is_md_equal(md_original, md_new, options=options)
+    assert md_new == md_2nd_pass

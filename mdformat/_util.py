@@ -63,6 +63,11 @@ def is_md_equal(
                 flags=re.DOTALL,
             )
         html = re.sub(r"\s+", " ", html)
+
+        # Strip insignificant paragraph leading/trailing whitespace
+        html = html.replace("<p> ", "<p>")
+        html = html.replace(" </p>", "</p>")
+
         html_texts[key] = html
 
     return html_texts["md1"] == html_texts["md2"]
