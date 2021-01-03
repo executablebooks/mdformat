@@ -145,6 +145,9 @@ def paragraph_close(
     # Replace line starting tabs with numeric decimal representation.
     # A normal tab character would start a code block.
     lines = ["&#9;" + line[1:] if line.startswith("\t") else line for line in lines]
+    # Make sure a paragraph line does not start with "#"
+    # (otherwise it will be interpreted as an ATX heading).
+    lines = [f"\\{line}" if line.startswith("#") else line for line in lines]
     # Make sure a paragraph line does not start with "-" or "+"
     # (otherwise it will be interpreted as list item).
     lines = [
@@ -180,9 +183,15 @@ def heading_close(
 
     # There can be newlines in setext headers, but we make an ATX
     # header always. Convert newlines to spaces.
-    newlines_removed = text.replace("\n", " ").rstrip()
+    text = text.replace("\n", " ").rstrip()
 
-    return prefix + newlines_removed + MARKERS.BLOCK_SEPARATOR
+    # If the text ends in a sequence of hashes (#), the hashes will be
+    # interpreted as an optional closing sequence of the heading, and
+    # will not be rendered. Escape a line ending hash to prevent this.
+    if text.endswith("#"):
+        text = text[:-1] + "\\#"
+
+    return prefix + text + MARKERS.BLOCK_SEPARATOR
 
 
 def strong_close(

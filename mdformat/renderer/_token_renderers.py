@@ -187,7 +187,6 @@ def text(
     # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")
 
-    text = text.replace("#", "\\#")  # Escape ATX heading marker
     # Escape emphasis/strong marker. Also list item marker if first char in line
     text = text.replace("*", "\\*")
     text = text.replace("_", "\\_")  # Escape emphasis/strong emphasis marker

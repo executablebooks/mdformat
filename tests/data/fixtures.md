@@ -253,3 +253,10 @@ Empty ref link destination
 
 [foo]: <>
 .
+
+Don't escape hash
+.
+- Recalculate secondary dependencies between rounds (#378)
+.
+- Recalculate secondary dependencies between rounds (#378)
+.
