@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 9136088a246768144165fcc3ecc3d31bb686920a  # frozen: v3.3.0
+  rev: 6e2418c5521b7d606e72914dced3253f9ace1205  # frozen: v3.4.0
   hooks:
   - id: check-yaml
   - id: check-toml
@@ -10,7 +10,7 @@ repos:
   - id: python-use-type-annotations
   - id: python-check-blanket-noqa
 - repo: https://github.com/timothycrosley/isort
-  rev: 6bb47b7acc1554ecb59d2855e9110c447162f674  # frozen: 5.6.4
+  rev: 473d150c1db60f4614a574e30993e9e0d3ca0cce  # frozen: 5.7.0
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
@@ -26,6 +26,6 @@ repos:
     - flake8-builtins==1.5.3
     - flake8-comprehensions==3.2.3
 - repo: https://github.com/myint/docformatter
-  rev: de0bf8fa254d25a01383fecdb6335bea01daeae3  # frozen: v1.3.1
+  rev: 67919ee01837761f2d954d7fbb08c12cdd38ec5a  # frozen: v1.4
   hooks:
   - id: docformatter

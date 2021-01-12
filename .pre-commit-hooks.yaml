@@ -4,3 +4,4 @@
   entry: mdformat
   language: python
   types: [markdown]
+  minimum_pre_commit_version: '1.0.0'
