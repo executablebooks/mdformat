@@ -171,26 +171,37 @@ if you wish to implement a new code formatter plugin.
   <tr>
     <th>Plugin</th>
     <th>Supported languages</th>
+    <th>Notes</th>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-beautysh">mdformat-beautysh</a></td>
     <td><code>bash</code>, <code>sh</code></td>
+    <td></td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-black">mdformat-black</a></td>
     <td><code>python</code></td>
+    <td></td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-config">mdformat-config</a></td>
     <td><code>json</code>, <code>toml</code>, <code>yaml</code></td>
+    <td></td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-gofmt">mdformat-gofmt</a></td>
     <td><code>go</code></td>
+    <td>Requires <a href="https://golang.org/doc/install">Go installation</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-rustfmt">mdformat-rustfmt</a></td>
+    <td><code>rust</code></td>
+    <td>Requires <a href="https://github.com/rust-lang/rustfmt#quick-start">rustfmt installation</a></td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-web">mdformat-web</a></td>
     <td><code>javascript</code>, <code>js</code>, <code>css</code>, <code>html</code>, <code>xml</code></td>
+    <td></td>
   </tr>
 </table>
 
