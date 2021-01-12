@@ -40,6 +40,7 @@ def link_close(
     if token.markup == "autolink":
         return ">"
     open_tkn = find_opening_token(tokens, idx)
+    assert open_tkn.attrs is not None, "link_open token attrs must not be None"
 
     ref_label = open_tkn.meta.get("label")
     if ref_label:
@@ -65,6 +66,7 @@ def image(
     tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     token = tokens[idx]
+    assert token.attrs is not None, "image token attrs must not be None"
 
     # "alt" attr MUST be set, even if empty. Because it's mandatory and
     # should be placed on proper position for tests.
@@ -109,6 +111,8 @@ def fence(
     tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     token = tokens[idx]
+    assert token.map is not None, "fence token map must not be None"
+
     info_str = token.info.strip() if token.info else ""
     lang = info_str.split()[0] if info_str.split() else ""
     code_block = token.content
