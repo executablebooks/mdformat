@@ -76,6 +76,9 @@ class MDRenderer:
                 continue
 
             if token.type == "inline":
+                assert (
+                    token.children is not None
+                ), "inline token children can not be None"
                 # inline tokens require nested rendering
                 result = self.render(
                     token.children,

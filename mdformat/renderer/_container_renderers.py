@@ -1,7 +1,7 @@
 """A namespace for functions that render the markdown of complete container
 blocks."""
 import re
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
 
@@ -99,7 +99,10 @@ def ordered_list_close(
         text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
 
     opening_token = find_opening_token(tokens, idx)
-    starting_number = opening_token.attrGet("start")
+    # TODO: remove the type ignore when
+    #       https://github.com/executablebooks/markdown-it-py/pull/102
+    #       is merged and released
+    starting_number: Optional[int] = opening_token.attrGet("start")  # type: ignore
     if starting_number is None:
         starting_number = 1
 
