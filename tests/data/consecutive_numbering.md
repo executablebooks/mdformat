@@ -38,3 +38,26 @@ numbered lists nested [consecutive]
    2. y
       z
 .
+
+0 prefix
+.
+Prefix needed:
+
+999. a
+1000. b
+
+No prefix needed:
+
+998. a
+999. b
+.
+Prefix needed:
+
+0999. a
+1000. b
+
+No prefix needed:
+
+998. a
+999. b
+.
