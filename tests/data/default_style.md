@@ -219,3 +219,25 @@ Don't escape hash
 .
 - Recalculate secondary dependencies between rounds (#378)
 .
+
+Only escape first ")" and "."
+.
+1\) Only the first "\)" of a line should be escaped in this paragraph.
+
+1\. Only the first "\." of a line should be escaped in this paragraph.
+
+First \. or \) char should not be escaped here because this line does not look like a list.
+.
+1\) Only the first ")" of a line should be escaped in this paragraph.
+
+1\. Only the first "." of a line should be escaped in this paragraph.
+
+First . or ) char should not be escaped here because this line does not look like a list.
+.
+
+Escape ! preceding a link
+.
+We must escape the exclamation here \![link](https://www.debian.org/)!!!
+.
+We must escape the exclamation here \![link](https://www.debian.org/)!!!
+.
