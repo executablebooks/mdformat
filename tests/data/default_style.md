@@ -234,3 +234,10 @@ First \. or \) char should not be escaped here because this line does not look l
 
 First . or ) char should not be escaped here because this line does not look like a list.
 .
+
+Escape ! preceding a link
+.
+We must escape the exclamation here \![link](https://www.debian.org/)!!!
+.
+We must escape the exclamation here \![link](https://www.debian.org/)!!!
+.
