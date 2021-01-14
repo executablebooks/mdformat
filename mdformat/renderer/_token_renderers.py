@@ -72,11 +72,8 @@ def image(
     # should be placed on proper position for tests.
     #
     # Replace content with actual value
-    token.attrs[token.attrIndex("alt")][1] = _render_inline_as_text(
-        token.children, options, env
-    )
-    description = token.attrGet("alt")
-    assert description is not None
+    description = _render_inline_as_text(token.children, options, env)
+    token.attrSet("alt", description)
 
     ref_label = token.meta.get("label")
     if ref_label:
