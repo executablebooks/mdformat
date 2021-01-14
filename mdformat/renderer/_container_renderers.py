@@ -12,6 +12,7 @@ from mdformat.renderer._util import (
     get_list_marker_type,
     is_tight_list,
     is_tight_list_item,
+    maybe_add_link_brackets,
     removesuffix,
 )
 
@@ -209,3 +210,30 @@ def em_close(
 ) -> str:
     indicator = tokens[idx].markup
     return indicator + text + indicator
+
+
+def link_close(
+    text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
+) -> str:
+    token = tokens[idx]
+    if token.markup == "autolink":
+        return "<" + text + ">"
+    open_tkn = find_opening_token(tokens, idx)
+    assert open_tkn.attrs is not None, "link_open token attrs must not be None"
+
+    ref_label = open_tkn.meta.get("label")
+    if ref_label:
+        env.setdefault("used_refs", set()).add(ref_label)
+        ref_label_repr = ref_label.lower()
+        if text.lower() == ref_label_repr:
+            return f"[{text}]"
+        return f"[{text}][{ref_label_repr}]"
+
+    attrs = dict(open_tkn.attrs)
+    uri = attrs["href"]
+    uri = maybe_add_link_brackets(uri)
+    title = attrs.get("title")
+    if title is None:
+        return f"[{text}]({uri})"
+    title = title.replace('"', '\\"')
+    return f'[{text}]({uri} "{title}")'

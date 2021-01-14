@@ -122,7 +122,7 @@ references:
 [ref1]: link4
 [unused]: link5
 .
-[text](link1) [text](link2 "title") [ref1][ref1] [ref2][ref2] [text][ref1]
+[text](link1) [text](link2 "title") [ref1] [ref2] [text][ref1]
 
 ![text](link1) ![text](link2 "title") ![ref1] ![ref2] ![text][ref1]
 
@@ -208,7 +208,7 @@ Empty ref link destination
 
 [foo]
 .
-[foo][foo]
+[foo]
 
 [foo]: <>
 .
@@ -240,4 +240,22 @@ Escape ! preceding a link
 We must escape the exclamation here \![link](https://www.debian.org/)!!!
 .
 We must escape the exclamation here \![link](https://www.debian.org/)!!!
+.
+
+Keep shortcut reference links (dont convert to full reference)
+.
+![Image]
+
+[iMaGe]: train.jpg
+
+[Foo]
+
+[fOO]: /url "title"
+.
+![Image]
+
+[Foo]
+
+[foo]: /url "title"
+[image]: train.jpg
 .
