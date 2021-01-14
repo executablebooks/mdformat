@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.5.5
+
+- Changed
+  - Style: Don't convert shortcut reference links into full reference links
+    ([#111](https://github.com/executablebooks/mdformat/issues/111))
+
 ## 0.5.4
 
 - Changed
