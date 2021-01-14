@@ -5,10 +5,10 @@ from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
 
+from mdformat.renderer._container_renderers import link_close as render_link
 from mdformat.renderer._util import (
     MARKERS,
     RE_CHAR_REFERENCE,
-    find_opening_token,
     is_text_inside_autolink,
     longest_consecutive_sequence,
     maybe_add_link_brackets,
@@ -22,39 +22,6 @@ def default(
 ) -> str:
     """Default formatter for tokens that don't have one implemented."""
     return ""
-
-
-def link_open(
-    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
-) -> str:
-    token = tokens[idx]
-    if token.markup == "autolink":
-        return "<"
-    return "["
-
-
-def link_close(
-    tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
-) -> str:
-    token = tokens[idx]
-    if token.markup == "autolink":
-        return ">"
-    open_tkn = find_opening_token(tokens, idx)
-    assert open_tkn.attrs is not None, "link_open token attrs must not be None"
-
-    ref_label = open_tkn.meta.get("label")
-    if ref_label:
-        env.setdefault("used_refs", set()).add(ref_label)
-        return f"][{ref_label.lower()}]"
-
-    attrs = dict(open_tkn.attrs)
-    uri = attrs["href"]
-    uri = maybe_add_link_brackets(uri)
-    title = attrs.get("title")
-    if title is None:
-        return f"]({uri})"
-    title = title.replace('"', '\\"')
-    return f']({uri} "{title}")'
 
 
 def hr(tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict) -> str:
@@ -79,7 +46,7 @@ def image(
     if ref_label:
         env.setdefault("used_refs", set()).add(ref_label)
         ref_label_repr = ref_label.lower()
-        if description == ref_label_repr:
+        if description.lower() == ref_label_repr:
             return f"![{description}]"
         return f"![{description}][{ref_label_repr}]"
 
@@ -235,18 +202,21 @@ def _render_inline_as_text(
     Don't try to use it! Spec requires to show `alt` content with
     stripped markup, instead of simple escaping.
     """
-    result = ""
     if not tokens:
-        return result
+        return ""
+    text_stack = [""]
 
     for i, token in enumerate(tokens):
         if token.type == "text":
-            result += token.content
+            text_stack[-1] += token.content
         elif token.type == "image":
-            result += _render_inline_as_text(token.children, options, env)
+            text_stack[-1] += _render_inline_as_text(token.children, options, env)
         elif token.type == "link_open":
-            result += link_open(tokens, i, options, env)
+            text_stack.append("")
         elif token.type == "link_close":
-            result += link_close(tokens, i, options, env)
+            link_text = text_stack.pop()
+            text_stack[-1] += render_link(link_text, tokens, i, options, env)
 
+    result = text_stack.pop()
+    assert not text_stack
     return result
