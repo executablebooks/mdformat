@@ -158,14 +158,15 @@ def paragraph_close(
         f"\\{line}" if (line.startswith("-") or line.startswith("+")) else line
         for line in lines
     ]
-    # If a line starts with a number followed by "." or ")", escape the "." or
-    # ")" or it will be interpreted as ordered list item.
+    # If a line starts with a number followed by "." or ")" followed by
+    # whitespace or end of line, escape the "." or ")" or it will be
+    # interpreted as ordered list item.
     lines = [
-        line.replace(")", "\\)", 1) if re.match(r"[0-9]+\)", line) else line
+        line.replace(")", "\\)", 1) if re.match(r"[0-9]+\)(\s|$)", line) else line
         for line in lines
     ]
     lines = [
-        line.replace(".", "\\.", 1) if re.match(r"[0-9]+\.", line) else line
+        line.replace(".", "\\.", 1) if re.match(r"[0-9]+\.(\s|$)", line) else line
         for line in lines
     ]
 
