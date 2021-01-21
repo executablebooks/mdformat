@@ -153,11 +153,9 @@ def paragraph_close(
     # (otherwise it will be interpreted as an ATX heading).
     lines = [f"\\{line}" if line.startswith("#") else line for line in lines]
     # Make sure a paragraph line does not start with "-" or "+"
+    # followed by a space, tab, or end of line.
     # (otherwise it will be interpreted as list item).
-    lines = [
-        f"\\{line}" if (line.startswith("-") or line.startswith("+")) else line
-        for line in lines
-    ]
+    lines = [f"\\{line}" if re.match(r"[-+]( |\t|$)", line) else line for line in lines]
     # If a line starts with a number followed by "." or ")" followed by
     # whitespace or end of line, escape the "." or ")" or it will be
     # interpreted as ordered list item.
