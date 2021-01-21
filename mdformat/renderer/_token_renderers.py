@@ -179,6 +179,7 @@ def text(
 
     # === or --- sequences can seem like a header when aligned
     # properly. Escape them.
+    # TODO: This logic seems wrong? Only one char is needed for a heading
     text = text.replace("===", r"\=\=\=")
     text = text.replace("---", r"\-\-\-")
 

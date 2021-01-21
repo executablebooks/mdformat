@@ -257,6 +257,30 @@ This needs escaping (space after the closing bracket)
 1\)
 .
 
+Escape line starting "+" and "-"
+.
+\+
+
+\+No need to escape plus
++No need to escape plus
+
+\-
+
+\-No need to escape dash
+-No need to escape dash
+.
+\+
+
++No need to escape plus
++No need to escape plus
+
+\-
+
+-No need to escape dash
+-No need to escape dash
+.
+
+
 Escape ! preceding a link
 .
 We must escape the exclamation here \![link](https://www.debian.org/)!!!
