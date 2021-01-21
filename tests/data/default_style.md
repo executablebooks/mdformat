@@ -239,6 +239,7 @@ Don't escape list item marker if not followed by whitespace or end of line
 .
 1.No need to escape the dot here
 1)No need to escape the closing bracket here
+1. No need to escape the dot here (there is a no-break-space, not space)
 
 This needs escaping (end of line after the dot)
  1.
@@ -249,6 +250,7 @@ This needs escaping (space after the closing bracket)
 .
 1.No need to escape the dot here
 1)No need to escape the closing bracket here
+1. No need to escape the dot here (there is a no-break-space, not space)
 
 This needs escaping (end of line after the dot)
 1\.
