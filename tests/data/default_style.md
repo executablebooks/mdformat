@@ -290,6 +290,19 @@ We must escape the exclamation here \![link](https://www.debian.org/)!!!
 We must escape the exclamation here \![link](https://www.debian.org/)!!!
 .
 
+
+Asterisk escapes
+.
+Escape*asterisk\*
+
+Don't * escape * asterisk
+.
+Escape\*asterisk\*
+
+Don't * escape&#160;*&#160;asterisk
+.
+
+
 Keep shortcut reference links (dont convert to full reference)
 .
 ![Image]
