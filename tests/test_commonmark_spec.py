@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from _pytest.mark import ParameterSet
 import pytest
 
 import mdformat
@@ -53,6 +54,15 @@ EXTRA_CASES = (
     {"name": "reference link", "md": '[foo][bar]\n\n[bar]: /url "title"\n'},
     {"name": "empty file", "md": ""},
     {"name": "whitespace only", "md": "  \n\n \n  \n"},
+    pytest.param(
+        {"name": "starts with em space", "md": "&emsp;\n"},
+        marks=pytest.mark.xfail(
+            reason="Fails because Markdown is different after 1st and 2nd pass."
+            " Em space representation is first converted to single em space char,"
+            " and stripped out on second pass."
+            " Make a generalized fix for all Unicode whitespace."
+        ),
+    ),
     {"name": "soft breaks", "md": "this is\nall one\nparagraph\n"},
     {"name": "escape underscore", "md": "# foo _bar_ \\_baz\\_\n"},
     {
@@ -72,7 +82,16 @@ ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 
 
 @pytest.mark.parametrize("number", [True, False])
-@pytest.mark.parametrize("entry", ALL_CASES, ids=[c["name"] for c in ALL_CASES])
+@pytest.mark.parametrize(
+    "entry",
+    ALL_CASES,
+    ids=[
+        c.values[0]["name"]  # type: ignore
+        if isinstance(c, ParameterSet)
+        else c["name"]
+        for c in ALL_CASES
+    ],
+)
 def test_commonmark_spec(number, entry):
     """mdformat.text() against the Commonmark spec.
 
