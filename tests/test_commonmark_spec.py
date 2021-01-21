@@ -77,6 +77,9 @@ EXTRA_CASES = (
     {"name": "image link with brackets 3", "md": "![link](foo\\)\\:)\n"},
     {"name": "image link with brackets 4", "md": "![a](<b)c>)\n"},
     {"name": "image link with brackets 5", "md": '![a](<b)c> "some title")\n'},
+    {"name": "escaped thematic break (hyphen)", "md": "\\-\\-\\-\n"},
+    {"name": "escaped thematic break (underscore)", "md": "\\_\\_\\_\n"},
+    {"name": "escaped thematic break (asterisk)", "md": "\\*\\*\\*\n"},
 )
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 

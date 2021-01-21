@@ -1,6 +1,7 @@
 """A namespace for functions that render the Markdown of tokens from markdown-
 it-py."""
 import logging
+import string
 from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
@@ -155,9 +156,11 @@ def text(
     # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")
 
-    # Escape emphasis/strong marker. Also list item marker if first char in line
-    text = text.replace("*", "\\*")
-    text = text.replace("_", "\\_")  # Escape emphasis/strong emphasis marker
+    # Escape emphasis/strong marker.
+    text = _escape_asterisk_emphasis(text)
+    # Escape emphasis/strong marker. Also thematic break in a
+    # sequence of three.
+    text = text.replace("_", "\\_")
     text = text.replace("[", "\\[")  # Escape link label enclosure
     text = text.replace("]", "\\]")  # Escape link label enclosure
     text = text.replace("<", "\\<")  # Escape URI enclosure
@@ -177,11 +180,14 @@ def text(
     # with newline character's decimal reference.
     text = text.replace("\n\n", "&#10;&#10;")
 
-    # === or --- sequences can seem like a header when aligned
-    # properly. Escape them.
+    # "===" and "---" sequences can seem like a header when aligned in
+    # a certain way. "---" sequence can also be interpreted as a
+    # thematic break. Escape them.
     # TODO: This logic seems wrong? Only one char is needed for a heading
     text = text.replace("===", r"\=\=\=")
     text = text.replace("---", r"\-\-\-")
+    # "***" sequence can be interpreted as a thematic break. Escape it.
+    text = text.replace("***", r"\*\*\*")
 
     # If the last character is a "!" and the token next up is a link, we
     # have to escape the "!" or else the link will be interpreted as image.
@@ -221,3 +227,28 @@ def _render_inline_as_text(
     result = text_stack.pop()
     assert not text_stack
     return result
+
+
+def _escape_asterisk_emphasis(text: str) -> str:
+    """Escape asterisks to prevent unexpected emphasis/strong emphasis.
+
+    Currently we escape all asterisks unless both previous and next
+    character are either whitespace or start/end of line.
+    """
+    escaped_text = ""
+
+    text_length = len(text)
+    for i, current_char in enumerate(text):
+        if current_char != "*":
+            escaped_text += current_char
+            continue
+        prev_char = text[i - 1] if (i - 1) >= 0 else None
+        next_char = text[i + 1] if (i + 1) < text_length else None
+        if (prev_char is None or prev_char in string.whitespace) and (
+            next_char is None or next_char in string.whitespace
+        ):
+            escaped_text += current_char
+            continue
+        escaped_text += "\\" + current_char
+
+    return escaped_text
