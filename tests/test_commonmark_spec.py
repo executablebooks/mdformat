@@ -59,7 +59,7 @@ EXTRA_CASES = (
         marks=pytest.mark.xfail(
             reason="Fails because Markdown is different after 1st and 2nd pass."
             " Em space representation is first converted to single em space char,"
-            "and stripped out on second pass."
+            " and stripped out on second pass."
             " Make a generalized fix for all Unicode whitespace."
         ),
     ),
