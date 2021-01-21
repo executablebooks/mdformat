@@ -1,9 +1,13 @@
 import html.entities
 import re
+import sys
 from typing import Callable, Sequence
 
 from markdown_it.token import Token
 
+UNICODE_WHITESPACE = "".join(
+    re.findall(r"\s", "".join(chr(c) for c in range(sys.maxunicode + 1)))
+)
 ASCII_SPACE_CHARS = frozenset({chr(9), chr(10), chr(11), chr(12), chr(13), chr(32)})
 ASCII_CTRL_CHARS = frozenset(chr(i) for i in range(32))
 

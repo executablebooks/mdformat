@@ -1,7 +1,6 @@
 """A namespace for functions that render the Markdown of tokens from markdown-
 it-py."""
 import logging
-import string
 from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
@@ -10,6 +9,7 @@ from mdformat.renderer._container_renderers import link_close as render_link
 from mdformat.renderer._util import (
     MARKERS,
     RE_CHAR_REFERENCE,
+    UNICODE_WHITESPACE,
     is_text_inside_autolink,
     longest_consecutive_sequence,
     maybe_add_link_brackets,
@@ -233,7 +233,7 @@ def _escape_asterisk_emphasis(text: str) -> str:
     """Escape asterisks to prevent unexpected emphasis/strong emphasis.
 
     Currently we escape all asterisks unless both previous and next
-    character are either whitespace or start/end of line.
+    character are Unicode whitespace.
     """
     escaped_text = ""
 
@@ -244,8 +244,8 @@ def _escape_asterisk_emphasis(text: str) -> str:
             continue
         prev_char = text[i - 1] if (i - 1) >= 0 else None
         next_char = text[i + 1] if (i + 1) < text_length else None
-        if (prev_char is None or prev_char in string.whitespace) and (
-            next_char is None or next_char in string.whitespace
+        if (prev_char is not None and prev_char in UNICODE_WHITESPACE) and (
+            next_char is not None and next_char in UNICODE_WHITESPACE
         ):
             escaped_text += current_char
             continue
