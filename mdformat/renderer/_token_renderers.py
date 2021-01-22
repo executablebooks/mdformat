@@ -243,9 +243,7 @@ def _escape_asterisk_emphasis(text: str) -> str:
             continue
         prev_char = text[i - 1] if (i - 1) >= 0 else None
         next_char = text[i + 1] if (i + 1) < text_length else None
-        if (prev_char is not None and prev_char in UNICODE_WHITESPACE) and (
-            next_char is not None and next_char in UNICODE_WHITESPACE
-        ):
+        if prev_char in UNICODE_WHITESPACE and next_char in UNICODE_WHITESPACE:
             escaped_text += current_char
             continue
         escaped_text += "\\" + current_char
@@ -271,13 +269,8 @@ def _escape_underscore_emphasis(text: str) -> str:
             continue
         prev_char = text[i - 1] if (i - 1) >= 0 else None
         next_char = text[i + 1] if (i + 1) < text_length else None
-        if (
-            (prev_char is not None and prev_char in UNICODE_WHITESPACE)
-            and (next_char is not None and next_char in UNICODE_WHITESPACE)
-            or (
-                prev_char not in bad_neighbor_chars
-                and next_char not in bad_neighbor_chars
-            )
+        if (prev_char in UNICODE_WHITESPACE and next_char in UNICODE_WHITESPACE) or (
+            prev_char not in bad_neighbor_chars and next_char not in bad_neighbor_chars
         ):
             escaped_text += current_char
             continue
