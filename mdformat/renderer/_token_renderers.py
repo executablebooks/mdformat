@@ -5,12 +5,11 @@ from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
 
+from mdformat.renderer import _codepoints
 from mdformat.renderer._container_renderers import link_close as render_link
 from mdformat.renderer._util import (
     MARKERS,
     RE_CHAR_REFERENCE,
-    UNICODE_PUNCTUATION,
-    UNICODE_WHITESPACE,
     is_text_inside_autolink,
     longest_consecutive_sequence,
     maybe_add_link_brackets,
@@ -243,7 +242,10 @@ def _escape_asterisk_emphasis(text: str) -> str:
             continue
         prev_char = text[i - 1] if (i - 1) >= 0 else None
         next_char = text[i + 1] if (i + 1) < text_length else None
-        if prev_char in UNICODE_WHITESPACE and next_char in UNICODE_WHITESPACE:
+        if (
+            prev_char in _codepoints.UNICODE_WHITESPACE
+            and next_char in _codepoints.UNICODE_WHITESPACE
+        ):
             escaped_text += current_char
             continue
         escaped_text += "\\" + current_char
@@ -259,7 +261,11 @@ def _escape_underscore_emphasis(text: str) -> str:
         start or end of line, or Unicode punctuation
       - Both surrounding characters are Unicode whitespace
     """
-    bad_neighbor_chars = UNICODE_WHITESPACE | UNICODE_PUNCTUATION | frozenset({None})
+    bad_neighbor_chars = (
+        _codepoints.UNICODE_WHITESPACE
+        | _codepoints.UNICODE_PUNCTUATION
+        | frozenset({None})
+    )
     escaped_text = ""
 
     text_length = len(text)
@@ -269,7 +275,10 @@ def _escape_underscore_emphasis(text: str) -> str:
             continue
         prev_char = text[i - 1] if (i - 1) >= 0 else None
         next_char = text[i + 1] if (i + 1) < text_length else None
-        if (prev_char in UNICODE_WHITESPACE and next_char in UNICODE_WHITESPACE) or (
+        if (
+            prev_char in _codepoints.UNICODE_WHITESPACE
+            and next_char in _codepoints.UNICODE_WHITESPACE
+        ) or (
             prev_char not in bad_neighbor_chars and next_char not in bad_neighbor_chars
         ):
             escaped_text += current_char
