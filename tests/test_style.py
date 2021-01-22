@@ -17,6 +17,6 @@ def test_style(fixture_file, options):
     for case in cases:
         line, title, text, expected = case
         md_new = mdformat.text(text, options=options)
-        if not md_new == expected:
+        if md_new != expected:
             print(md_new)
         assert md_new == expected

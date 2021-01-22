@@ -5,6 +5,7 @@ from typing import Any, Mapping, Optional, Sequence
 
 from markdown_it.token import Token
 
+from mdformat.renderer import _codepoints
 from mdformat.renderer._container_renderers import link_close as render_link
 from mdformat.renderer._util import (
     MARKERS,
@@ -155,9 +156,8 @@ def text(
     # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")
 
-    # Escape emphasis/strong marker. Also list item marker if first char in line
-    text = text.replace("*", "\\*")
-    text = text.replace("_", "\\_")  # Escape emphasis/strong emphasis marker
+    text = _escape_asterisk_emphasis(text)  # Escape emphasis/strong marker.
+    text = _escape_underscore_emphasis(text)  # Escape emphasis/strong marker.
     text = text.replace("[", "\\[")  # Escape link label enclosure
     text = text.replace("]", "\\]")  # Escape link label enclosure
     text = text.replace("<", "\\<")  # Escape URI enclosure
@@ -177,11 +177,15 @@ def text(
     # with newline character's decimal reference.
     text = text.replace("\n\n", "&#10;&#10;")
 
-    # === or --- sequences can seem like a header when aligned
-    # properly. Escape them.
+    # "===" and "---" sequences can seem like a header when aligned in
+    # a certain way. "---" sequence can also be interpreted as a
+    # thematic break. Escape them.
     # TODO: This logic seems wrong? Only one char is needed for a heading
     text = text.replace("===", r"\=\=\=")
     text = text.replace("---", r"\-\-\-")
+    # "***" or "___" sequences can be interpreted as a thematic break. Escape them.
+    text = text.replace("***", r"\*\*\*")
+    text = text.replace("***", r"\_\_\_")
 
     # If the last character is a "!" and the token next up is a link, we
     # have to escape the "!" or else the link will be interpreted as image.
@@ -221,3 +225,64 @@ def _render_inline_as_text(
     result = text_stack.pop()
     assert not text_stack
     return result
+
+
+def _escape_asterisk_emphasis(text: str) -> str:
+    """Escape asterisks to prevent unexpected emphasis/strong emphasis.
+
+    Currently we escape all asterisks unless both previous and next
+    character are Unicode whitespace.
+    """
+    escaped_text = ""
+
+    text_length = len(text)
+    for i, current_char in enumerate(text):
+        if current_char != "*":
+            escaped_text += current_char
+            continue
+        prev_char = text[i - 1] if (i - 1) >= 0 else None
+        next_char = text[i + 1] if (i + 1) < text_length else None
+        if (
+            prev_char in _codepoints.UNICODE_WHITESPACE
+            and next_char in _codepoints.UNICODE_WHITESPACE
+        ):
+            escaped_text += current_char
+            continue
+        escaped_text += "\\" + current_char
+
+    return escaped_text
+
+
+def _escape_underscore_emphasis(text: str) -> str:
+    """Escape underscores to prevent unexpected emphasis/strong emphasis.
+
+    Currently we escape all underscores unless:
+      - Neither of the surrounding characters are one of Unicode whitespace,
+        start or end of line, or Unicode punctuation
+      - Both surrounding characters are Unicode whitespace
+    """
+    bad_neighbor_chars = (
+        _codepoints.UNICODE_WHITESPACE
+        | _codepoints.UNICODE_PUNCTUATION
+        | frozenset({None})
+    )
+    escaped_text = ""
+
+    text_length = len(text)
+    for i, current_char in enumerate(text):
+        if current_char != "_":
+            escaped_text += current_char
+            continue
+        prev_char = text[i - 1] if (i - 1) >= 0 else None
+        next_char = text[i + 1] if (i + 1) < text_length else None
+        if (
+            prev_char in _codepoints.UNICODE_WHITESPACE
+            and next_char in _codepoints.UNICODE_WHITESPACE
+        ) or (
+            prev_char not in bad_neighbor_chars and next_char not in bad_neighbor_chars
+        ):
+            escaped_text += current_char
+            continue
+        escaped_text += "\\" + current_char
+
+    return escaped_text

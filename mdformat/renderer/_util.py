@@ -4,8 +4,7 @@ from typing import Callable, Sequence
 
 from markdown_it.token import Token
 
-ASCII_SPACE_CHARS = frozenset({chr(9), chr(10), chr(11), chr(12), chr(13), chr(32)})
-ASCII_CTRL_CHARS = frozenset(chr(i) for i in range(32))
+from mdformat.renderer import _codepoints
 
 # Regex that finds character references.
 # The reference can be either
@@ -156,7 +155,9 @@ def maybe_add_link_brackets(link: str) -> str:
     """Surround URI with brackets if required by spec."""
     if (
         not link
-        or any(char in ASCII_CTRL_CHARS | ASCII_SPACE_CHARS for char in link)
+        or any(
+            char in _codepoints.ASCII_CTRL | _codepoints.ASCII_SPACE for char in link
+        )
         or "(" in link
         or ")" in link
     ):
