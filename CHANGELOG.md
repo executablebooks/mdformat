@@ -3,6 +3,15 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.5.6
+
+- Changed
+  - Style: Reduce asterisk escaping
+    ([#120](https://github.com/executablebooks/mdformat/issues/120))
+  - Style: Reduce underscore escaping
+    ([#119](https://github.com/executablebooks/mdformat/issues/119)).
+    Thank you [dustinmichels](https://github.com/dustinmichels) for the issue.
+
 ## 0.5.5
 
 - Changed
