@@ -55,7 +55,7 @@ This function needs to be exposed via entry point distribution metadata.
 The entry point's group must be "mdformat.codeformatter",
 name must be name of the coding language it formats (as it appears in Markdown code block info strings), e.g. "python",
 and value has to point to the formatter function within the plugin package,
-e.g. "my\_package.some\_module:format\_python"
+e.g. "my_package.some_module:format_python"
 
 If using `setup.py` for packaging, the entry point configuration would have to be similar to:
 
@@ -115,7 +115,7 @@ def render_token(
 ```
 
 This function needs to be exposed via entry point distribution metadata.
-and the entry point's group must be "mdformat.parser\_extension".
+and the entry point's group must be "mdformat.parser_extension".
 
 If using `setup.py` for packaging, the entry point configuration would have to be similar to:
 
