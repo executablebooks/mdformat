@@ -9,6 +9,7 @@ from mdformat.renderer._container_renderers import link_close as render_link
 from mdformat.renderer._util import (
     MARKERS,
     RE_CHAR_REFERENCE,
+    UNICODE_PUNCTUATION,
     UNICODE_WHITESPACE,
     is_text_inside_autolink,
     longest_consecutive_sequence,
@@ -156,11 +157,8 @@ def text(
     # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")
 
-    # Escape emphasis/strong marker.
-    text = _escape_asterisk_emphasis(text)
-    # Escape emphasis/strong marker. Also thematic break in a
-    # sequence of three.
-    text = text.replace("_", "\\_")
+    text = _escape_asterisk_emphasis(text)  # Escape emphasis/strong marker.
+    text = _escape_underscore_emphasis(text)  # Escape emphasis/strong marker.
     text = text.replace("[", "\\[")  # Escape link label enclosure
     text = text.replace("]", "\\]")  # Escape link label enclosure
     text = text.replace("<", "\\<")  # Escape URI enclosure
@@ -186,8 +184,9 @@ def text(
     # TODO: This logic seems wrong? Only one char is needed for a heading
     text = text.replace("===", r"\=\=\=")
     text = text.replace("---", r"\-\-\-")
-    # "***" sequence can be interpreted as a thematic break. Escape it.
+    # "***" or "___" sequences can be interpreted as a thematic break. Escape them.
     text = text.replace("***", r"\*\*\*")
+    text = text.replace("***", r"\_\_\_")
 
     # If the last character is a "!" and the token next up is a link, we
     # have to escape the "!" or else the link will be interpreted as image.
@@ -246,6 +245,39 @@ def _escape_asterisk_emphasis(text: str) -> str:
         next_char = text[i + 1] if (i + 1) < text_length else None
         if (prev_char is not None and prev_char in UNICODE_WHITESPACE) and (
             next_char is not None and next_char in UNICODE_WHITESPACE
+        ):
+            escaped_text += current_char
+            continue
+        escaped_text += "\\" + current_char
+
+    return escaped_text
+
+
+def _escape_underscore_emphasis(text: str) -> str:
+    """Escape underscores to prevent unexpected emphasis/strong emphasis.
+
+    Currently we escape all underscores unless:
+      - Neither of the surrounding characters are one of Unicode whitespace,
+        start or end of line, or Unicode punctuation
+      - Both surrounding characters are Unicode whitespace
+    """
+    bad_neighbor_chars = UNICODE_WHITESPACE | UNICODE_PUNCTUATION | frozenset({None})
+    escaped_text = ""
+
+    text_length = len(text)
+    for i, current_char in enumerate(text):
+        if current_char != "_":
+            escaped_text += current_char
+            continue
+        prev_char = text[i - 1] if (i - 1) >= 0 else None
+        next_char = text[i + 1] if (i + 1) < text_length else None
+        if (
+            (prev_char is not None and prev_char in UNICODE_WHITESPACE)
+            and (next_char is not None and next_char in UNICODE_WHITESPACE)
+            or (
+                prev_char not in bad_neighbor_chars
+                and next_char not in bad_neighbor_chars
+            )
         ):
             escaped_text += current_char
             continue
