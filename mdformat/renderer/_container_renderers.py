@@ -141,34 +141,54 @@ def ordered_list_close(
     return text + MARKERS.BLOCK_SEPARATOR
 
 
-def paragraph_close(
+def paragraph_close(  # noqa: C901
     text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     lines = text.split("\n")
 
-    # Replace line starting tabs with numeric decimal representation.
-    # A normal tab character would start a code block.
-    lines = ["&#9;" + line[1:] if line.startswith("\t") else line for line in lines]
-    # Make sure a paragraph line does not start with "#"
-    # (otherwise it will be interpreted as an ATX heading).
-    lines = [f"\\{line}" if line.startswith("#") else line for line in lines]
-    # Make sure a paragraph line does not start with "*", "-" or "+"
-    # followed by a space, tab, or end of line.
-    # (otherwise it will be interpreted as list item).
-    lines = [
-        f"\\{line}" if re.match(r"[-*+]( |\t|$)", line) else line for line in lines
-    ]
-    # If a line starts with a number followed by "." or ")" followed by
-    # a space, tab or end of line, escape the "." or ")" or it will be
-    # interpreted as ordered list item.
-    lines = [
-        line.replace(")", "\\)", 1) if re.match(r"[0-9]+\)( |\t|$)", line) else line
-        for line in lines
-    ]
-    lines = [
-        line.replace(".", "\\.", 1) if re.match(r"[0-9]+\.( |\t|$)", line) else line
-        for line in lines
-    ]
+    for i in range(len(lines)):
+        # Replace line starting tabs with numeric decimal representation.
+        # A normal tab character would start a code block.
+        if lines[i].startswith("\t"):
+            lines[i] = "&#9;" + lines[i][1:]
+
+        # Make sure a paragraph line does not start with "#"
+        # (otherwise it will be interpreted as an ATX heading).
+        if lines[i].startswith("#"):
+            lines[i] = f"\\{lines[i]}"
+
+        # Make sure a paragraph line does not start with "*", "-" or "+"
+        # followed by a space, tab, or end of line.
+        # (otherwise it will be interpreted as list item).
+        if re.match(r"[-*+]( |\t|$)", lines[i]):
+            lines[i] = f"\\{lines[i]}"
+
+        # If a line starts with a number followed by "." or ")" followed by
+        # a space, tab or end of line, escape the "." or ")" or it will be
+        # interpreted as ordered list item.
+        if re.match(r"[0-9]+\)( |\t|$)", lines[i]):
+            lines[i] = lines[i].replace(")", "\\)", 1)
+        if re.match(r"[0-9]+\.( |\t|$)", lines[i]):
+            lines[i] = lines[i].replace(".", "\\.", 1)
+
+        # Consecutive "-", "*" or "_" sequences can be interpreted as thematic
+        # break. Escape them.
+        space_removed = lines[i].replace(" ", "").replace("\t", "")
+        if len(space_removed) >= 3:
+            if all(c == "*" for c in space_removed):
+                lines[i] = lines[i].replace("*", "\\*", 1)
+            elif all(c == "-" for c in space_removed):
+                lines[i] = lines[i].replace("-", "\\-", 1)
+            elif all(c == "_" for c in space_removed):
+                lines[i] = lines[i].replace("_", "\\_", 1)
+
+        # A stripped line where all characters are "=" or "-" will be
+        # interpreted as a setext heading. Escape.
+        stripped = lines[i].strip(" \t")
+        if all(c == "-" for c in stripped):
+            lines[i] = lines[i].replace("-", "\\-", 1)
+        elif all(c == "=" for c in stripped):
+            lines[i] = lines[i].replace("=", "\\=", 1)
 
     text = "\n".join(lines)
 

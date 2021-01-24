@@ -177,16 +177,6 @@ def text(
     # with newline character's decimal reference.
     text = text.replace("\n\n", "&#10;&#10;")
 
-    # "===" and "---" sequences can seem like a header when aligned in
-    # a certain way. "---" sequence can also be interpreted as a
-    # thematic break. Escape them.
-    # TODO: This logic seems wrong? Only one char is needed for a heading
-    text = text.replace("===", r"\=\=\=")
-    text = text.replace("---", r"\-\-\-")
-    # "***" or "___" sequences can be interpreted as a thematic break. Escape them.
-    text = text.replace("***", r"\*\*\*")
-    text = text.replace("***", r"\_\_\_")
-
     # If the last character is a "!" and the token next up is a link, we
     # have to escape the "!" or else the link will be interpreted as image.
     if (
