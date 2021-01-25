@@ -28,7 +28,7 @@ read [the style guide](https://github.com/executablebooks/mdformat/blob/master/S
 The formatting style produced by mdformat may change in each version.
 It is recommended to pin mdformat dependency version.
 
-Mdformat also offers an extensible plugin system for both code fence content formatting and parser extensions (like tables).
+Mdformat offers an extensible plugin system for both code fence content formatting and parser extensions (like tables).
 
 ## Installing
 
@@ -162,7 +162,8 @@ formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
 
-Read the [contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
+Read the
+[contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
 if you wish to implement a new code formatter plugin.
 
 ### Existing plugins
@@ -191,12 +192,17 @@ if you wish to implement a new code formatter plugin.
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-gofmt">mdformat-gofmt</a></td>
     <td><code>go</code></td>
-    <td>Requires <a href="https://golang.org/doc/install">Go installation</a></td>
+    <td>Requires <a href="https://golang.org/doc/install">Go</a> installation</td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-rustfmt">mdformat-rustfmt</a></td>
     <td><code>rust</code></td>
-    <td>Requires <a href="https://github.com/rust-lang/rustfmt#quick-start">rustfmt installation</a></td>
+    <td>Requires <a href="https://github.com/rust-lang/rustfmt#quick-start">rustfmt</a> installation</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/hukkinj1/mdformat-shfmt">mdformat-shfmt</a></td>
+    <td><code>bash</code>, <code>sh</code></td>
+    <td>Requires either <a href="https://github.com/mvdan/sh#shfmt">shfmt</a> or <a href="https://docs.docker.com/get-docker/">Docker</a> installation</td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkinj1/mdformat-web">mdformat-web</a></td>
@@ -222,7 +228,8 @@ unformatted = "content...\n"
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
-Read the [contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
+Read the
+[contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
 if you wish to implement a new parser extension plugin.
 
 ### Existing plugins
