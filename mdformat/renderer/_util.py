@@ -155,9 +155,7 @@ def maybe_add_link_brackets(link: str) -> str:
     """Surround URI with brackets if required by spec."""
     if (
         not link
-        or any(
-            char in _codepoints.ASCII_CTRL | _codepoints.ASCII_SPACE for char in link
-        )
+        or (_codepoints.ASCII_CTRL | _codepoints.ASCII_SPACE).intersection(link)
         or "(" in link
         or ")" in link
     ):
