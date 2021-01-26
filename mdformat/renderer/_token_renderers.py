@@ -223,6 +223,10 @@ def _escape_asterisk_emphasis(text: str) -> str:
     Currently we escape all asterisks unless both previous and next
     character are Unicode whitespace.
     """
+    # Fast exit to improve performance
+    if "*" not in text:
+        return text
+
     escaped_text = ""
 
     text_length = len(text)
@@ -251,6 +255,10 @@ def _escape_underscore_emphasis(text: str) -> str:
         start or end of line, or Unicode punctuation
       - Both surrounding characters are Unicode whitespace
     """
+    # Fast exit to improve performance
+    if "_" not in text:
+        return text
+
     bad_neighbor_chars = (
         _codepoints.UNICODE_WHITESPACE
         | _codepoints.UNICODE_PUNCTUATION
