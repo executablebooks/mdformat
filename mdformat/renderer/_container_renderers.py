@@ -144,6 +144,11 @@ def ordered_list_close(
 def paragraph_close(  # noqa: C901
     text: str, tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
+    if "mdformat" in options and "translator" in options["mdformat"]:
+        text = options["mdformat"]["translator"].gettext(
+            text.replace("\n", " ").strip()
+        )
+
     lines = text.split("\n")
 
     for i in range(len(lines)):
@@ -209,6 +214,9 @@ def heading_close(
     # There can be newlines in setext headers, but we make an ATX
     # header always. Convert newlines to spaces.
     text = text.replace("\n", " ").rstrip()
+
+    if "mdformat" in options and "translator" in options["mdformat"]:
+        text = options["mdformat"]["translator"].gettext(text.lstrip())
 
     # If the text ends in a sequence of hashes (#), the hashes will be
     # interpreted as an optional closing sequence of the heading, and
