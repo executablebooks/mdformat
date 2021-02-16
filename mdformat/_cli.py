@@ -173,8 +173,12 @@ def wrap_paragraphs(paragraphs: Iterable[str]) -> str:
     End the string in a newline.
     """
     terminal_width, _ = shutil.get_terminal_size()
+    if 0 < terminal_width < 80:
+        wrap_width = terminal_width
+    else:
+        wrap_width = 80
     wrapper = textwrap.TextWrapper(
-        break_long_words=False, break_on_hyphens=False, width=min(terminal_width, 80)
+        break_long_words=False, break_on_hyphens=False, width=wrap_width
     )
     return "\n\n".join(wrapper.fill(p) for p in paragraphs) + "\n"
 
