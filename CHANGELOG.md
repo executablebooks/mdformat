@@ -3,6 +3,13 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.5.7
+
+- Fixed
+  - CLI crash when formatting standard error output and the operating system reports a terminal window width of zero or less
+    ([#131](https://github.com/executablebooks/mdformat/issues/131)).
+    Thank you [ehontoria](https://github.com/ehontoria) for the issue.
+
 ## 0.5.6
 
 - Changed
