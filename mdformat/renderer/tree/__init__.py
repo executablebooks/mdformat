@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Callable, Collection, List, Mapping, Optional, Sequence, Tuple
 
+from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
 from mdformat.renderer._util import removesuffix
@@ -41,7 +42,29 @@ class TreeRenderer:
         *,
         finalize: bool = True,
     ) -> str:
-        return tree.render(RENDERER_MAP, options, env)
+        text = tree.render(RENDERER_MAP, options, env)
+        if finalize:
+            text = text.rstrip("\n")
+            if env.get("used_refs"):
+                text += "\n\n"
+                text += self._write_references(env)
+            text += "\n"
+        return text
+
+    @staticmethod
+    def _write_references(env: dict) -> str:
+        text = ""
+        for label in sorted(env.get("used_refs", [])):
+            ref = env["references"][label]
+            destination = ref["href"] if ref["href"] else "<>"
+            destination = unescape_string(destination)
+            item = f"[{label.lower()}]: {destination}"
+            title = ref["title"]
+            if title:
+                title = title.replace('"', '\\"')
+                item += f' "{title}"'
+            text += item + "\n"
+        return text.rstrip()
 
 
 def build_tree(tokens: Sequence[Token]) -> "TreeNode":

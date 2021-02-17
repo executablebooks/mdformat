@@ -505,13 +505,13 @@ def ordered_list(
                     #   003. Second item
                     #   ...
                     #   112. Last item
+                    number = starting_number + list_item_index
                     pad = len(str(list_len + starting_number - 1))
                     indentation = " " * (pad + len(f"{marker_type}{first_line_indent}"))
-                    number = str(starting_number).rjust(pad, "0")
+                    number_str = str(number).rjust(pad, "0")
                     formatted_lines.append(
-                        f"{number}{marker_type}{first_line_indent}{line}"
+                        f"{number_str}{marker_type}{first_line_indent}{line}"
                     )
-                    starting_number += 1
                 else:
                     # Replace first MARKERS.LIST_ITEM with the starting number of the list.
                     # Replace following MARKERS.LIST_ITEMs with number one prefixed by zeros
