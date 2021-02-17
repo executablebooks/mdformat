@@ -32,12 +32,9 @@ def render_children(
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    text = ""
-    if not node.children:
-        return text
-    for child in node.children:
-        text += child.render(renderer_funcs, options, env)
-    return text
+    return "".join(
+        child.render(renderer_funcs, options, env) for child in node.children
+    )
 
 
 def hr(
