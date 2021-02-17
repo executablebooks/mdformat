@@ -104,7 +104,7 @@ class TreeNode:
         options: Mapping[str, Any],
         env: dict,
     ) -> str:
-        renderer_func = renderer_funcs.get(self.type_, renderer_funcs["default"])
+        renderer_func = renderer_funcs[self.type_]
         return renderer_func(self, renderer_funcs, options, env)
 
     def next_sibling(self) -> Optional["TreeNode"]:

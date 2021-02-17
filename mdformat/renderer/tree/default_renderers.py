@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 import re
 from types import MappingProxyType
@@ -255,12 +256,14 @@ def _render_inline_as_text(
     ) -> str:
         return _render_inline_as_text(node, renderer_funcs, options, env)
 
-    inline_renderer_funcs = {
-        "default": render_children,
-        "text": text_renderer,
-        "image": image_renderer,
-        "link": link,
-    }
+    inline_renderer_funcs = defaultdict(
+        lambda: render_children,
+        {
+            "text": text_renderer,
+            "image": image_renderer,
+            "link": link,
+        },
+    )
     return render_children(node, inline_renderer_funcs, options, env)
 
 
@@ -569,7 +572,8 @@ def ordered_list(
 
 RENDERER_MAP = MappingProxyType(
     {
-        "default": render_children,
+        "inline": render_children,
+        "root": render_children,
         "hr": hr,
         "code_inline": code_inline,
         "html_block": html_block,
