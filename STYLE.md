@@ -89,6 +89,32 @@ Indented code blocks are reformatted as fenced code blocks.
 Fenced code blocks are preferred because they allow setting an info string,
 which indented code blocks do not support.
 
+## Code spans
+
+Length of a code span starting/ending backtick string is reduced to minimum.
+Needless space characters are stripped from the front and back,
+unless the content contains backticks.
+
+Input:
+
+`````markdown
+````Backtick string is reduced.````
+
+` Space is stripped from the front and back... `
+
+```` ...unless a "`" character is present. ````
+`````
+
+Output:
+
+```markdown
+`Backtick string is reduced.`
+
+`Space is stripped from the front and back...`
+
+`` ...unless a "`" character is present. ``
+```
+
 ## Inline links
 
 Redundant angle brackets surrounding a link destination will be removed.
