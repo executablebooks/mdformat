@@ -23,18 +23,19 @@ if TYPE_CHECKING:
 
 LOGGER = logging.getLogger(__name__)
 
-_BLOCK_SEPARATOR = "\n\n"
 
+def make_render_children(separator: str) -> Callable:
+    def render_children(
+        node: "TreeNode",
+        renderer_funcs: Mapping[str, Callable],
+        options: Mapping[str, Any],
+        env: dict,
+    ) -> str:
+        return separator.join(
+            child.render(renderer_funcs, options, env) for child in node.children
+        )
 
-def render_children(
-    node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
-    options: Mapping[str, Any],
-    env: dict,
-) -> str:
-    return "".join(
-        child.render(renderer_funcs, options, env) for child in node.children
-    )
+    return render_children
 
 
 def hr(
@@ -44,7 +45,7 @@ def hr(
     env: dict,
 ) -> str:
     thematic_break_width = 70
-    return "_" * thematic_break_width + _BLOCK_SEPARATOR
+    return "_" * thematic_break_width
 
 
 def code_inline(
@@ -70,7 +71,7 @@ def html_block(
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    return node.token.content.rstrip("\n") + _BLOCK_SEPARATOR
+    return node.token.content.rstrip("\n")
 
 
 def html_inline(
@@ -187,7 +188,7 @@ def fence(
     fence_len = max(3, longest_consecutive_sequence(code_block, fence_char) + 1)
     fence_str = fence_char * fence_len
 
-    return f"{fence_str}{info_str}\n{code_block}{fence_str}" + _BLOCK_SEPARATOR
+    return f"{fence_str}{info_str}\n{code_block}{fence_str}"
 
 
 def code_block(
@@ -256,14 +257,14 @@ def _render_inline_as_text(
         return _render_inline_as_text(node, renderer_funcs, options, env)
 
     inline_renderer_funcs = defaultdict(
-        lambda: render_children,
+        lambda: make_render_children(""),
         {
             "text": text_renderer,
             "image": image_renderer,
             "link": link,
         },
     )
-    return render_children(node, inline_renderer_funcs, options, env)
+    return make_render_children("")(node, inline_renderer_funcs, options, env)
 
 
 def link(
@@ -305,7 +306,7 @@ def em(
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    text = render_children(node, renderer_funcs, options, env)
+    text = make_render_children(separator="")(node, renderer_funcs, options, env)
     indicator = node.closing.markup
     return indicator + text + indicator
 
@@ -316,7 +317,7 @@ def strong(
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    text = render_children(node, renderer_funcs, options, env)
+    text = make_render_children(separator="")(node, renderer_funcs, options, env)
     indicator = node.closing.markup
     return indicator + text + indicator
 
@@ -327,7 +328,7 @@ def heading(
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    text = render_children(node, renderer_funcs, options, env)
+    text = make_render_children(separator="")(node, renderer_funcs, options, env)
 
     opener_token = node.opening
     if opener_token.markup == "=":
@@ -347,7 +348,7 @@ def heading(
     if text.endswith("#"):
         text = text[:-1] + "\\#"
 
-    return prefix + text + _BLOCK_SEPARATOR
+    return prefix + text
 
 
 def blockquote(
@@ -356,15 +357,15 @@ def blockquote(
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    text = render_children(node, renderer_funcs, options, env)
+    text = make_render_children(separator="\n\n")(node, renderer_funcs, options, env)
     # text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
     # text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
     lines = text.splitlines()
     if not lines:
-        return ">" + _BLOCK_SEPARATOR
+        return ">"
     quoted_lines = (f"> {line}" if line else ">" for line in lines)
     quoted_str = "\n".join(quoted_lines)
-    return quoted_str + _BLOCK_SEPARATOR
+    return quoted_str
 
 
 def paragraph(  # noqa: C901
@@ -373,7 +374,8 @@ def paragraph(  # noqa: C901
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    text = render_children(node, renderer_funcs, options, env)
+    inline_node = node.children[0]
+    text = inline_node.render(renderer_funcs, options, env)
     lines = text.split("\n")
 
     for i in range(len(lines)):
@@ -422,7 +424,7 @@ def paragraph(  # noqa: C901
 
     text = "\n".join(lines)
 
-    return text + _BLOCK_SEPARATOR
+    return text
 
 
 def list_item(
@@ -438,14 +440,12 @@ def list_item(
     processing.
     """
     is_tight = is_tight_list_item(node)
-    text = ""
-    for child in node.children:
-        block_separator = "\n" if is_tight else "\n\n"
-        text += child.render(renderer_funcs, options, env) + block_separator
+    block_separator = "\n" if is_tight else "\n\n"
+    text = make_render_children(block_separator)(node, renderer_funcs, options, env)
 
     if not text.strip():
-        return _BLOCK_SEPARATOR
-    return text + _BLOCK_SEPARATOR
+        return ""
+    return text
 
 
 def bullet_list(
@@ -459,7 +459,7 @@ def bullet_list(
     indent = " " * len(marker_type + first_line_indent)
     block_separator = "\n" if is_tight_list(node) else "\n\n"
     text = ""
-    for child in node.children:
+    for child_idx, child in enumerate(node.children):
         list_item = child.render(renderer_funcs, options, env)
         lines = list_item.split("\n")
         formatted_lines = []
@@ -469,8 +469,10 @@ def bullet_list(
             else:
                 formatted_lines.append(f"{indent}{line}")
 
-        text += "\n".join(formatted_lines) + block_separator
-    return text + _BLOCK_SEPARATOR
+        text += "\n".join(formatted_lines)
+        if child_idx != len(node.children) - 1:
+            text += block_separator
+    return text
 
 
 def ordered_list(
@@ -515,25 +517,26 @@ def ordered_list(
                         f"{number_str}{marker_type}{first_line_indent}{line}"
                     )
                 else:
-                    # Replace first MARKERS.LIST_ITEM with the starting number of the list.
-                    # Replace following MARKERS.LIST_ITEMs with number one prefixed by zeros
-                    # to make the marker of even length with the first one.
+                    # Replace first MARKERS.LIST_ITEM with the starting number of the
+                    # list. Replace following MARKERS.LIST_ITEMs with number one
+                    # prefixed by zeros to make the marker of even length with the
+                    # first one.
                     # E.g.
                     #   5321. This is the first list item
                     #   0001. Second item
                     #   0001. Third item
                     first_item_marker = f"{starting_number}{marker_type}"
-                    # other_item_marker = "0" * (len(str(starting_number)) - 1) + "1" + marker_type
                     indentation = " " * len(first_item_marker + first_line_indent)
                     formatted_lines.append(
                         f"{first_item_marker}{first_line_indent}{line}"
                     )
-                    # text = text.replace(MARKERS.LIST_ITEM, other_item_marker)
             else:
                 formatted_lines.append(f"{indentation}{line}")
 
-        text += "\n".join(formatted_lines) + block_separator
-    return text + _BLOCK_SEPARATOR
+        text += "\n".join(formatted_lines)
+        if list_item_index != len(node.children) - 1:
+            text += block_separator
+    return text
 
     # if options.get("mdformat", {}).get(CONSECUTIVE_KEY):
     #     # Replace MARKERS.LIST_ITEM with consecutive numbering,
@@ -571,8 +574,8 @@ def ordered_list(
 
 RENDERER_MAP = MappingProxyType(
     {
-        "inline": render_children,
-        "root": render_children,
+        "inline": make_render_children(""),
+        "root": make_render_children("\n\n"),
         "hr": hr,
         "code_inline": code_inline,
         "html_block": html_block,
