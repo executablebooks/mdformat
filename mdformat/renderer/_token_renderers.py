@@ -64,9 +64,8 @@ def code_inline(
     tokens: Sequence[Token], idx: int, options: Mapping[str, Any], env: dict
 ) -> str:
     code = tokens[idx].content
-    all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
-    if not longest_backtick_seq or all_chars_are_whitespace:
+    if not longest_backtick_seq:
         return f"`{code}`"
     separator = "`" * (longest_backtick_seq + 1)
     return f"{separator} {code} {separator}"
