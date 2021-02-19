@@ -91,7 +91,7 @@ which indented code blocks do not support.
 
 ## Code spans
 
-Length of the code span starting/ending backtick string is reduced to minimum.
+Length of a code span starting/ending backtick string is reduced to minimum.
 Needless space characters are stripped from the front and back,
 unless the content contains backticks.
 
