@@ -483,7 +483,6 @@ def ordered_list(
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
-    # text = render_children(node, renderer_funcs, options, env)
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     block_separator = "\n" if is_tight_list(node) else "\n\n"

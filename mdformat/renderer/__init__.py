@@ -1,4 +1,4 @@
-__all__ = ("MDRenderer", "LOGGER")
+__all__ = ("MDRenderer", "LOGGER", "TreeNode")
 
 
 import logging
@@ -35,7 +35,7 @@ class MDRenderer:
         *,
         finalize: bool = True,
     ) -> str:
-        tree = build_tree(tokens)
+        tree = TreeNode.from_tokens(tokens)
         return self.render_tree(tree, options, env, finalize=finalize)
 
     def render_tree(
@@ -71,12 +71,6 @@ class MDRenderer:
         return text.rstrip()
 
 
-def build_tree(tokens: Sequence[Token]) -> "TreeNode":
-    root = TreeNode()
-    root.set_children_from_tokens(tokens)
-    return root
-
-
 class TreeNode:
     def __init__(self) -> None:
         # Root and containers don't have self.token
@@ -91,6 +85,12 @@ class TreeNode:
 
         # Empty list unless a non-empty container, inline or image
         self.children: List["TreeNode"] = []
+
+    @staticmethod
+    def from_tokens(tokens: Sequence[Token]) -> "TreeNode":
+        root = TreeNode()
+        root._set_children_from_tokens(tokens)
+        return root
 
     @property
     def siblings(self) -> Sequence["TreeNode"]:
@@ -130,7 +130,7 @@ class TreeNode:
             return self.siblings[self_index - 1]
         return None
 
-    def add_child(
+    def _add_child(
         self,
         *,
         token: Optional[Token] = None,
@@ -147,16 +147,16 @@ class TreeNode:
         self.children.append(child)
         return child
 
-    def set_children_from_tokens(self, tokens: Sequence[Token]) -> None:
+    def _set_children_from_tokens(self, tokens: Sequence[Token]) -> None:
         """Convert the token stream to a tree structure."""
         reversed_tokens = list(reversed(tokens))
         while reversed_tokens:
             token = reversed_tokens.pop()
 
             if token.nesting == 0:
-                child = self.add_child(token=token)
+                child = self._add_child(token=token)
                 if token.children:
-                    child.set_children_from_tokens(token.children)
+                    child._set_children_from_tokens(token.children)
                 continue
 
             assert token.nesting == 1
@@ -170,5 +170,5 @@ class TreeNode:
             if nesting != 0:
                 raise ValueError(f"unclosed tokens starting {nested_tokens[0]}")
 
-            child = self.add_child(token_pair=(nested_tokens[0], nested_tokens[-1]))
-            child.set_children_from_tokens(nested_tokens[1:-1])
+            child = self._add_child(token_pair=(nested_tokens[0], nested_tokens[-1]))
+            child._set_children_from_tokens(nested_tokens[1:-1])
