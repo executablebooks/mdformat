@@ -2,7 +2,7 @@ from collections import defaultdict
 import logging
 import re
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Mapping, Optional
 
 from mdformat.renderer._typing import RendererFunc
 from mdformat.renderer._util import (
@@ -24,10 +24,10 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-def make_render_children(separator: str) -> Callable:
+def make_render_children(separator: str) -> RendererFunc:
     def render_children(
         node: "TreeNode",
-        renderer_funcs: Mapping[str, Callable],
+        renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: dict,
     ) -> str:
@@ -40,7 +40,7 @@ def make_render_children(separator: str) -> Callable:
 
 def hr(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -50,7 +50,7 @@ def hr(
 
 def code_inline(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -67,7 +67,7 @@ def code_inline(
 
 def html_block(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -76,7 +76,7 @@ def html_block(
 
 def html_inline(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -85,7 +85,7 @@ def html_inline(
 
 def hardbreak(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -94,7 +94,7 @@ def hardbreak(
 
 def softbreak(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -103,7 +103,7 @@ def softbreak(
 
 def text(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -152,7 +152,7 @@ def text(
 
 def fence(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -193,7 +193,7 @@ def fence(
 
 def code_block(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -202,7 +202,7 @@ def code_block(
 
 def image(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -230,7 +230,7 @@ def image(
 
 def _render_inline_as_text(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -242,7 +242,7 @@ def _render_inline_as_text(
 
     def text_renderer(
         node: "TreeNode",
-        renderer_funcs: Mapping[str, Callable],
+        renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: dict,
     ) -> str:
@@ -250,13 +250,13 @@ def _render_inline_as_text(
 
     def image_renderer(
         node: "TreeNode",
-        renderer_funcs: Mapping[str, Callable],
+        renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: dict,
     ) -> str:
         return _render_inline_as_text(node, renderer_funcs, options, env)
 
-    inline_renderer_funcs = defaultdict(
+    inline_renderer_funcs: Mapping[str, RendererFunc] = defaultdict(
         lambda: make_render_children(""),
         {
             "text": text_renderer,
@@ -269,7 +269,7 @@ def _render_inline_as_text(
 
 def link(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -302,7 +302,7 @@ def link(
 
 def em(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -313,7 +313,7 @@ def em(
 
 def strong(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -324,7 +324,7 @@ def strong(
 
 def heading(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -353,7 +353,7 @@ def heading(
 
 def blockquote(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -370,7 +370,7 @@ def blockquote(
 
 def paragraph(  # noqa: C901
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -429,7 +429,7 @@ def paragraph(  # noqa: C901
 
 def list_item(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -450,7 +450,7 @@ def list_item(
 
 def bullet_list(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
@@ -479,7 +479,7 @@ def bullet_list(
 
 def ordered_list(
     node: "TreeNode",
-    renderer_funcs: Mapping[str, Callable],
+    renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: dict,
 ) -> str:
