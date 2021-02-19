@@ -4,22 +4,22 @@ import re
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Optional
 
-from mdformat.renderer._token_renderers import (
+from mdformat.renderer._typing import RendererFunc
+from mdformat.renderer._util import (
+    CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
-    _escape_asterisk_emphasis,
-    _escape_underscore_emphasis,
-    maybe_add_link_brackets,
-)
-from mdformat.renderer._util import CONSECUTIVE_KEY, longest_consecutive_sequence
-from mdformat.renderer.tree._util import (
+    escape_asterisk_emphasis,
+    escape_underscore_emphasis,
     get_list_marker_type,
     is_text_inside_autolink,
     is_tight_list,
     is_tight_list_item,
+    longest_consecutive_sequence,
+    maybe_add_link_brackets,
 )
 
 if TYPE_CHECKING:
-    from mdformat.renderer.tree import TreeNode
+    from mdformat.renderer import TreeNode
 
 LOGGER = logging.getLogger(__name__)
 
@@ -120,8 +120,8 @@ def text(
     # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")
 
-    text = _escape_asterisk_emphasis(text)  # Escape emphasis/strong marker.
-    text = _escape_underscore_emphasis(text)  # Escape emphasis/strong marker.
+    text = escape_asterisk_emphasis(text)  # Escape emphasis/strong marker.
+    text = escape_underscore_emphasis(text)  # Escape emphasis/strong marker.
     text = text.replace("[", "\\[")  # Escape link label enclosure
     text = text.replace("]", "\\]")  # Escape link label enclosure
     text = text.replace("<", "\\<")  # Escape URI enclosure
@@ -229,7 +229,7 @@ def image(
 
 
 def _render_inline_as_text(
-    node: Optional["TreeNode"],
+    node: "TreeNode",
     renderer_funcs: Mapping[str, Callable],
     options: Mapping[str, Any],
     env: dict,
@@ -241,7 +241,7 @@ def _render_inline_as_text(
     """
 
     def text_renderer(
-        node: Optional["TreeNode"],
+        node: "TreeNode",
         renderer_funcs: Mapping[str, Callable],
         options: Mapping[str, Any],
         env: dict,
@@ -249,7 +249,7 @@ def _render_inline_as_text(
         return node.token.content
 
     def image_renderer(
-        node: Optional["TreeNode"],
+        node: "TreeNode",
         renderer_funcs: Mapping[str, Callable],
         options: Mapping[str, Any],
         env: dict,
@@ -465,9 +465,11 @@ def bullet_list(
         formatted_lines = []
         for i, line in enumerate(lines):
             if i == 0:
-                formatted_lines.append(f"{marker_type}{first_line_indent}{line}")
+                formatted_lines.append(
+                    f"{marker_type}{first_line_indent}{line}" if line else marker_type
+                )
             else:
-                formatted_lines.append(f"{indent}{line}")
+                formatted_lines.append(f"{indent}{line}" if line else "")
 
         text += "\n".join(formatted_lines)
         if child_idx != len(node.children) - 1:
@@ -487,10 +489,7 @@ def ordered_list(
     block_separator = "\n" if is_tight_list(node) else "\n\n"
     list_len = len(node.children)
 
-    # TODO: remove the type ignore when
-    #       https://github.com/executablebooks/markdown-it-py/pull/102
-    #       is merged and released
-    starting_number: Optional[int] = node.opening.attrGet("start")  # type: ignore
+    starting_number: Optional[int] = node.opening.attrGet("start")
     if starting_number is None:
         starting_number = 1
 
@@ -499,9 +498,10 @@ def ordered_list(
         list_item_text = list_item.render(renderer_funcs, options, env)
         lines = list_item_text.split("\n")
         formatted_lines = []
-        for i, line in enumerate(lines):
-            if i == 0:
-                if options.get("mdformat", {}).get(CONSECUTIVE_KEY):
+        conseucutive_numbering = options.get("mdformat", {}).get(CONSECUTIVE_KEY)
+        for line_index, line in enumerate(lines):
+            if line_index == 0:
+                if conseucutive_numbering:
                     # Replace MARKERS.LIST_ITEM with consecutive numbering,
                     # padded with zeros to make all markers of even length.
                     # E.g.
@@ -515,6 +515,8 @@ def ordered_list(
                     number_str = str(number).rjust(pad, "0")
                     formatted_lines.append(
                         f"{number_str}{marker_type}{first_line_indent}{line}"
+                        if line
+                        else f"{number_str}{marker_type}"
                     )
                 else:
                     # Replace first MARKERS.LIST_ITEM with the starting number of the
@@ -526,53 +528,32 @@ def ordered_list(
                     #   0001. Second item
                     #   0001. Third item
                     first_item_marker = f"{starting_number}{marker_type}"
-                    indentation = " " * len(first_item_marker + first_line_indent)
-                    formatted_lines.append(
-                        f"{first_item_marker}{first_line_indent}{line}"
+                    other_item_marker = (
+                        "0" * (len(str(starting_number)) - 1) + "1" + marker_type
                     )
+                    indentation = " " * len(first_item_marker + first_line_indent)
+                    if list_item_index == 0:
+                        formatted_lines.append(
+                            f"{first_item_marker}{first_line_indent}{line}"
+                            if line
+                            else first_item_marker
+                        )
+                    else:
+                        formatted_lines.append(
+                            f"{other_item_marker}{first_line_indent}{line}"
+                            if line
+                            else other_item_marker
+                        )
             else:
-                formatted_lines.append(f"{indentation}{line}")
+                formatted_lines.append(f"{indentation}{line}" if line else "")
 
         text += "\n".join(formatted_lines)
         if list_item_index != len(node.children) - 1:
             text += block_separator
     return text
 
-    # if options.get("mdformat", {}).get(CONSECUTIVE_KEY):
-    #     # Replace MARKERS.LIST_ITEM with consecutive numbering,
-    #     # padded with zeros to make all markers of even length.
-    #     # E.g.
-    #     #   002. This is the first list item
-    #     #   003. Second item
-    #     #   ...
-    #     #   112. Last item
-    #     pad = len(str(text.count(MARKERS.LIST_ITEM) + starting_number - 1))
-    #     indentation = " " * (pad + len(f"{marker_type}{first_line_indent}"))
-    #     while MARKERS.LIST_ITEM in text:
-    #         number = str(starting_number).rjust(pad, "0")
-    #         text = text.replace(MARKERS.LIST_ITEM, f"{number}{marker_type}", 1)
-    #         starting_number += 1
-    # else:
-    #     # Replace first MARKERS.LIST_ITEM with the starting number of the list.
-    #     # Replace following MARKERS.LIST_ITEMs with number one prefixed by zeros
-    #     # to make the marker of even length with the first one.
-    #     # E.g.
-    #     #   5321. This is the first list item
-    #     #   0001. Second item
-    #     #   0001. Third item
-    #     first_item_marker = f"{starting_number}{marker_type}"
-    #     other_item_marker = "0" * (len(str(starting_number)) - 1) + "1" + marker_type
-    #     indentation = " " * len(first_item_marker + first_line_indent)
-    #     text = text.replace(MARKERS.LIST_ITEM, first_item_marker, 1)
-    #     text = text.replace(MARKERS.LIST_ITEM, other_item_marker)
 
-    # text = text.replace(MARKERS.LIST_INDENT_FIRST_LINE, first_line_indent)
-    # text = text.replace(MARKERS.LIST_INDENT, indentation)
-    #
-    # return text + MARKERS.BLOCK_SEPARATOR
-
-
-RENDERER_MAP = MappingProxyType(
+RENDERER_MAP: Mapping[str, RendererFunc] = MappingProxyType(
     {
         "inline": make_render_children(""),
         "root": make_render_children("\n\n"),

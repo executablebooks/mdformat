@@ -1,14 +1,15 @@
-__all__ = ("MDRenderer", "MARKERS", "LOGGER")
+__all__ = ("MDRenderer", "LOGGER")
 
 
 import logging
-from typing import Any, Mapping, Optional, Sequence
+from typing import Any, List, Mapping, Optional, Sequence, Tuple
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
-from mdformat.renderer import _container_renderers, _token_renderers
-from mdformat.renderer._util import MARKERS, removesuffix
+from mdformat.renderer._default_renderers import RENDERER_MAP
+from mdformat.renderer._typing import RendererFunc
+from mdformat.renderer._util import removesuffix
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,109 +27,33 @@ class MDRenderer:
         """__init__ must have `parser` parameter for markdown-it-py
         compatibility."""
 
-    def render(  # noqa: C901
+    def render(
         self,
         tokens: Sequence[Token],
         options: Mapping[str, Any],
         env: dict,
         *,
-        start: int = 0,
-        stop: Optional[int] = None,
         finalize: bool = True,
-        _recursion_level: int = 0,
     ) -> str:
-        """Takes token stream and generates Markdown.
+        tree = build_tree(tokens)
+        return self.render_tree(tree, options, env, finalize=finalize)
 
-        Args:
-            tokens: A list of block tokens to render
-            options: Params of parser instance
-            env: Additional data from parsed input
-            start: Start rendering from this index
-            stop: Stop rendering before this index
-            finalize: replace markers and write references
-        """
-        assert _recursion_level in {
-            0,
-            1,
-        }, "There should be no more than one level of recursion in tokens"
-        text_stack = [""]
-
-        i = start - 1
-        if stop is None:
-            stop = len(tokens)
-        while (i + 1) < stop:
-            i += 1
-            token = tokens[i]
-
-            result = None
-
-            # first check plugins
-            for plugin in options.get("parser_extension", []):
-                output = plugin.render_token(self, tokens, i, options, env)
-                if output is not None:
-                    result, i = output
-                    break
-
-            if result is not None:
-                # if a plugin has handled the token,
-                # we assume that it does not need to open or close a container
-                text_stack[-1] = text_stack[-1] + result
-                continue
-
-            if token.type == "inline":
-                assert (
-                    token.children is not None
-                ), "inline token children can not be None"
-                # inline tokens require nested rendering
-                result = self.render(
-                    token.children,
-                    options,
-                    env,
-                    finalize=finalize,
-                    _recursion_level=_recursion_level + 1,
-                )
-            else:
-                # otherwise use a built-in renderer
-                tkn_renderer = getattr(
-                    _token_renderers, token.type, _token_renderers.default
-                )
-                result = tkn_renderer(tokens, i, options, env)
-
-            # If the token opens a new container block, create a new item for
-            # it in the text stack.
-            if token.nesting == 1:
-                text_stack.append(result)
-            # If the token doesn't change nesting, write in the immediate container
-            # block's stack item.
-            elif token.nesting == 0:
-                text_stack[-1] = text_stack[-1] + result
-            # If the token ends a container block, pop the block's stack item,
-            # format all markdown of that block, and append formatted markdown
-            # to the block's container's stack item.
-            else:  # token.nesting == -1
-                container_result = text_stack.pop() + result
-                container_renderer = getattr(
-                    _container_renderers, token.type, _container_renderers.default
-                )
-                container_result = container_renderer(
-                    container_result, tokens, i, options, env
-                )
-                text_stack[-1] = text_stack[-1] + container_result
-
-        rendered_content = text_stack.pop()
-        assert not text_stack, "Text stack should be empty before returning"
-
-        if finalize and not _recursion_level:
-            rendered_content = removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
-            rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
-
+    def render_tree(
+        self,
+        tree: "TreeNode",
+        options: Mapping[str, Any],
+        env: dict,
+        *,
+        finalize: bool = True,
+    ) -> str:
+        text = tree.render(RENDERER_MAP, options, env)
+        if finalize:
+            text = text.rstrip("\n")
             if env.get("used_refs"):
-                rendered_content += "\n\n"
-                rendered_content += self._write_references(env)
-
-            rendered_content += "\n"
-
-        return rendered_content
+                text += "\n\n"
+                text += self._write_references(env)
+            text += "\n"
+        return text
 
     @staticmethod
     def _write_references(env: dict) -> str:
@@ -144,3 +69,106 @@ class MDRenderer:
                 item += f' "{title}"'
             text += item + "\n"
         return text.rstrip()
+
+
+def build_tree(tokens: Sequence[Token]) -> "TreeNode":
+    root = TreeNode()
+    root.set_children_from_tokens(tokens)
+    return root
+
+
+class TreeNode:
+    def __init__(self) -> None:
+        # Root and containers don't have self.token
+        self.token: Any = None  # Optional[Token]
+
+        # Only containers have self.opening and self.closing
+        self.opening: Any = None  # Optional[Token]
+        self.closing: Any = None  # Optional[Token]
+
+        # Root does not have self.parent
+        self.parent: Any = None  # Optional["TreeNode"]
+
+        # Empty list unless a non-empty container, inline or image
+        self.children: List["TreeNode"] = []
+
+    @property
+    def siblings(self) -> Sequence["TreeNode"]:
+        return self.parent.children
+
+    @property
+    def type_(self) -> str:
+        if self.token is None and self.opening is None:
+            return "root"
+        if self.token:
+            return self.token.type
+        assert self.opening is not None
+        return removesuffix(self.opening.type, "_open")
+
+    def render(
+        self,
+        renderer_funcs: Mapping[str, RendererFunc],
+        options: Mapping[str, Any],
+        env: dict,
+    ) -> str:
+        renderer_func = renderer_funcs[self.type_]
+        return renderer_func(self, renderer_funcs, options, env)
+
+    def next_sibling(self) -> Optional["TreeNode"]:
+        if not self.parent:
+            return None
+        self_index = self.siblings.index(self)
+        if self_index + 1 < len(self.siblings):
+            return self.siblings[self_index + 1]
+        return None
+
+    def previous_sibling(self) -> Optional["TreeNode"]:
+        if not self.parent:
+            return None
+        self_index = self.siblings.index(self)
+        if self_index - 1 >= 0:
+            return self.siblings[self_index - 1]
+        return None
+
+    def add_child(
+        self,
+        *,
+        token: Optional[Token] = None,
+        token_pair: Optional[Tuple[Token, Token]] = None,
+    ) -> "TreeNode":
+        child = TreeNode()
+        if token:
+            child.token = token
+        else:
+            assert token_pair is not None
+            child.opening = token_pair[0]
+            child.closing = token_pair[1]
+        child.parent = self
+        self.children.append(child)
+        return child
+
+    def set_children_from_tokens(self, tokens: Sequence[Token]) -> None:
+        """Convert the token stream to a tree structure."""
+        reversed_tokens = list(reversed(tokens))
+        while reversed_tokens:
+            token = reversed_tokens.pop()
+
+            if token.nesting == 0:
+                child = self.add_child(token=token)
+                if token.children:
+                    child.set_children_from_tokens(token.children)
+                continue
+
+            assert token.nesting == 1
+
+            nested_tokens = [token]
+            nesting = 1
+            while reversed_tokens and nesting != 0:
+                token = reversed_tokens.pop()
+                nested_tokens.append(token)
+                nesting += token.nesting
+            if nesting != 0:
+                raise ValueError(f"unclosed tokens starting {nested_tokens[0]}")
+
+            child = self.add_child(token_pair=(nested_tokens[0], nested_tokens[-1]))
+            child.set_children_from_tokens(nested_tokens[1:-1])
