@@ -29,7 +29,11 @@ EXTRA_CASES = (
         "md": "# BIG Title\n" "> a quote here\n\n" "Paragraph is here.\n",
     },
     {"name": "strikethrough", "md": "# Testing strikethrough\n" "~~here goes~~\n"},
-    {"name": "inline code", "md": "`print('Hello World!)`\n"},
+    {"name": "code span", "md": "`print('Hello World!)`\n"},
+    {
+        "name": "code span: double spaces",
+        "md": "`  starts and ends with double spaces  `\n",
+    },
     {"name": "escape char", "md": "\\*not emphasized\\*\n"},
     {
         "name": "fenced code",

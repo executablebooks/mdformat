@@ -56,10 +56,12 @@ def code_inline(
     code = node.token.content
     all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
-    if not longest_backtick_seq or all_chars_are_whitespace:
-        return f"`{code}`"
-    separator = "`" * (longest_backtick_seq + 1)
-    return f"{separator} {code} {separator}"
+    if longest_backtick_seq:
+        separator = "`" * (longest_backtick_seq + 1)
+        return f"{separator} {code} {separator}"
+    if code.startswith(" ") and code.endswith(" ") and not all_chars_are_whitespace:
+        return f"` {code} `"
+    return f"`{code}`"
 
 
 def html_block(
