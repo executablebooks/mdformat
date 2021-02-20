@@ -365,9 +365,23 @@ def paragraph(  # noqa: C901
     env: MutableMapping,
 ) -> str:
     inline_node = node.children[0]
-    text = inline_node.render(renderer_funcs, options, env)
-    lines = text.split("\n")
 
+    if options.get("mdformat", {}).get("wrap", "keep") == "no":
+        text = ""
+        buffer = ""
+        for child in inline_node.children:
+            if child.type_ in {"text", "softbreak"}:
+                buffer += child.render(renderer_funcs, options, env)
+            else:
+                text += re.sub(r"\s+", " ", buffer)
+                buffer = ""
+                text += child.render(renderer_funcs, options, env)
+        if buffer:
+            text += re.sub(r"\s+", " ", buffer)
+    else:
+        text = inline_node.render(renderer_funcs, options, env)
+
+    lines = text.split("\n")
     for i in range(len(lines)):
         # Replace line starting tabs with numeric decimal representation.
         # A normal tab character would start a code block.

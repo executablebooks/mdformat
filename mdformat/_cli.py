@@ -112,6 +112,12 @@ def make_arg_parser(
         action="store_true",
         help="apply consecutive numbering to ordered lists",
     )
+    parser.add_argument(
+        "--wrap",
+        choices=("keep", "no"),
+        default="keep",
+        help="paragraph word wrap mode",
+    )
     for plugin in parser_plugins:
         if hasattr(plugin, "add_cli_options"):
             plugin.add_cli_options(parser)
