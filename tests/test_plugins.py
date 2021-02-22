@@ -1,17 +1,16 @@
 import argparse
 import json
 from textwrap import dedent
-from typing import Any, Mapping, Optional, Sequence, Tuple
+from typing import Any, Mapping, MutableMapping
 from unittest.mock import patch
 
 from markdown_it import MarkdownIt
-from markdown_it.token import Token
-import pytest
 
 import mdformat
 from mdformat._cli import run
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
-from mdformat.renderer import MDRenderer
+from mdformat.renderer import MDRenderer, TreeNode
+from mdformat.renderer._typing import RendererFunc
 
 
 def example_formatter(code, info):
@@ -46,21 +45,17 @@ class TextEditorPlugin:
     def update_mdit(mdit: MarkdownIt):
         pass
 
-    @staticmethod
-    def render_token(
-        renderer: MDRenderer,
-        tokens: Sequence[Token],
-        index: int,
+    def _text_renderer(  # type: ignore
+        tree: TreeNode,
+        renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
-        env: dict,
-    ) -> Optional[Tuple[str, int]]:
-        token = tokens[index]
-        if token.type == "text":
-            return "All text is like this now!", index
-        return None
+        env: MutableMapping,
+    ) -> str:
+        return "All text is like this now!"
+
+    RENDERERS = {"text": _text_renderer}
 
 
-@pytest.mark.xfail(reason="TODO: redo plugin API")
 def test_single_token_extension(monkeypatch):
     """Test the front matter plugin, as a single token extension example."""
     plugin_name = "text_editor"
@@ -91,27 +86,17 @@ class ExampleTablePlugin:
     def update_mdit(mdit: MarkdownIt):
         mdit.enable("table")
 
-    @staticmethod
-    def render_token(
-        renderer: MDRenderer,
-        tokens: Sequence[Token],
-        index: int,
+    def _table_renderer(  # type: ignore
+        tree: TreeNode,
+        renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
-        env: dict,
-    ) -> Optional[Tuple[str, int]]:
-        token = tokens[index]
-        if token.type == "table_open":
-            # search for the table close, and return a dummy output
-            while index < len(tokens):
-                index += 1
-                if tokens[index].type == "table_close":
-                    break
-            # return f"dummy {index}" + MARKERS.BLOCK_SEPARATOR, index
-            return "Todo", -1
-        return None
+        env: MutableMapping,
+    ) -> str:
+        return "dummy 21"
+
+    RENDERERS = {"table": _table_renderer}
 
 
-@pytest.mark.xfail(reason="TODO: redo plugin API")
 def test_table(monkeypatch):
     """Test the table plugin, as a multi-token extension example."""
     monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExampleTablePlugin)
@@ -180,21 +165,17 @@ class ExampleASTChangingPlugin:
     def update_mdit(mdit: MarkdownIt):
         pass
 
-    @staticmethod
-    def render_token(
-        renderer: MDRenderer,
-        tokens: Sequence[Token],
-        index: int,
+    def _text_renderer(  # type: ignore
+        tree: TreeNode,
+        renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
-        env: dict,
-    ) -> Optional[Tuple[str, int]]:
-        token = tokens[index]
-        if token.type == "text":
-            return ExampleASTChangingPlugin.TEXT_REPLACEMENT, index
-        return None
+        env: MutableMapping,
+    ) -> str:
+        return ExampleASTChangingPlugin.TEXT_REPLACEMENT
+
+    RENDERERS = {"text": _text_renderer}
 
 
-@pytest.mark.xfail(reason="TODO: redo plugin API")
 def test_ast_changing_plugin(monkeypatch, tmp_path):
     plugin = ExampleASTChangingPlugin()
     monkeypatch.setitem(PARSER_EXTENSIONS, "ast_changer", plugin)

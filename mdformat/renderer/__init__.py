@@ -2,7 +2,8 @@ __all__ = ("MDRenderer", "LOGGER", "TreeNode")
 
 
 import logging
-from typing import Any, List, Mapping, Optional, Sequence, Tuple
+from types import MappingProxyType
+from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
@@ -31,7 +32,7 @@ class MDRenderer:
         self,
         tokens: Sequence[Token],
         options: Mapping[str, Any],
-        env: dict,
+        env: MutableMapping,
         *,
         finalize: bool = True,
     ) -> str:
@@ -42,11 +43,25 @@ class MDRenderer:
         self,
         tree: "TreeNode",
         options: Mapping[str, Any],
-        env: dict,
+        env: MutableMapping,
         *,
         finalize: bool = True,
     ) -> str:
-        text = tree.render(RENDERER_MAP, options, env)
+        # Update RENDERER_MAP defaults with renderer functions defined
+        # by plugins.
+        updated_renderers = {}
+        for plugin in options.get("parser_extension", []):
+            for token_name, renderer_func in plugin.RENDERERS.items():
+                if token_name in updated_renderers:
+                    LOGGER.warning(
+                        "Plugin conflict. More than one plugin defined a renderer"
+                        f' for "{token_name}" token or token pair.'
+                    )
+                else:
+                    updated_renderers[token_name] = renderer_func
+        renderer_map = MappingProxyType({**RENDERER_MAP, **updated_renderers})
+
+        text = tree.render(renderer_map, options, env)
         if finalize:
             text = text.rstrip("\n")
             if env.get("used_refs"):
@@ -56,7 +71,7 @@ class MDRenderer:
         return text
 
     @staticmethod
-    def _write_references(env: dict) -> str:
+    def _write_references(env: MutableMapping) -> str:
         text = ""
         for label in sorted(env.get("used_refs", [])):
             ref = env["references"][label]
@@ -109,7 +124,7 @@ class TreeNode:
         self,
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
-        env: dict,
+        env: MutableMapping,
     ) -> str:
         renderer_func = renderer_funcs[self.type_]
         return renderer_func(self, renderer_funcs, options, env)

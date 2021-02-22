@@ -1,11 +1,10 @@
 import argparse
 import sys
-from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple
+from typing import Callable, Dict, Mapping
 
 from markdown_it import MarkdownIt
-from markdown_it.token import Token
 
-from mdformat.renderer import MDRenderer
+from mdformat.renderer._typing import RendererFunc
 
 if sys.version_info >= (3, 8):
     from importlib import metadata as importlib_metadata
@@ -31,6 +30,7 @@ class ParserExtensionInterface(Protocol):
     # Does the plugin's formatting change Markdown AST or not?
     # (optional, default: False)
     CHANGES_AST: bool = False
+    RENDERERS: Mapping[str, RendererFunc]
 
     @staticmethod
     def add_cli_options(parser: argparse.ArgumentParser) -> None:
@@ -40,20 +40,6 @@ class ParserExtensionInterface(Protocol):
     @staticmethod
     def update_mdit(mdit: MarkdownIt) -> None:
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
-
-    @staticmethod
-    def render_token(
-        renderer: MDRenderer,
-        tokens: Sequence[Token],
-        index: int,
-        options: Mapping[str, Any],
-        env: dict,
-    ) -> Optional[Tuple[str, int]]:
-        """Convert token(s) to a string, or return None if no render method
-        available.
-
-        :returns: (text, index) where index is of the final "consumed" token
-        """
 
 
 def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:

@@ -2,7 +2,7 @@ from collections import defaultdict
 import logging
 import re
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, Optional
 
 from mdformat.renderer._typing import RendererFunc
 from mdformat.renderer._util import (
@@ -31,7 +31,7 @@ def make_render_children(separator: str) -> RendererFunc:
         node: "TreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
-        env: dict,
+        env: MutableMapping,
     ) -> str:
         return separator.join(
             child.render(renderer_funcs, options, env) for child in node.children
@@ -44,7 +44,7 @@ def hr(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     thematic_break_width = 70
     return "_" * thematic_break_width
@@ -54,7 +54,7 @@ def code_inline(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     code = node.token.content
     all_chars_are_whitespace = not code.strip()
@@ -71,7 +71,7 @@ def html_block(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     return node.token.content.rstrip("\n")
 
@@ -80,7 +80,7 @@ def html_inline(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     return node.token.content
 
@@ -89,7 +89,7 @@ def hardbreak(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     return "\\" + "\n"
 
@@ -98,7 +98,7 @@ def softbreak(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     return "\n"
 
@@ -107,7 +107,7 @@ def text(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     """Process a text token.
 
@@ -153,7 +153,7 @@ def fence(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     token = node.token
     assert token.map is not None, "fence token map must not be None"
@@ -194,7 +194,7 @@ def code_block(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     return fence(node, renderer_funcs, options, env)
 
@@ -203,7 +203,7 @@ def image(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     token = node.token
     assert token.attrs is not None, "image token attrs must not be None"
@@ -231,7 +231,7 @@ def _render_inline_as_text(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     """Special kludge for image `alt` attributes to conform CommonMark spec.
 
@@ -243,7 +243,7 @@ def _render_inline_as_text(
         node: "TreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
-        env: dict,
+        env: MutableMapping,
     ) -> str:
         return node.token.content
 
@@ -251,7 +251,7 @@ def _render_inline_as_text(
         node: "TreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
-        env: dict,
+        env: MutableMapping,
     ) -> str:
         return _render_inline_as_text(node, renderer_funcs, options, env)
 
@@ -270,7 +270,7 @@ def link(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     text = ""
     for child in node.children:
@@ -303,7 +303,7 @@ def em(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     text = make_render_children(separator="")(node, renderer_funcs, options, env)
     indicator = node.closing.markup
@@ -314,7 +314,7 @@ def strong(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     text = make_render_children(separator="")(node, renderer_funcs, options, env)
     indicator = node.closing.markup
@@ -325,7 +325,7 @@ def heading(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     text = make_render_children(separator="")(node, renderer_funcs, options, env)
 
@@ -354,7 +354,7 @@ def blockquote(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     text = make_render_children(separator="\n\n")(node, renderer_funcs, options, env)
     # text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
@@ -371,7 +371,7 @@ def paragraph(  # noqa: C901
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     inline_node = node.children[0]
     text = inline_node.render(renderer_funcs, options, env)
@@ -433,7 +433,7 @@ def list_item(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     """Return one list item as string.
 
@@ -454,7 +454,7 @@ def bullet_list(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
@@ -483,7 +483,7 @@ def ordered_list(
     node: "TreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
-    env: dict,
+    env: MutableMapping,
 ) -> str:
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
