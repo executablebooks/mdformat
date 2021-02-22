@@ -19,7 +19,16 @@ def text(
         extensions=extensions,
         codeformatters=codeformatters,
     )
-    return mdit.render(md)
+    rendering = mdit.render(md)
+
+    # If word wrap is changed, add a second pass of rendering.
+    # Some escapes will be different depending on word wrap, so
+    # rendering after 1st and 2nd pass will be different. Rendering
+    # twice seems like the easiest way to achieve stable formatting.
+    if options.get("wrap", "keep") != "keep":
+        rendering = mdit.render(rendering)
+
+    return rendering
 
 
 def file(
