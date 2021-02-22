@@ -185,3 +185,31 @@ def get_list_marker_type(tokens: Sequence[Token], closing_token_idx: int) -> str
             current_closing_idx = prev_idx
         else:
             return primary_marker if consecutive_lists_count % 2 else secondary_marker
+
+
+def decimalify_leading_whitespace(text: str) -> str:
+    """Replace leading whitespace with decimal representations."""
+    start_whitespace = ""
+    start_whitespace_count = 0
+    for ws_char in text:
+        if ws_char in _codepoints.UNICODE_WHITESPACE:
+            start_whitespace += f"&#{ord(ws_char)};"
+            start_whitespace_count += 1
+        else:
+            break
+    return start_whitespace + text[start_whitespace_count:]
+
+
+def decimalify_trailing_whitespace(text: str) -> str:
+    """Replace trailing whitespace with decimal representations."""
+    end_whitespace = ""
+    end_whitespace_count = 0
+    for ws_char in reversed(text):
+        if ws_char in _codepoints.UNICODE_WHITESPACE:
+            end_whitespace = f"&#{ord(ws_char)};" + end_whitespace
+            end_whitespace_count += 1
+        else:
+            break
+    if end_whitespace:
+        return text[:-end_whitespace_count] + end_whitespace
+    return text

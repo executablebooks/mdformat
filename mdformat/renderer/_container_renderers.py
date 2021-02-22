@@ -8,6 +8,8 @@ from markdown_it.token import Token
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     MARKERS,
+    decimalify_leading_whitespace,
+    decimalify_trailing_whitespace,
     find_opening_token,
     get_list_marker_type,
     is_tight_list,
@@ -191,6 +193,9 @@ def paragraph_close(  # noqa: C901
             lines[i] = lines[i].replace("=", "\\=", 1)
 
     text = "\n".join(lines)
+
+    text = decimalify_leading_whitespace(text)
+    text = decimalify_trailing_whitespace(text)
 
     return text + MARKERS.BLOCK_SEPARATOR
 

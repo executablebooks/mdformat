@@ -171,9 +171,6 @@ def text(
         start = char_ref.start() + char_refs_found
         text = text[:start] + "\\" + text[start:]
 
-    # Replace no-break space with its decimal representation
-    text = text.replace(chr(160), "&#160;")
-
     # The parser can give us consecutive newlines which can break
     # the markdown structure. Replace two or more consecutive newlines
     # with newline character's decimal reference.
