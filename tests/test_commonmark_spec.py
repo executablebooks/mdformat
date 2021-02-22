@@ -58,15 +58,8 @@ EXTRA_CASES = (
     {"name": "reference link", "md": '[foo][bar]\n\n[bar]: /url "title"\n'},
     {"name": "empty file", "md": ""},
     {"name": "whitespace only", "md": "  \n\n \n  \n"},
-    pytest.param(
-        {"name": "starts with em space", "md": "&emsp;\n"},
-        marks=pytest.mark.xfail(
-            reason="Fails because Markdown is different after 1st and 2nd pass."
-            " Em space representation is first converted to single em space char,"
-            " and stripped out on second pass."
-            " Make a generalized fix for all Unicode whitespace."
-        ),
-    ),
+    {"name": "starts with em space", "md": "&emsp;\n"},
+    {"name": "starts with space", "md": "&#32;\n"},
     {"name": "soft breaks", "md": "this is\nall one\nparagraph\n"},
     {"name": "escape underscore", "md": "# foo _bar_ \\_baz\\_\n"},
     {

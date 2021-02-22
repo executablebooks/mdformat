@@ -299,7 +299,7 @@ Don't * escape * asterisk
 .
 Escape\*asterisk\*
 
-Don't * escape&#160;*&#160;asterisk
+Don't * escape * asterisk
 .
 
 
@@ -315,7 +315,7 @@ Do \_escape
 
 Don't esc_ape
 
-Don't _ escape&#160;_&#160;underscore
+Don't _ escape _ underscore
 .
 
 

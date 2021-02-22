@@ -8,6 +8,8 @@ from mdformat.renderer._typing import RendererFunc
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
+    decimalify_leading_whitespace,
+    decimalify_trailing_whitespace,
     escape_asterisk_emphasis,
     escape_underscore_emphasis,
     get_list_marker_type,
@@ -132,9 +134,6 @@ def text(
     for char_refs_found, char_ref in enumerate(RE_CHAR_REFERENCE.finditer(text)):
         start = char_ref.start() + char_refs_found
         text = text[:start] + "\\" + text[start:]
-
-    # Replace no-break space with its decimal representation
-    text = text.replace(chr(160), "&#160;")
 
     # The parser can give us consecutive newlines which can break
     # the markdown structure. Replace two or more consecutive newlines
@@ -423,6 +422,9 @@ def paragraph(  # noqa: C901
             lines[i] = lines[i].replace("=", "\\=", 1)
 
     text = "\n".join(lines)
+
+    text = decimalify_leading_whitespace(text)
+    text = decimalify_trailing_whitespace(text)
 
     return text
 
