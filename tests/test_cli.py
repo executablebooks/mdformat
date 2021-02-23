@@ -141,3 +141,31 @@ def test_no_wrap(tmp_path):
         "\n"
         "This however is the next paragraph. Whitespace should be collapsed here\n"
     )
+
+
+def test_wrap(tmp_path):
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text(
+        "This\n"
+        "text\n"
+        "should\n"
+        "be wrapped again so that wrap width is whatever is defined below. "
+        "Also     whitespace            should\t\tbe             collapsed. "
+        "Next up a second paragraph:\n"
+        "\n"
+        "This paragraph should also be wrapped. "
+        "Here's some more text to wrap.  "
+        "Here's some more text to wrap.  "
+        "Here's some more text to wrap.  "
+    )
+    assert run([str(file_path), "--wrap=60"]) == 0
+    assert (
+        file_path.read_text()
+        == "This text should be wrapped again so that wrap width is\n"
+        "whatever is defined below. Also whitespace should be\n"
+        "collapsed. Next up a second paragraph:\n"
+        "\n"
+        "This paragraph should also be wrapped. Here's some more text\n"
+        "to wrap. Here's some more text to wrap. Here's some more\n"
+        "text to wrap.\n"
+    )

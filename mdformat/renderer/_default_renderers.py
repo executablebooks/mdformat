@@ -1,8 +1,10 @@
 from collections import defaultdict
 import logging
 import re
+import sys
+import textwrap
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, Optional
+from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, Optional, Union
 
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
@@ -19,6 +21,11 @@ from mdformat.renderer._util import (
     maybe_add_link_brackets,
 )
 from mdformat.renderer.typing import RendererFunc
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Literal
+else:
+    from typing import Literal
 
 if TYPE_CHECKING:
     from mdformat.renderer import RenderTreeNode
@@ -358,6 +365,50 @@ def blockquote(
     return quoted_str
 
 
+def _last_line_width(text: str) -> int:
+    width = 0
+    for c in reversed(text):
+        if c == "\n":
+            return width
+        width += 1
+    return width
+
+
+def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -> str:
+    # Collapse all whitespace to a single space char
+    text = re.sub(r"\s+", " ", text)
+    if width == "no":
+        return text
+
+    wrapper = textwrap.TextWrapper(
+        break_long_words=False,
+        break_on_hyphens=False,
+        width=width,
+        expand_tabs=False,
+        replace_whitespace=False,
+        drop_whitespace=False,
+    )
+
+    # Prepend the text with as many null characters as the width of the last
+    # line in `preceding_text`. This forces a line break to happen sooner if
+    # the line already has content in `preceding_text`. Null characters are
+    # used because they can not naturally be present in the text.
+    text = _last_line_width(preceding_text) * "\x00" + text
+
+    # Do the wrapping
+    text = wrapper.fill(text)
+
+    # Remove the added null characters now that wrapping is done
+    text = text.lstrip("\x00")
+
+    # Because we set `drop_whitespace=False` for the wrapper, we now need
+    # to manually drop some whitespace
+    text = text.replace("\n ", "\n")
+    text = text.replace(" \n", "\n")
+
+    return text
+
+
 def paragraph(  # noqa: C901
     node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
@@ -366,18 +417,20 @@ def paragraph(  # noqa: C901
 ) -> str:
     inline_node = node.children[0]
 
-    if options.get("mdformat", {}).get("wrap", "keep") == "no":
+    wrap_mode = options.get("mdformat", {}).get("wrap", "keep")
+    if isinstance(wrap_mode, int) or wrap_mode == "no":
         text = ""
         buffer = ""
         for child in inline_node.children:
             if child.type_ in {"text", "softbreak"}:
                 buffer += child.render(renderer_funcs, options, env)
             else:
-                text += re.sub(r"\s+", " ", buffer)
+                if buffer:
+                    text += _wrap(buffer, width=wrap_mode, preceding_text=text)
                 buffer = ""
                 text += child.render(renderer_funcs, options, env)
         if buffer:
-            text += re.sub(r"\s+", " ", buffer)
+            text += _wrap(buffer, width=wrap_mode, preceding_text=text)
     else:
         text = inline_node.render(renderer_funcs, options, env)
 

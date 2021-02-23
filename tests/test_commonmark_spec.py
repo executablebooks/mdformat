@@ -81,7 +81,7 @@ EXTRA_CASES = (
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 
 
-@pytest.mark.parametrize("wrap", ["keep", "no"])
+@pytest.mark.parametrize("wrap", ["keep", "no", 60])
 @pytest.mark.parametrize("number", [True, False])
 @pytest.mark.parametrize(
     "entry",

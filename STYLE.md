@@ -178,6 +178,8 @@ yet still as relevant as ever today:
 >
 > _— Brian W. Kernighan. "UNIX for Beginners". 1974_
 
+Mdformat allows removing word wrap or setting a target wrap width via configuration.
+
 ## Thematic breaks
 
 Thematic breaks are formatted as a 70 character wide string of underscores.
