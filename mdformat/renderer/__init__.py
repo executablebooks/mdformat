@@ -63,7 +63,6 @@ class MDRenderer:
 
         text = tree.render(renderer_map, options, env)
         if finalize:
-            text = text.rstrip("\n")
             if env.get("used_refs"):
                 text += "\n\n"
                 text += self._write_references(env)
@@ -72,7 +71,7 @@ class MDRenderer:
 
     @staticmethod
     def _write_references(env: MutableMapping) -> str:
-        text = ""
+        ref_list = []
         for label in sorted(env.get("used_refs", [])):
             ref = env["references"][label]
             destination = ref["href"] if ref["href"] else "<>"
@@ -82,8 +81,8 @@ class MDRenderer:
             if title:
                 title = title.replace('"', '\\"')
                 item += f' "{title}"'
-            text += item + "\n"
-        return text.rstrip()
+            ref_list.append(item)
+        return "\n".join(ref_list)
 
 
 class TreeNode:
