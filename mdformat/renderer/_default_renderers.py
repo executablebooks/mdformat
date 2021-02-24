@@ -4,7 +4,6 @@ import re
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, Optional
 
-from mdformat.renderer._typing import RendererFunc
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
@@ -19,6 +18,7 @@ from mdformat.renderer._util import (
     longest_consecutive_sequence,
     maybe_add_link_brackets,
 )
+from mdformat.renderer.typing import RendererFunc
 
 if TYPE_CHECKING:
     from mdformat.renderer import TreeNode
@@ -554,7 +554,7 @@ def ordered_list(
     return text
 
 
-RENDERER_MAP: Mapping[str, RendererFunc] = MappingProxyType(
+DEFAULT_RENDERER_FUNCS: Mapping[str, RendererFunc] = MappingProxyType(
     {
         "inline": make_render_children(""),
         "root": make_render_children("\n\n"),

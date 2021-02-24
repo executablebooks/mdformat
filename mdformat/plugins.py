@@ -4,7 +4,7 @@ from typing import Callable, Dict, Mapping
 
 from markdown_it import MarkdownIt
 
-from mdformat.renderer._typing import RendererFunc
+from mdformat.renderer.typing import RendererFunc
 
 if sys.version_info >= (3, 8):
     from importlib import metadata as importlib_metadata
@@ -30,7 +30,11 @@ class ParserExtensionInterface(Protocol):
     # Does the plugin's formatting change Markdown AST or not?
     # (optional, default: False)
     CHANGES_AST: bool = False
-    RENDERERS: Mapping[str, RendererFunc]
+
+    # A mapping from `TreeNode.type_` to a `RendererFunc` that can
+    # render the given `TreeNode` type. These override the default
+    # `RendererFunc`s defined in `mdformat.renderer.DEFAULT_RENDERER_FUNCS`.
+    RENDERER_FUNCS: Mapping[str, RendererFunc]
 
     @staticmethod
     def add_cli_options(parser: argparse.ArgumentParser) -> None:

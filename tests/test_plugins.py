@@ -10,7 +10,7 @@ import mdformat
 from mdformat._cli import run
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
 from mdformat.renderer import MDRenderer, TreeNode
-from mdformat.renderer._typing import RendererFunc
+from mdformat.renderer.typing import RendererFunc
 
 
 def example_formatter(code, info):
@@ -53,7 +53,7 @@ class TextEditorPlugin:
     ) -> str:
         return "All text is like this now!"
 
-    RENDERERS = {"text": _text_renderer}
+    RENDERER_FUNCS = {"text": _text_renderer}
 
 
 def test_single_token_extension(monkeypatch):
@@ -94,7 +94,7 @@ class ExampleTablePlugin:
     ) -> str:
         return "dummy 21"
 
-    RENDERERS = {"table": _table_renderer}
+    RENDERER_FUNCS = {"table": _table_renderer}
 
 
 def test_table(monkeypatch):
@@ -173,7 +173,7 @@ class ExampleASTChangingPlugin:
     ) -> str:
         return ExampleASTChangingPlugin.TEXT_REPLACEMENT
 
-    RENDERERS = {"text": _text_renderer}
+    RENDERER_FUNCS = {"text": _text_renderer}
 
 
 def test_ast_changing_plugin(monkeypatch, tmp_path):

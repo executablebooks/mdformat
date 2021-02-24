@@ -1,4 +1,4 @@
-__all__ = ("MDRenderer", "LOGGER", "TreeNode")
+__all__ = ("MDRenderer", "LOGGER", "TreeNode", "DEFAULT_RENDERER_FUNCS")
 
 
 import logging
@@ -8,9 +8,9 @@ from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
-from mdformat.renderer._default_renderers import RENDERER_MAP
-from mdformat.renderer._typing import RendererFunc
+from mdformat.renderer._default_renderers import DEFAULT_RENDERER_FUNCS
 from mdformat.renderer._util import removesuffix
+from mdformat.renderer.typing import RendererFunc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class MDRenderer:
         # by plugins.
         updated_renderers = {}
         for plugin in options.get("parser_extension", []):
-            for token_name, renderer_func in plugin.RENDERERS.items():
+            for token_name, renderer_func in plugin.RENDERER_FUNCS.items():
                 if token_name in updated_renderers:
                     LOGGER.warning(
                         "Plugin conflict. More than one plugin defined a renderer"
@@ -59,7 +59,7 @@ class MDRenderer:
                     )
                 else:
                     updated_renderers[token_name] = renderer_func
-        renderer_map = MappingProxyType({**RENDERER_MAP, **updated_renderers})
+        renderer_map = MappingProxyType({**DEFAULT_RENDERER_FUNCS, **updated_renderers})
 
         text = tree.render(renderer_map, options, env)
         if finalize:
