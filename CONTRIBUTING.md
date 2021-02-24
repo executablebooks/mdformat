@@ -98,8 +98,8 @@ def update_mdit(mdit: MarkdownIt) -> None:
    pass
 
 
-# A mapping from `TreeNode.type_` value to a `RendererFunc` that can
-# render the given `TreeNode` type. These functions override the default
+# A mapping from `SyntaxTreeNode.type` value to a `RendererFunc` that can
+# render the given `SyntaxTreeNode` type. These functions override the default
 # `RendererFunc`s defined in `mdformat.renderer.DEFAULT_RENDERER_FUNCS`.
 RENDERER_FUNCS: Mapping[str, RendererFunc]
 ```

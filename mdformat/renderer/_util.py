@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from mdformat.renderer import _codepoints
 
 if TYPE_CHECKING:
-    from mdformat.renderer import TreeNode
+    from mdformat.renderer import SyntaxTreeNode
 
 # Regex that finds character references.
 # The reference can be either
@@ -23,14 +23,14 @@ RE_CHAR_REFERENCE = re.compile(
 CONSECUTIVE_KEY = "number"
 
 
-def is_tight_list(node: "TreeNode") -> bool:
-    assert node.type_ in {"bullet_list", "ordered_list"}
+def is_tight_list(node: "SyntaxTreeNode") -> bool:
+    assert node.type in {"bullet_list", "ordered_list"}
 
     # The list has list items at level +1 so paragraphs in those list
     # items must be at level +2 (grand children)
     for child in node.children:
         for grand_child in child.children:
-            if grand_child.type_ != "paragraph":
+            if grand_child.type != "paragraph":
                 continue
             is_tight = grand_child.opening.hidden
             if not is_tight:
@@ -38,8 +38,8 @@ def is_tight_list(node: "TreeNode") -> bool:
     return True
 
 
-def is_tight_list_item(node: "TreeNode") -> bool:
-    assert node.type_ == "list_item"
+def is_tight_list_item(node: "SyntaxTreeNode") -> bool:
+    assert node.type == "list_item"
     assert node.parent is not None
     return is_tight_list(node.parent)
 
@@ -60,11 +60,11 @@ def longest_consecutive_sequence(seq: str, char: str) -> int:
     return longest
 
 
-def is_text_inside_autolink(node: "TreeNode") -> bool:
-    assert node.type_ == "text"
+def is_text_inside_autolink(node: "SyntaxTreeNode") -> bool:
+    assert node.type == "text"
     return (
         node.parent
-        and node.parent.type_ == "link"
+        and node.parent.type == "link"
         and node.parent.opening.markup == "autolink"
     )
 
@@ -84,8 +84,8 @@ def maybe_add_link_brackets(link: str) -> str:
     return link
 
 
-def get_list_marker_type(node: "TreeNode") -> str:
-    if node.type_ == "bullet_list":
+def get_list_marker_type(node: "SyntaxTreeNode") -> str:
+    if node.type == "bullet_list":
         mode = "bullet"
         primary_marker = "-"
         secondary_marker = "*"
@@ -99,7 +99,7 @@ def get_list_marker_type(node: "TreeNode") -> str:
         previous_sibling = current.previous_sibling()
         if previous_sibling is None:
             return primary_marker if consecutive_lists_count % 2 else secondary_marker
-        prev_type = previous_sibling.type_
+        prev_type = previous_sibling.type
         if (mode == "bullet" and prev_type == "bullet_list") or (
             mode == "ordered" and prev_type == "ordered_list"
         ):

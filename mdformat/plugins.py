@@ -31,8 +31,8 @@ class ParserExtensionInterface(Protocol):
     # (optional, default: False)
     CHANGES_AST: bool = False
 
-    # A mapping from `TreeNode.type_` to a `RendererFunc` that can
-    # render the given `TreeNode` type. These override the default
+    # A mapping from `SyntaxTreeNode.type` to a `RendererFunc` that can
+    # render the given `SyntaxTreeNode` type. These override the default
     # `RendererFunc`s defined in `mdformat.renderer.DEFAULT_RENDERER_FUNCS`.
     RENDERER_FUNCS: Mapping[str, RendererFunc]
 

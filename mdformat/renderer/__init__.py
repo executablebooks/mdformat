@@ -1,4 +1,4 @@
-__all__ = ("MDRenderer", "LOGGER", "TreeNode", "DEFAULT_RENDERER_FUNCS")
+__all__ = ("MDRenderer", "LOGGER", "SyntaxTreeNode", "DEFAULT_RENDERER_FUNCS")
 
 
 import logging
@@ -44,12 +44,12 @@ class MDRenderer:
             env: Additional data from parsed input
             finalize: write references and add trailing newline
         """
-        tree = TreeNode.from_tokens(tokens)
+        tree = SyntaxTreeNode.from_tokens(tokens)
         return self.render_tree(tree, options, env, finalize=finalize)
 
     def render_tree(
         self,
-        tree: "TreeNode",
+        tree: "SyntaxTreeNode",
         options: Mapping[str, Any],
         env: MutableMapping,
         *,
@@ -93,7 +93,7 @@ class MDRenderer:
         return "\n".join(ref_list)
 
 
-class TreeNode:
+class SyntaxTreeNode:
     def __init__(self) -> None:
         # Root and containers don't have self.token
         self.token: Any = None  # Optional[Token]
@@ -103,23 +103,23 @@ class TreeNode:
         self.closing: Any = None  # Optional[Token]
 
         # Root does not have self.parent
-        self.parent: Any = None  # Optional["TreeNode"]
+        self.parent: Any = None  # Optional["SyntaxTreeNode"]
 
         # Empty list unless a non-empty container, inline or image
-        self.children: List["TreeNode"] = []
+        self.children: List["SyntaxTreeNode"] = []
 
     @staticmethod
-    def from_tokens(tokens: Sequence[Token]) -> "TreeNode":
-        root = TreeNode()
+    def from_tokens(tokens: Sequence[Token]) -> "SyntaxTreeNode":
+        root = SyntaxTreeNode()
         root._set_children_from_tokens(tokens)
         return root
 
     @property
-    def siblings(self) -> Sequence["TreeNode"]:
+    def siblings(self) -> Sequence["SyntaxTreeNode"]:
         return self.parent.children
 
-    @property
-    def type_(self) -> str:
+    @property  # noqa: A003
+    def type(self) -> str:
         if self.token is None and self.opening is None:
             return "root"
         if self.token:
@@ -133,10 +133,10 @@ class TreeNode:
         options: Mapping[str, Any],
         env: MutableMapping,
     ) -> str:
-        renderer_func = renderer_funcs[self.type_]
+        renderer_func = renderer_funcs[self.type]
         return renderer_func(self, renderer_funcs, options, env)
 
-    def next_sibling(self) -> Optional["TreeNode"]:
+    def next_sibling(self) -> Optional["SyntaxTreeNode"]:
         if not self.parent:
             return None
         self_index = self.siblings.index(self)
@@ -144,7 +144,7 @@ class TreeNode:
             return self.siblings[self_index + 1]
         return None
 
-    def previous_sibling(self) -> Optional["TreeNode"]:
+    def previous_sibling(self) -> Optional["SyntaxTreeNode"]:
         if not self.parent:
             return None
         self_index = self.siblings.index(self)
@@ -157,8 +157,8 @@ class TreeNode:
         *,
         token: Optional[Token] = None,
         token_pair: Optional[Tuple[Token, Token]] = None,
-    ) -> "TreeNode":
-        child = TreeNode()
+    ) -> "SyntaxTreeNode":
+        child = SyntaxTreeNode()
         if token:
             child.token = token
         else:

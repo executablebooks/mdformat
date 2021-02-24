@@ -9,7 +9,7 @@ from markdown_it import MarkdownIt
 import mdformat
 from mdformat._cli import run
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
-from mdformat.renderer import MDRenderer, TreeNode
+from mdformat.renderer import MDRenderer, SyntaxTreeNode
 from mdformat.renderer.typing import RendererFunc
 
 
@@ -46,7 +46,7 @@ class TextEditorPlugin:
         pass
 
     def _text_renderer(  # type: ignore
-        tree: TreeNode,
+        tree: SyntaxTreeNode,
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -87,7 +87,7 @@ class ExampleTablePlugin:
         mdit.enable("table")
 
     def _table_renderer(  # type: ignore
-        tree: TreeNode,
+        tree: SyntaxTreeNode,
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -166,7 +166,7 @@ class ExampleASTChangingPlugin:
         pass
 
     def _text_renderer(  # type: ignore
-        tree: TreeNode,
+        tree: SyntaxTreeNode,
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,

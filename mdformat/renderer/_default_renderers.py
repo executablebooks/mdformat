@@ -21,14 +21,14 @@ from mdformat.renderer._util import (
 from mdformat.renderer.typing import RendererFunc
 
 if TYPE_CHECKING:
-    from mdformat.renderer import TreeNode
+    from mdformat.renderer import SyntaxTreeNode
 
 LOGGER = logging.getLogger(__name__)
 
 
 def make_render_children(separator: str) -> RendererFunc:
     def render_children(
-        node: "TreeNode",
+        node: "SyntaxTreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -41,7 +41,7 @@ def make_render_children(separator: str) -> RendererFunc:
 
 
 def hr(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -51,7 +51,7 @@ def hr(
 
 
 def code_inline(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -68,7 +68,7 @@ def code_inline(
 
 
 def html_block(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -77,7 +77,7 @@ def html_block(
 
 
 def html_inline(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -86,7 +86,7 @@ def html_inline(
 
 
 def hardbreak(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -95,7 +95,7 @@ def hardbreak(
 
 
 def softbreak(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -104,7 +104,7 @@ def softbreak(
 
 
 def text(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -143,14 +143,14 @@ def text(
     # If the last character is a "!" and the token next up is a link, we
     # have to escape the "!" or else the link will be interpreted as image.
     next_sibling = node.next_sibling()
-    if text.endswith("!") and next_sibling and next_sibling.type_ == "link":
+    if text.endswith("!") and next_sibling and next_sibling.type == "link":
         text = text[:-1] + "\\!"
 
     return text
 
 
 def fence(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -191,7 +191,7 @@ def fence(
 
 
 def code_block(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -200,7 +200,7 @@ def code_block(
 
 
 def image(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -228,7 +228,7 @@ def image(
 
 
 def _render_inline_as_text(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -240,7 +240,7 @@ def _render_inline_as_text(
     """
 
     def text_renderer(
-        node: "TreeNode",
+        node: "SyntaxTreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -248,7 +248,7 @@ def _render_inline_as_text(
         return node.token.content
 
     def image_renderer(
-        node: "TreeNode",
+        node: "SyntaxTreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -267,7 +267,7 @@ def _render_inline_as_text(
 
 
 def link(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -300,7 +300,7 @@ def link(
 
 
 def em(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -311,7 +311,7 @@ def em(
 
 
 def strong(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -322,7 +322,7 @@ def strong(
 
 
 def heading(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -351,7 +351,7 @@ def heading(
 
 
 def blockquote(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -368,7 +368,7 @@ def blockquote(
 
 
 def paragraph(  # noqa: C901
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -430,7 +430,7 @@ def paragraph(  # noqa: C901
 
 
 def list_item(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -451,7 +451,7 @@ def list_item(
 
 
 def bullet_list(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -480,7 +480,7 @@ def bullet_list(
 
 
 def ordered_list(
-    node: "TreeNode",
+    node: "SyntaxTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,

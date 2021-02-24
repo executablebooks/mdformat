@@ -1,9 +1,16 @@
 from typing import TYPE_CHECKING, Any, Callable, Mapping, MutableMapping
 
 if TYPE_CHECKING:
-    from mdformat.renderer import TreeNode
+    from mdformat.renderer import SyntaxTreeNode
 
+# There is a recursion in this type that can be added when
+# https://github.com/python/mypy/issues/731 is implemented.
 RendererFunc = Callable[
-    ["TreeNode", Mapping[str, Callable[..., str]], Mapping[str, Any], MutableMapping],
+    [
+        "SyntaxTreeNode",
+        Mapping[str, Callable[..., str]],
+        Mapping[str, Any],
+        MutableMapping,
+    ],
     str,
 ]
