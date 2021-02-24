@@ -36,6 +36,14 @@ class MDRenderer:
         *,
         finalize: bool = True,
     ) -> str:
+        """Takes token stream and generates Markdown.
+
+        Args:
+            tokens: A sequence of block tokens to render
+            options: Params of parser instance
+            env: Additional data from parsed input
+            finalize: write references and add trailing newline
+        """
         tree = TreeNode.from_tokens(tokens)
         return self.render_tree(tree, options, env, finalize=finalize)
 
