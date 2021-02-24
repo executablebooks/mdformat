@@ -94,7 +94,23 @@ class MDRenderer:
 
 
 class SyntaxTreeNode:
+    """A Markdown syntax tree node.
+
+    A class that can be used to construct a tree representation of a linear
+    `markdown-it-py` token stream.
+
+    Each node in the tree represents either:
+      - root of the Markdown document
+      - a single unnested `markdown_it.token.Token`
+      - a `markdown_it.token.Token` "_open" and "_close" token pair, and the
+          tokens nested in between
+    """
+
     def __init__(self) -> None:
+        """Initialize a root node with no children.
+
+        You probably need `SyntaxTreeNode.from_tokens` instead.
+        """
         # Root and containers don't have self.token
         self.token: Any = None  # Optional[Token]
 
@@ -105,7 +121,8 @@ class SyntaxTreeNode:
         # Root does not have self.parent
         self.parent: Any = None  # Optional["SyntaxTreeNode"]
 
-        # Empty list unless a non-empty container, inline or image
+        # Empty list unless a non-empty container, or unnested token that has
+        # children (i.e. inline or image)
         self.children: List["SyntaxTreeNode"] = []
 
     @staticmethod
