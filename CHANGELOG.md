@@ -3,6 +3,20 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.6.0
+
+**NOTE:** Parser extension plugin API has changed in this release.
+
+- Removed
+  - `mdformat.renderer.MARKERS`
+  - `mdformat.plugins.ParserExtensionInterface.render_token`
+  - `start` and `stop` keyword arguments removed from `mdformat.renderer.MDRenderer.render`.
+    Use `mdformat.renderer.MDRenderer.render_tree` to render a part of a Markdown document.
+- Added
+  - `mdformat.plugins.ParserExtensionInterface.RENDERER_FUNCS`
+  - A class for representing linear `markdown-it` token stream as a tree: `mdformat.renderer.SyntaxTreeNode`
+  - `mdformat.renderer.MDRenderer.render_tree` for rendering a `SyntaxTreeNode`
+
 ## 0.5.7
 
 - Fixed
