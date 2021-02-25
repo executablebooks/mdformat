@@ -3,7 +3,17 @@ __all__ = ("MDRenderer", "LOGGER", "SyntaxTreeNode", "DEFAULT_RENDERER_FUNCS")
 
 import logging
 from types import MappingProxyType
-from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple
+from typing import (
+    Any,
+    Dict,
+    List,
+    Mapping,
+    MutableMapping,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+)
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
@@ -106,23 +116,26 @@ class SyntaxTreeNode:
           tokens nested in between
     """
 
+    class _NesterTokens(NamedTuple):
+        opening: Token
+        closing: Token
+
     def __init__(self) -> None:
         """Initialize a root node with no children.
 
         You probably need `SyntaxTreeNode.from_tokens` instead.
         """
-        # Root and containers don't have self.token
-        self.token: Any = None  # Optional[Token]
+        # Only nodes representing an unnested token have self.token
+        self.token: Optional[Token] = None
 
-        # Only containers have self.opening and self.closing
-        self.opening: Any = None  # Optional[Token]
-        self.closing: Any = None  # Optional[Token]
+        # Only containers have nester tokens
+        self.nester_tokens: Optional[SyntaxTreeNode._NesterTokens] = None
 
-        # Root does not have self.parent
+        # Root node does not have self.parent
         self.parent: Optional["SyntaxTreeNode"] = None
 
         # Empty list unless a non-empty container, or unnested token that has
-        # children (i.e. inline or image)
+        # children (i.e. inline or img)
         self.children: List["SyntaxTreeNode"] = []
 
     @staticmethod
@@ -139,12 +152,12 @@ class SyntaxTreeNode:
 
     @property  # noqa: A003
     def type(self) -> str:
-        if self.token is None and self.opening is None:
+        if not self.token and not self.nester_tokens:
             return "root"
         if self.token:
             return self.token.type
-        assert self.opening is not None
-        return removesuffix(self.opening.type, "_open")
+        assert self.nester_tokens
+        return removesuffix(self.nester_tokens.opening.type, "_open")
 
     def render(
         self,
@@ -155,31 +168,33 @@ class SyntaxTreeNode:
         renderer_func = renderer_funcs[self.type]
         return renderer_func(self, renderer_funcs, options, env)
 
+    @property
     def next_sibling(self) -> Optional["SyntaxTreeNode"]:
         self_index = self.siblings.index(self)
         if self_index + 1 < len(self.siblings):
             return self.siblings[self_index + 1]
         return None
 
+    @property
     def previous_sibling(self) -> Optional["SyntaxTreeNode"]:
         self_index = self.siblings.index(self)
         if self_index - 1 >= 0:
             return self.siblings[self_index - 1]
         return None
 
-    def _add_child(
+    def _make_child(
         self,
         *,
         token: Optional[Token] = None,
-        token_pair: Optional[Tuple[Token, Token]] = None,
+        nester_tokens: Optional[_NesterTokens] = None,
     ) -> "SyntaxTreeNode":
+        if token and nester_tokens or not token and not nester_tokens:
+            raise ValueError("must specify either `token` or `nester_tokens`")
         child = SyntaxTreeNode()
         if token:
             child.token = token
         else:
-            assert token_pair is not None
-            child.opening = token_pair[0]
-            child.closing = token_pair[1]
+            child.nester_tokens = nester_tokens
         child.parent = self
         self.children.append(child)
         return child
@@ -191,7 +206,7 @@ class SyntaxTreeNode:
             token = reversed_tokens.pop()
 
             if token.nesting == 0:
-                child = self._add_child(token=token)
+                child = self._make_child(token=token)
                 if token.children:
                     child._set_children_from_tokens(token.children)
                 continue
@@ -207,5 +222,69 @@ class SyntaxTreeNode:
             if nesting != 0:
                 raise ValueError(f"unclosed tokens starting {nested_tokens[0]}")
 
-            child = self._add_child(token_pair=(nested_tokens[0], nested_tokens[-1]))
+            child = self._make_child(
+                nester_tokens=SyntaxTreeNode._NesterTokens(
+                    nested_tokens[0], nested_tokens[-1]
+                )
+            )
             child._set_children_from_tokens(nested_tokens[1:-1])
+
+    # NOTE:
+    # The values of the properties defined below directly map to properties
+    # of the underlying `Token`s. A root node does not translate to a `Token`
+    # object, so calling these methods on a root node will raise an
+    # `AttributeError`.
+
+    def _attribute_token(self) -> Token:
+        if self.token:
+            return self.token
+        if self.nester_tokens:
+            return self.nester_tokens.opening
+        raise AttributeError("Root node does not have the accessed attribute")
+
+    @property
+    def tag(self) -> str:
+        return self._attribute_token().tag
+
+    @property
+    def attrs(self) -> Dict[str, Any]:
+        token_attrs = self._attribute_token().attrs
+        if token_attrs is None:
+            return {}
+        return dict(token_attrs)
+
+    @property  # noqa: A003
+    def map(self) -> Optional[Tuple[int, int]]:
+        map_ = self._attribute_token().map
+        if map_:
+            # Type ignore because `markdown-it-py` type annotations are not perfect
+            return tuple(map_)  # type: ignore
+        return None
+
+    @property
+    def level(self) -> int:
+        return self._attribute_token().level
+
+    @property
+    def content(self) -> str:
+        return self._attribute_token().content
+
+    @property
+    def markup(self) -> str:
+        return self._attribute_token().markup
+
+    @property
+    def info(self) -> str:
+        return self._attribute_token().info
+
+    @property
+    def meta(self) -> dict:
+        return self._attribute_token().meta
+
+    @property
+    def block(self) -> bool:
+        return self._attribute_token().block
+
+    @property
+    def hidden(self) -> bool:
+        return self._attribute_token().hidden
