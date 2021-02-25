@@ -63,7 +63,7 @@ def longest_consecutive_sequence(seq: str, char: str) -> int:
 def is_text_inside_autolink(node: "SyntaxTreeNode") -> bool:
     assert node.type == "text"
     return (
-        node.parent
+        node.parent  # type: ignore
         and node.parent.type == "link"
         and node.parent.opening.markup == "autolink"
     )

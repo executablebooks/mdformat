@@ -119,7 +119,7 @@ class SyntaxTreeNode:
         self.closing: Any = None  # Optional[Token]
 
         # Root does not have self.parent
-        self.parent: Any = None  # Optional["SyntaxTreeNode"]
+        self.parent: Optional["SyntaxTreeNode"] = None
 
         # Empty list unless a non-empty container, or unnested token that has
         # children (i.e. inline or image)
@@ -133,6 +133,8 @@ class SyntaxTreeNode:
 
     @property
     def siblings(self) -> Sequence["SyntaxTreeNode"]:
+        if not self.parent:
+            return [self]
         return self.parent.children
 
     @property  # noqa: A003
@@ -154,16 +156,12 @@ class SyntaxTreeNode:
         return renderer_func(self, renderer_funcs, options, env)
 
     def next_sibling(self) -> Optional["SyntaxTreeNode"]:
-        if not self.parent:
-            return None
         self_index = self.siblings.index(self)
         if self_index + 1 < len(self.siblings):
             return self.siblings[self_index + 1]
         return None
 
     def previous_sibling(self) -> Optional["SyntaxTreeNode"]:
-        if not self.parent:
-            return None
         self_index = self.siblings.index(self)
         if self_index - 1 >= 0:
             return self.siblings[self_index - 1]
