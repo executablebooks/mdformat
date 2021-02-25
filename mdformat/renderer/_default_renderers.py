@@ -56,7 +56,7 @@ def code_inline(
     options: Mapping[str, Any],
     env: MutableMapping,
 ) -> str:
-    code = node.token.content
+    code = node.content
     all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
     if longest_backtick_seq:
@@ -73,7 +73,7 @@ def html_block(
     options: Mapping[str, Any],
     env: MutableMapping,
 ) -> str:
-    return node.token.content.rstrip("\n")
+    return node.content.rstrip("\n")
 
 
 def html_inline(
@@ -82,7 +82,7 @@ def html_inline(
     options: Mapping[str, Any],
     env: MutableMapping,
 ) -> str:
-    return node.token.content
+    return node.content
 
 
 def hardbreak(
@@ -114,7 +114,7 @@ def text(
     Text should always be a child of an inline token. An inline token
     should always be enclosed by a heading or a paragraph.
     """
-    text = node.token.content
+    text = node.content
     if is_text_inside_autolink(node):
         return text
 
@@ -142,7 +142,7 @@ def text(
 
     # If the last character is a "!" and the token next up is a link, we
     # have to escape the "!" or else the link will be interpreted as image.
-    next_sibling = node.next_sibling()
+    next_sibling = node.next_sibling
     if text.endswith("!") and next_sibling and next_sibling.type == "link":
         text = text[:-1] + "\\!"
 
@@ -155,12 +155,9 @@ def fence(
     options: Mapping[str, Any],
     env: MutableMapping,
 ) -> str:
-    token = node.token
-    assert token.map is not None, "fence token map must not be None"
-
-    info_str = token.info.strip() if token.info else ""
+    info_str = node.info.strip()
     lang = info_str.split()[0] if info_str.split() else ""
-    code_block = token.content
+    code_block = node.content
 
     # Info strings of backtick code fences can not contain backticks or tildes.
     # If that is the case, we make a tilde code fence instead.
@@ -177,9 +174,12 @@ def fence(
         except Exception:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.
+            assert (
+                node.map is not None
+            ), "A fence token must always have `map` attribute set"
             LOGGER.warning(
                 f"Failed formatting content of a {lang} code block "
-                f"(line {token.map[0] + 1} before formatting)"
+                f"(line {node.map[0] + 1} before formatting)"
             )
 
     # The code block must not include as long or longer sequence of `fence_char`s
@@ -205,12 +205,9 @@ def image(
     options: Mapping[str, Any],
     env: MutableMapping,
 ) -> str:
-    token = node.token
-    assert token.attrs is not None, "image token attrs must not be None"
-
     description = _render_inline_as_text(node, renderer_funcs, options, env)
 
-    ref_label = token.meta.get("label")
+    ref_label = node.meta.get("label")
     if ref_label:
         env.setdefault("used_refs", set()).add(ref_label)
         ref_label_repr = ref_label.lower()
@@ -218,10 +215,9 @@ def image(
             return f"![{description}]"
         return f"![{description}][{ref_label_repr}]"
 
-    uri = token.attrGet("src")
-    assert uri is not None
+    uri = node.attrs["src"]
     uri = maybe_add_link_brackets(uri)
-    title = token.attrGet("title")
+    title = node.attrs.get("title")
     if title is not None:
         return f'![{description}]({uri} "{title}")'
     return f"![{description}]({uri})"
@@ -245,7 +241,7 @@ def _render_inline_as_text(
         options: Mapping[str, Any],
         env: MutableMapping,
     ) -> str:
-        return node.token.content
+        return node.content
 
     def image_renderer(
         node: "SyntaxTreeNode",
@@ -275,13 +271,10 @@ def link(
     text = ""
     for child in node.children:
         text += child.render(renderer_funcs, options, env)
-    token = node.closing
-    if token.markup == "autolink":
+    if node.markup == "autolink":
         return "<" + text + ">"
-    open_tkn = node.opening
-    assert open_tkn.attrs is not None, "link_open token attrs must not be None"
 
-    ref_label = open_tkn.meta.get("label")
+    ref_label = node.meta.get("label")
     if ref_label:
         env.setdefault("used_refs", set()).add(ref_label)
         ref_label_repr = ref_label.lower()
@@ -289,10 +282,9 @@ def link(
             return f"[{text}]"
         return f"[{text}][{ref_label_repr}]"
 
-    attrs = dict(open_tkn.attrs)
-    uri = attrs["href"]
+    uri = node.attrs["href"]
     uri = maybe_add_link_brackets(uri)
-    title = attrs.get("title")
+    title = node.attrs.get("title")
     if title is None:
         return f"[{text}]({uri})"
     title = title.replace('"', '\\"')
@@ -306,7 +298,7 @@ def em(
     env: MutableMapping,
 ) -> str:
     text = make_render_children(separator="")(node, renderer_funcs, options, env)
-    indicator = node.closing.markup
+    indicator = node.markup
     return indicator + text + indicator
 
 
@@ -317,7 +309,7 @@ def strong(
     env: MutableMapping,
 ) -> str:
     text = make_render_children(separator="")(node, renderer_funcs, options, env)
-    indicator = node.closing.markup
+    indicator = node.markup
     return indicator + text + indicator
 
 
@@ -329,13 +321,12 @@ def heading(
 ) -> str:
     text = make_render_children(separator="")(node, renderer_funcs, options, env)
 
-    opener_token = node.opening
-    if opener_token.markup == "=":
+    if node.markup == "=":
         prefix = "# "
-    elif opener_token.markup == "-":
+    elif node.markup == "-":
         prefix = "## "
     else:  # ATX heading
-        prefix = opener_token.markup + " "
+        prefix = node.markup + " "
 
     # There can be newlines in setext headers, but we make an ATX
     # header always. Convert newlines to spaces.
@@ -490,7 +481,7 @@ def ordered_list(
     block_separator = "\n" if is_tight_list(node) else "\n\n"
     list_len = len(node.children)
 
-    starting_number: Optional[int] = node.opening.attrGet("start")
+    starting_number: Optional[int] = node.attrs.get("start")
     if starting_number is None:
         starting_number = 1
 

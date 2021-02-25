@@ -32,7 +32,7 @@ def is_tight_list(node: "SyntaxTreeNode") -> bool:
         for grand_child in child.children:
             if grand_child.type != "paragraph":
                 continue
-            is_tight = grand_child.opening.hidden
+            is_tight = grand_child.hidden
             if not is_tight:
                 return False
     return True
@@ -65,7 +65,7 @@ def is_text_inside_autolink(node: "SyntaxTreeNode") -> bool:
     return (
         node.parent  # type: ignore
         and node.parent.type == "link"
-        and node.parent.opening.markup == "autolink"
+        and node.parent.markup == "autolink"
     )
 
 
@@ -96,7 +96,7 @@ def get_list_marker_type(node: "SyntaxTreeNode") -> str:
     consecutive_lists_count = 1
     current = node
     while True:
-        previous_sibling = current.previous_sibling()
+        previous_sibling = current.previous_sibling
         if previous_sibling is None:
             return primary_marker if consecutive_lists_count % 2 else secondary_marker
         prev_type = previous_sibling.type
