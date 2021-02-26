@@ -21,14 +21,14 @@ from mdformat.renderer._util import (
 from mdformat.renderer.typing import RendererFunc
 
 if TYPE_CHECKING:
-    from mdformat.renderer import SyntaxTreeNode
+    from mdformat.renderer import RenderTreeNode
 
 LOGGER = logging.getLogger(__name__)
 
 
 def make_render_children(separator: str) -> RendererFunc:
     def render_children(
-        node: "SyntaxTreeNode",
+        node: "RenderTreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -41,7 +41,7 @@ def make_render_children(separator: str) -> RendererFunc:
 
 
 def hr(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -51,7 +51,7 @@ def hr(
 
 
 def code_inline(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -68,7 +68,7 @@ def code_inline(
 
 
 def html_block(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -77,7 +77,7 @@ def html_block(
 
 
 def html_inline(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -86,7 +86,7 @@ def html_inline(
 
 
 def hardbreak(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -95,7 +95,7 @@ def hardbreak(
 
 
 def softbreak(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -104,7 +104,7 @@ def softbreak(
 
 
 def text(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -150,7 +150,7 @@ def text(
 
 
 def fence(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -191,7 +191,7 @@ def fence(
 
 
 def code_block(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -200,7 +200,7 @@ def code_block(
 
 
 def image(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -224,7 +224,7 @@ def image(
 
 
 def _render_inline_as_text(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -236,7 +236,7 @@ def _render_inline_as_text(
     """
 
     def text_renderer(
-        node: "SyntaxTreeNode",
+        node: "RenderTreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -244,7 +244,7 @@ def _render_inline_as_text(
         return node.content
 
     def image_renderer(
-        node: "SyntaxTreeNode",
+        node: "RenderTreeNode",
         renderer_funcs: Mapping[str, RendererFunc],
         options: Mapping[str, Any],
         env: MutableMapping,
@@ -263,7 +263,7 @@ def _render_inline_as_text(
 
 
 def link(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -292,7 +292,7 @@ def link(
 
 
 def em(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -303,7 +303,7 @@ def em(
 
 
 def strong(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -314,7 +314,7 @@ def strong(
 
 
 def heading(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -342,7 +342,7 @@ def heading(
 
 
 def blockquote(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -359,7 +359,7 @@ def blockquote(
 
 
 def paragraph(  # noqa: C901
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -421,7 +421,7 @@ def paragraph(  # noqa: C901
 
 
 def list_item(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -442,7 +442,7 @@ def list_item(
 
 
 def bullet_list(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,
@@ -471,7 +471,7 @@ def bullet_list(
 
 
 def ordered_list(
-    node: "SyntaxTreeNode",
+    node: "RenderTreeNode",
     renderer_funcs: Mapping[str, RendererFunc],
     options: Mapping[str, Any],
     env: MutableMapping,

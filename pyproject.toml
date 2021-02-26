@@ -37,7 +37,10 @@ mdformat = "mdformat.__main__:run"
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-markdown-it-py = ">=0.5.5"
+# TODO: Use PyPI release when released
+markdown-it-py = { git = "https://github.com/hukkinj1/markdown-it-py.git", branch = "tree-types" }
+#markdown-it-py = { git = "https://github.com/executablebooks/markdown-it-py.git", branch = "master" }
+#markdown-it-py = ">=0.5.5"
 importlib-metadata = { version = ">=0.12", python = "<3.8" }
 typing-extensions= { version = "*", python = "<3.8" }
 

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from mdformat.renderer import _codepoints
 
 if TYPE_CHECKING:
-    from mdformat.renderer import SyntaxTreeNode
+    from mdformat.renderer import RenderTreeNode
 
 # Regex that finds character references.
 # The reference can be either
@@ -23,7 +23,7 @@ RE_CHAR_REFERENCE = re.compile(
 CONSECUTIVE_KEY = "number"
 
 
-def is_tight_list(node: "SyntaxTreeNode") -> bool:
+def is_tight_list(node: "RenderTreeNode") -> bool:
     assert node.type in {"bullet_list", "ordered_list"}
 
     # The list has list items at level +1 so paragraphs in those list
@@ -38,7 +38,7 @@ def is_tight_list(node: "SyntaxTreeNode") -> bool:
     return True
 
 
-def is_tight_list_item(node: "SyntaxTreeNode") -> bool:
+def is_tight_list_item(node: "RenderTreeNode") -> bool:
     assert node.type == "list_item"
     assert node.parent is not None
     return is_tight_list(node.parent)
@@ -60,19 +60,13 @@ def longest_consecutive_sequence(seq: str, char: str) -> int:
     return longest
 
 
-def is_text_inside_autolink(node: "SyntaxTreeNode") -> bool:
+def is_text_inside_autolink(node: "RenderTreeNode") -> bool:
     assert node.type == "text"
     return (
         node.parent  # type: ignore
         and node.parent.type == "link"
         and node.parent.markup == "autolink"
     )
-
-
-def removesuffix(string: str, suffix: str) -> str:
-    if suffix and string.endswith(suffix):
-        return string[: -len(suffix)]
-    return string
 
 
 def maybe_add_link_brackets(link: str) -> str:
@@ -84,7 +78,7 @@ def maybe_add_link_brackets(link: str) -> str:
     return link
 
 
-def get_list_marker_type(node: "SyntaxTreeNode") -> str:
+def get_list_marker_type(node: "RenderTreeNode") -> str:
     if node.type == "bullet_list":
         mode = "bullet"
         primary_marker = "-"

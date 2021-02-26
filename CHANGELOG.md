@@ -14,8 +14,8 @@ Note that there is currently no guarantee for a stable Markdown formatting style
     Use `mdformat.renderer.MDRenderer.render_tree` to render a part of a Markdown document.
 - Added
   - `mdformat.plugins.ParserExtensionInterface.RENDERER_FUNCS`
-  - A class for representing linear `markdown-it` token stream as a tree: `mdformat.renderer.SyntaxTreeNode`
-  - `mdformat.renderer.MDRenderer.render_tree` for rendering a `SyntaxTreeNode`
+  - A class for representing linear `markdown-it` token stream as a tree: `mdformat.renderer.RenderTreeNode`
+  - `mdformat.renderer.MDRenderer.render_tree` for rendering a `RenderTreeNode`
 
 ## 0.5.7
 
