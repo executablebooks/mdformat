@@ -422,7 +422,7 @@ def paragraph(  # noqa: C901
         text = ""
         buffer = ""
         for child in inline_node.children:
-            if child.type_ in {"text", "softbreak"}:
+            if child.type in {"text", "softbreak"}:
                 buffer += child.render(renderer_funcs, options, env)
             else:
                 if buffer:
