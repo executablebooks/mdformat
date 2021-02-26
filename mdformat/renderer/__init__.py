@@ -7,7 +7,7 @@ from typing import Any, Mapping, MutableMapping, Sequence
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
-from markdown_it.tree import SyntaxTreeNodeBase
+from markdown_it.tree import SyntaxTreeNode
 
 from mdformat.renderer._default_renderers import DEFAULT_RENDERER_FUNCS
 from mdformat.renderer.typing import RendererFunc
@@ -93,7 +93,7 @@ class MDRenderer:
         return "\n".join(ref_list)
 
 
-class RenderTreeNode(SyntaxTreeNodeBase["RenderTreeNode"]):
+class RenderTreeNode(SyntaxTreeNode):
     def render(
         self,
         renderer_funcs: Mapping[str, RendererFunc],

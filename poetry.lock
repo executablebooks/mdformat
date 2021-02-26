@@ -153,7 +153,7 @@ testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions", 
 type = "git"
 url = "https://github.com/hukkinj1/markdown-it-py.git"
 reference = "tree-types"
-resolved_reference = "aa57244e71bf7e94f14eb66649ec118f830e9616"
+resolved_reference = "fce3d214efc686b03907eea1d543a59edb944e03"
 
 [[package]]
 name = "mdit-py-plugins"
