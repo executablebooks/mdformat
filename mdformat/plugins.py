@@ -1,11 +1,10 @@
 import argparse
 import sys
-from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple
+from typing import Callable, Dict, Mapping
 
 from markdown_it import MarkdownIt
-from markdown_it.token import Token
 
-from mdformat.renderer import MDRenderer
+from mdformat.renderer.typing import RendererFunc
 
 if sys.version_info >= (3, 8):
     from importlib import metadata as importlib_metadata
@@ -16,7 +15,7 @@ else:
 
 
 def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:
-    codeformatter_entrypoints = importlib_metadata.entry_points().get(
+    codeformatter_entrypoints = importlib_metadata.entry_points().get(  # type: ignore
         "mdformat.codeformatter", ()
     )
     return {ep.name: ep.load() for ep in codeformatter_entrypoints}
@@ -32,6 +31,11 @@ class ParserExtensionInterface(Protocol):
     # (optional, default: False)
     CHANGES_AST: bool = False
 
+    # A mapping from `RenderTreeNode.type` to a `RendererFunc` that can
+    # render the given `RenderTreeNode` type. These override the default
+    # `RendererFunc`s defined in `mdformat.renderer.DEFAULT_RENDERER_FUNCS`.
+    RENDERER_FUNCS: Mapping[str, RendererFunc]
+
     @staticmethod
     def add_cli_options(parser: argparse.ArgumentParser) -> None:
         """Add options to the mdformat CLI, to be stored in
@@ -41,23 +45,9 @@ class ParserExtensionInterface(Protocol):
     def update_mdit(mdit: MarkdownIt) -> None:
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
 
-    @staticmethod
-    def render_token(
-        renderer: MDRenderer,
-        tokens: Sequence[Token],
-        index: int,
-        options: Mapping[str, Any],
-        env: dict,
-    ) -> Optional[Tuple[str, int]]:
-        """Convert token(s) to a string, or return None if no render method
-        available.
-
-        :returns: (text, index) where index is of the final "consumed" token
-        """
-
 
 def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:
-    parser_extension_entrypoints = importlib_metadata.entry_points().get(
+    parser_extension_entrypoints = importlib_metadata.entry_points().get(  # type: ignore  # noqa: E501
         "mdformat.parser_extension", ()
     )
     return {ep.name: ep.load() for ep in parser_extension_entrypoints}

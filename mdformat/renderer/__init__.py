@@ -1,14 +1,16 @@
-__all__ = ("MDRenderer", "MARKERS", "LOGGER")
+__all__ = ("MDRenderer", "LOGGER", "RenderTreeNode", "DEFAULT_RENDERER_FUNCS")
 
 
 import logging
-from typing import Any, Mapping, Optional, Sequence
+from types import MappingProxyType
+from typing import Any, Mapping, MutableMapping, Sequence
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
-from mdformat.renderer import _container_renderers, _token_renderers
-from mdformat.renderer._util import MARKERS, removesuffix
+from mdformat.renderer._default_renderers import DEFAULT_RENDERER_FUNCS
+from mdformat.renderer._tree import SyntaxTreeNode
+from mdformat.renderer.typing import RendererFunc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,113 +28,58 @@ class MDRenderer:
         """__init__ must have `parser` parameter for markdown-it-py
         compatibility."""
 
-    def render(  # noqa: C901
+    def render(
         self,
         tokens: Sequence[Token],
         options: Mapping[str, Any],
-        env: dict,
+        env: MutableMapping,
         *,
-        start: int = 0,
-        stop: Optional[int] = None,
         finalize: bool = True,
-        _recursion_level: int = 0,
     ) -> str:
         """Takes token stream and generates Markdown.
 
         Args:
-            tokens: A list of block tokens to render
+            tokens: A sequence of block tokens to render
             options: Params of parser instance
             env: Additional data from parsed input
-            start: Start rendering from this index
-            stop: Stop rendering before this index
-            finalize: replace markers and write references
+            finalize: write references and add trailing newline
         """
-        assert _recursion_level in {
-            0,
-            1,
-        }, "There should be no more than one level of recursion in tokens"
-        text_stack = [""]
+        tree = RenderTreeNode(tokens)
+        return self.render_tree(tree, options, env, finalize=finalize)
 
-        i = start - 1
-        if stop is None:
-            stop = len(tokens)
-        while (i + 1) < stop:
-            i += 1
-            token = tokens[i]
+    def render_tree(
+        self,
+        tree: "RenderTreeNode",
+        options: Mapping[str, Any],
+        env: MutableMapping,
+        *,
+        finalize: bool = True,
+    ) -> str:
+        # Update RENDERER_MAP defaults with renderer functions defined
+        # by plugins.
+        updated_renderers = {}
+        for plugin in options.get("parser_extension", []):
+            for token_name, renderer_func in plugin.RENDERER_FUNCS.items():
+                if token_name in updated_renderers:
+                    LOGGER.warning(
+                        "Plugin conflict. More than one plugin defined a renderer"
+                        f' for "{token_name}" token or token pair.'
+                    )
+                else:
+                    updated_renderers[token_name] = renderer_func
+        renderer_map = MappingProxyType({**DEFAULT_RENDERER_FUNCS, **updated_renderers})
 
-            result = None
-
-            # first check plugins
-            for plugin in options.get("parser_extension", []):
-                output = plugin.render_token(self, tokens, i, options, env)
-                if output is not None:
-                    result, i = output
-                    break
-
-            if result is not None:
-                # if a plugin has handled the token,
-                # we assume that it does not need to open or close a container
-                text_stack[-1] = text_stack[-1] + result
-                continue
-
-            if token.type == "inline":
-                assert (
-                    token.children is not None
-                ), "inline token children can not be None"
-                # inline tokens require nested rendering
-                result = self.render(
-                    token.children,
-                    options,
-                    env,
-                    finalize=finalize,
-                    _recursion_level=_recursion_level + 1,
-                )
-            else:
-                # otherwise use a built-in renderer
-                tkn_renderer = getattr(
-                    _token_renderers, token.type, _token_renderers.default
-                )
-                result = tkn_renderer(tokens, i, options, env)
-
-            # If the token opens a new container block, create a new item for
-            # it in the text stack.
-            if token.nesting == 1:
-                text_stack.append(result)
-            # If the token doesn't change nesting, write in the immediate container
-            # block's stack item.
-            elif token.nesting == 0:
-                text_stack[-1] = text_stack[-1] + result
-            # If the token ends a container block, pop the block's stack item,
-            # format all markdown of that block, and append formatted markdown
-            # to the block's container's stack item.
-            else:  # token.nesting == -1
-                container_result = text_stack.pop() + result
-                container_renderer = getattr(
-                    _container_renderers, token.type, _container_renderers.default
-                )
-                container_result = container_renderer(
-                    container_result, tokens, i, options, env
-                )
-                text_stack[-1] = text_stack[-1] + container_result
-
-        rendered_content = text_stack.pop()
-        assert not text_stack, "Text stack should be empty before returning"
-
-        if finalize and not _recursion_level:
-            rendered_content = removesuffix(rendered_content, MARKERS.BLOCK_SEPARATOR)
-            rendered_content = rendered_content.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
-
+        text = tree.render(renderer_map, options, env)
+        if finalize:
             if env.get("used_refs"):
-                rendered_content += "\n\n"
-                rendered_content += self._write_references(env)
-
-            rendered_content += "\n"
-
-        return rendered_content
+                text += "\n\n"
+                text += self._write_references(env)
+            text += "\n"
+        return text
 
     @staticmethod
-    def _write_references(env: dict) -> str:
-        text = ""
+    def _write_references(env: MutableMapping) -> str:
+        ref_list = []
         for label in sorted(env.get("used_refs", [])):
             ref = env["references"][label]
             destination = ref["href"] if ref["href"] else "<>"
@@ -142,5 +89,16 @@ class MDRenderer:
             if title:
                 title = title.replace('"', '\\"')
                 item += f' "{title}"'
-            text += item + "\n"
-        return text.rstrip()
+            ref_list.append(item)
+        return "\n".join(ref_list)
+
+
+class RenderTreeNode(SyntaxTreeNode):
+    def render(
+        self,
+        renderer_funcs: Mapping[str, RendererFunc],
+        options: Mapping[str, Any],
+        env: MutableMapping,
+    ) -> str:
+        renderer_func = renderer_funcs[self.type]
+        return renderer_func(self, renderer_funcs, options, env)

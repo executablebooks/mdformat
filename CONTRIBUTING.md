@@ -11,7 +11,7 @@ New configuration will only be added for a very good reason and use case.
 
 Below are the basic development steps,
 and for further information also see the
-[EPB organisation guidelines](https://github.com/executablebooks/.github/blob/master/CONTRIBUTING.md).
+[EBP organisation guidelines](https://github.com/executablebooks/.github/blob/master/CONTRIBUTING.md).
 
 1. Fork and clone the repository.
 
@@ -40,7 +40,7 @@ and for further information also see the
 1. Test the pre-commit hook against the repository
 
    ```bash
-   pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
+   pre-commit try-repo . mdformat --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
    ```
 
 1. Commit, push, and make a PR.
@@ -88,10 +88,9 @@ The easiest way to get started on a plugin, is to use the <https://github.com/ex
 Mdformat parser extension plugins need to adhere to the `mdformat.plugins.ParserExtensionInterface`:
 
 ```python
-from typing import List, Optional, Tuple
+from typing import Mapping
 from markdown_it import MarkdownIt
-from markdown_it.token import Token
-from mdformat.renderer import MDRenderer
+from mdformat.renderer.typing import RendererFunc
 
 
 def update_mdit(mdit: MarkdownIt) -> None:
@@ -99,23 +98,14 @@ def update_mdit(mdit: MarkdownIt) -> None:
    pass
 
 
-def render_token(
-   renderer: MDRenderer,
-   tokens: List[Token],
-   index: int,
-   options: dict,
-   env: dict,
-) -> Optional[Tuple[str, int]]:
-   """Convert token(s) to a string, or return None if no render method
-   available.
-
-   :returns: (text, index) where index is of the final "consumed" token
-   """
-   return None
+# A mapping from `RenderTreeNode.type` value to a `RendererFunc` that can
+# render the given `RenderTreeNode` type. These functions override the default
+# `RendererFunc`s defined in `mdformat.renderer.DEFAULT_RENDERER_FUNCS`.
+RENDERER_FUNCS: Mapping[str, RendererFunc]
 ```
 
-This function needs to be exposed via entry point distribution metadata.
-and the entry point's group must be "mdformat.parser_extension".
+This interface needs to be exposed via entry point distribution metadata.
+The entry point's group must be "mdformat.parser_extension".
 
 If using `setup.py` for packaging, the entry point configuration would have to be similar to:
 
