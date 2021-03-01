@@ -365,6 +365,15 @@ def blockquote(
     return quoted_str
 
 
+def _first_line_width(text: str) -> int:
+    width = 0
+    for c in text:
+        if c == "\n":
+            return width
+        width += 1
+    return width
+
+
 def _last_line_width(text: str) -> int:
     width = 0
     for c in reversed(text):
@@ -428,7 +437,19 @@ def paragraph(  # noqa: C901
                 if buffer:
                     text += _wrap(buffer, width=wrap_mode, preceding_text=text)
                 buffer = ""
-                text += child.render(renderer_funcs, options, env)
+
+                no_wrap_section = child.render(renderer_funcs, options, env)
+                # Add preceding wrap if the section extends
+                # beyond target wrap width
+                if (
+                    isinstance(wrap_mode, int)
+                    and text
+                    and text[-1] == " "
+                    and _last_line_width(text) + _first_line_width(no_wrap_section)
+                    > wrap_mode
+                ):
+                    text = text[:-1] + "\n"
+                text += no_wrap_section
         if buffer:
             text += _wrap(buffer, width=wrap_mode, preceding_text=text)
     else:
