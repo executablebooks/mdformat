@@ -7,9 +7,9 @@ from typing import Any, Mapping, MutableMapping, Sequence
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
-from markdown_it.tree import SyntaxTreeNode
 
 from mdformat.renderer._default_renderers import DEFAULT_RENDERER_FUNCS
+from mdformat.renderer._tree import SyntaxTreeNode
 from mdformat.renderer.typing import RendererFunc
 
 LOGGER = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class MDRenderer:
             env: Additional data from parsed input
             finalize: write references and add trailing newline
         """
-        tree = RenderTreeNode.from_tokens(tokens)
+        tree = RenderTreeNode(tokens)
         return self.render_tree(tree, options, env, finalize=finalize)
 
     def render_tree(
