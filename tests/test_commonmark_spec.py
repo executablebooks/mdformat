@@ -81,6 +81,7 @@ EXTRA_CASES = (
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 
 
+@pytest.mark.parametrize("wrap", ["keep", "no", 60])
 @pytest.mark.parametrize("number", [True, False])
 @pytest.mark.parametrize(
     "entry",
@@ -92,14 +93,14 @@ ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
         for c in ALL_CASES
     ],
 )
-def test_commonmark_spec(number, entry):
+def test_commonmark_spec(wrap, number, entry):
     """mdformat.text() against the Commonmark spec.
 
     Test that:
     1. Markdown AST is the same before and after 1 pass of formatting
     2. Markdown after 1st pass and 2nd pass of formatting are equal
     """
-    options = {"number": number}
+    options = {"wrap": wrap, "number": number}
     md_original = entry["md"]
     md_new = mdformat.text(md_original, options=options)
     md_2nd_pass = mdformat.text(md_new, options=options)

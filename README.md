@@ -72,18 +72,22 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ```console
 foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number] [paths [paths ...]]
+usage: mdformat [-h] [--check] [--version] [--number]
+                [--wrap {keep,no,INTEGER}]
+                [paths [paths ...]]
 
 CommonMark compliant Markdown formatter
 
 positional arguments:
-  paths       files to format
+  paths                 files to format
 
 optional arguments:
-  -h, --help  show this help message and exit
-  --check     do not apply changes to files
-  --version   show program's version number and exit
-  --number    apply consecutive numbering to ordered lists
+  -h, --help            show this help message and exit
+  --check               do not apply changes to files
+  --version             show program's version number and exit
+  --number              apply consecutive numbering to ordered lists
+  --wrap {keep,no,INTEGER}
+                        paragraph word wrap mode (default: keep)
 ```
 
 ## Python API usage
@@ -120,11 +124,12 @@ mdformat.file(filepath)
 Any options available in the CLI are also available in the Python API,
 with equivalent option names.
 
-For instance, to switch on consecutive numbering of ordered lists, do
+For instance, to switch on consecutive numbering of ordered lists,
+and set a word wrap target width of 60 characters, do
 
 ```python
 import mdformat
-mdformat.file("FILENAME.md", options={"number": True})
+mdformat.file("FILENAME.md", options={"number": True, "wrap": 60})
 ```
 
 ## Usage as a pre-commit hook

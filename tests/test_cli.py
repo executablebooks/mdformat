@@ -117,3 +117,55 @@ def test_version(capsys):
     assert exc_info.value.code == 0
     captured = capsys.readouterr()
     assert captured.out == f"mdformat {mdformat.__version__}\n"
+
+
+def test_no_wrap(tmp_path):
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text(
+        "all\n"
+        "these newlines\n"
+        "except the one in this hardbreak  \n"
+        "should be\n"
+        "removed because they are\n"
+        "in the same paragraph\n"
+        "\n"
+        "This however is the next\n"
+        "paragraph.    Whitespace should  be collapsed\n"
+        "    \t here\n"
+    )
+    assert run([str(file_path), "--wrap=no"]) == 0
+    assert (
+        file_path.read_text()
+        == "all these newlines except the one in this hardbreak\\\n"
+        "should be removed because they are in the same paragraph\n"
+        "\n"
+        "This however is the next paragraph. Whitespace should be collapsed here\n"
+    )
+
+
+def test_wrap(tmp_path):
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text(
+        "This\n"
+        "text\n"
+        "should\n"
+        "be wrapped again so that wrap width is whatever is defined below. "
+        "Also     whitespace            should\t\tbe             collapsed. "
+        "Next up a second paragraph:\n"
+        "\n"
+        "This paragraph should also be wrapped. "
+        "Here's some more text to wrap.  "
+        "Here's some more text to wrap.  "
+        "Here's some more text to wrap.  "
+    )
+    assert run([str(file_path), "--wrap=60"]) == 0
+    assert (
+        file_path.read_text()
+        == "This text should be wrapped again so that wrap width is\n"
+        "whatever is defined below. Also whitespace should be\n"
+        "collapsed. Next up a second paragraph:\n"
+        "\n"
+        "This paragraph should also be wrapped. Here's some more text\n"
+        "to wrap. Here's some more text to wrap. Here's some more\n"
+        "text to wrap.\n"
+    )

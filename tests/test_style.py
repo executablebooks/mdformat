@@ -9,7 +9,11 @@ from mdformat.renderer._util import CONSECUTIVE_KEY
 
 @pytest.mark.parametrize(
     "fixture_file,options",
-    [("default_style.md", {}), ("consecutive_numbering.md", {CONSECUTIVE_KEY: True})],
+    [
+        ("default_style.md", {}),
+        ("consecutive_numbering.md", {CONSECUTIVE_KEY: True}),
+        ("wrap_width_50.md", {"wrap": 50}),
+    ],
 )
 def test_style(fixture_file, options):
     """Test Markdown renderer renders expected style."""

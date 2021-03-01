@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 import sys
 import textwrap
-from typing import Any, Generator, Iterable, List, Mapping, Optional, Sequence
+from typing import Any, Generator, Iterable, List, Mapping, Optional, Sequence, Union
 
 import mdformat
 from mdformat._util import is_md_equal
@@ -94,6 +94,15 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     return 0
 
 
+def validate_wrap_arg(value: str) -> Union[str, int]:
+    if value in {"keep", "no"}:
+        return value
+    width = int(value)
+    if width < 1:
+        raise ValueError("wrap width must be a positive integer")
+    return width
+
+
 def make_arg_parser(
     parser_plugins: Iterable[mdformat.plugins.ParserExtensionInterface],
 ) -> argparse.ArgumentParser:
@@ -111,6 +120,13 @@ def make_arg_parser(
         f"--{CONSECUTIVE_KEY}",
         action="store_true",
         help="apply consecutive numbering to ordered lists",
+    )
+    parser.add_argument(
+        "--wrap",
+        default="keep",
+        type=validate_wrap_arg,
+        metavar="{keep,no,INTEGER}",
+        help="paragraph word wrap mode (default: keep)",
     )
     for plugin in parser_plugins:
         if hasattr(plugin, "add_cli_options"):
