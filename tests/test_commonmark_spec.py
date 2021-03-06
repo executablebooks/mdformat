@@ -55,6 +55,7 @@ EXTRA_CASES = (
     {"name": "debug", "md": "> ```\n> a\n> \n> \n> ```\n"},
     {"name": "list indentation", "md": "- foo\n\n\t\tbar\n"},
     {"name": "list in quote", "md": "> -"},
+    {"name": "starts with >", "md": "\\>"},
     {"name": "reference link", "md": '[foo][bar]\n\n[bar]: /url "title"\n'},
     {"name": "empty file", "md": ""},
     {"name": "whitespace only", "md": "  \n\n \n  \n"},
