@@ -71,6 +71,7 @@ profile = "black"
 addopts = "--strict-markers --strict-config"
 xfail_strict = true
 
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]

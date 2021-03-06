@@ -355,8 +355,6 @@ def blockquote(
     env: MutableMapping,
 ) -> str:
     text = make_render_children(separator="\n\n")(node, renderer_funcs, options, env)
-    # text = removesuffix(text, MARKERS.BLOCK_SEPARATOR)
-    # text = text.replace(MARKERS.BLOCK_SEPARATOR, "\n\n")
     lines = text.splitlines()
     if not lines:
         return ">"
@@ -467,6 +465,11 @@ def paragraph(  # noqa: C901
         if lines[i].startswith("#"):
             lines[i] = f"\\{lines[i]}"
 
+        # Make sure a paragraph line does not start with ">"
+        # (otherwise it will be interpreted as a block quote).
+        if lines[i].startswith(">"):
+            lines[i] = f"\\{lines[i]}"
+
         # Make sure a paragraph line does not start with "*", "-" or "+"
         # followed by a space, tab, or end of line.
         # (otherwise it will be interpreted as list item).
@@ -516,9 +519,8 @@ def list_item(
 ) -> str:
     """Return one list item as string.
 
-    The string contains MARKERS.LIST_ITEMs, MARKERS.LIST_INDENTs and
-    MARKERS.LIST_INDENT_FIRST_LINEs which have to be replaced in later
-    processing.
+    This returns just the content. List item markers and indentation are
+    added in `bullet_list` and `ordered_list` renderers.
     """
     is_tight = is_tight_list_item(node)
     block_separator = "\n" if is_tight else "\n\n"
@@ -582,7 +584,7 @@ def ordered_list(
         for line_index, line in enumerate(lines):
             if line_index == 0:
                 if conseucutive_numbering:
-                    # Replace MARKERS.LIST_ITEM with consecutive numbering,
+                    # Prefix first line of the list item with consecutive numbering,
                     # padded with zeros to make all markers of even length.
                     # E.g.
                     #   002. This is the first list item
@@ -599,10 +601,10 @@ def ordered_list(
                         else f"{number_str}{marker_type}"
                     )
                 else:
-                    # Replace first MARKERS.LIST_ITEM with the starting number of the
-                    # list. Replace following MARKERS.LIST_ITEMs with number one
-                    # prefixed by zeros to make the marker of even length with the
-                    # first one.
+                    # Prefix first line of first item with the starting number of the
+                    # list. Prefix following list items with the number one
+                    # prefixed by zeros to make the list item marker of even length
+                    # with the first one.
                     # E.g.
                     #   5321. This is the first list item
                     #   0001. Second item
