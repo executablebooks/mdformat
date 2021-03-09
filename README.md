@@ -260,4 +260,9 @@ if you wish to implement a new parser extension plugin.
     <td><code>toc</code></td>
     <td>Adds the capability to auto-generate a table of contents</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/butler54/mdformat-toc">mdformat-frontmatter</a></td>
+    <td><code>frontmatter</code></td>
+    <td>Adds the capability parse yaml headers to markdown documents.</td>
+  </tr>
 </table>
