@@ -263,6 +263,6 @@ if you wish to implement a new parser extension plugin.
   <tr>
     <td><a href="https://github.com/butler54/mdformat-frontmatter">mdformat-frontmatter</a></td>
     <td><code>frontmatter</code></td>
-    <td>Adds the capability parse yaml headers to markdown documents.</td>
+    <td>Adds support for front matter, and formats YAML front matter</td>
   </tr>
 </table>
