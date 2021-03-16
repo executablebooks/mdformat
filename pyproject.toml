@@ -77,9 +77,13 @@ legacy_tox_ini = """
 [tox]
 envlist = py{36,37,38,39}
 isolated_build = True
+requires =
+    poetry >= 1.1.4
+
+[testenv]
+allowlist_externals = poetry
 
 [testenv:py{36,37,38,39}]
-deps = poetry
 commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
@@ -92,7 +96,6 @@ deps = pre-commit
 commands = pre-commit run {posargs}
 
 [testenv:py{36,37,38,39}-mypy]
-deps = poetry
 commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
