@@ -80,23 +80,27 @@ isolated_build = True
 
 [testenv:py{36,37,38,39}]
 deps = poetry
-commands =
+commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
+commands =
     pytest {posargs}
 
 [testenv:py{36,37,38,39}-pre-commit]
+skip_install = True
 deps = pre-commit
 commands = pre-commit run {posargs}
 
 [testenv:py{36,37,38,39}-mypy]
 deps = poetry
-commands =
+commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
+commands =
     mypy {posargs:.}
 
 [testenv:py{36,37,38,39}-hook]
+skip_install = True
 deps = pre-commit
 commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
 
