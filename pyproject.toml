@@ -75,33 +75,31 @@ xfail_strict = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{36,37,38}
+envlist = py{36,37,38,39}
 isolated_build = True
 
-[testenv:py{36,37,38}]
-# from https://github.com/python-poetry/poetry/issues/1941
-# it appears there is no easy way to access [tool.poetry.dev-dependencies]
-deps =
-    pytest
-    pytest-randomly
-    pytest-cov
-commands = pytest {posargs}
+[testenv:py{36,37,38,39}]
+deps = poetry
+commands =
+    # TODO: Use --dev-only flag when poetry 1.2 is released
+    poetry install --no-root
+    pytest {posargs}
 
-[testenv:py{36,37,38}-pre-commit]
+[testenv:py{36,37,38,39}-pre-commit]
 deps = pre-commit
 commands = pre-commit run {posargs}
 
-[testenv:py{36,37,38}-mypy]
-deps =
-    mypy
-    pytest
-commands = mypy {posargs:.}
+[testenv:py{36,37,38,39}-mypy]
+deps = poetry
+commands =
+    # TODO: Use --dev-only flag when poetry 1.2 is released
+    poetry install --no-root
+    mypy {posargs:.}
 
-[testenv:py{36,37,38}-hook]
+[testenv:py{36,37,38,39}-hook]
 deps = pre-commit
 commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
 
-[testenv:py{36,37,38}-cli]
+[testenv:py{36,37,38,39}-cli]
 commands = mdformat {posargs}
-
 """
