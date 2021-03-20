@@ -46,6 +46,9 @@ typing-extensions= { version = ">=3.7.4", python = "<3.8" }
 pytest = "*"
 pytest-randomly = "*"
 pytest-cov = "*"
+# This is a dependency of pytest-cov that we list explicitly because we
+# want the "toml" extra for pyproject.toml support.
+coverage = { version = "*", extras = ["toml"] }
 
 # Tools
 pre-commit = "*"
@@ -110,3 +113,7 @@ commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --fil
 [testenv:py{36,37,38,39}-cli]
 commands = mdformat {posargs}
 """
+
+
+[tool.coverage.run]
+omit = ["tests/*", "*/site-packages/*"]
