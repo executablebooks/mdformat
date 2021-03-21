@@ -441,8 +441,7 @@ def paragraph(  # noqa: C901
                 # beyond target wrap width
                 if (
                     isinstance(wrap_mode, int)
-                    and text
-                    and text[-1] == " "
+                    and text.endswith(" ")
                     and _last_line_width(text) + _first_line_width(no_wrap_section)
                     > wrap_mode
                 ):
@@ -546,13 +545,15 @@ def bullet_list(
         list_item = child.render(renderer_funcs, options, env)
         lines = list_item.split("\n")
         formatted_lines = []
-        for i, line in enumerate(lines):
-            if i == 0:
-                formatted_lines.append(
-                    f"{marker_type}{first_line_indent}{line}" if line else marker_type
-                )
-            else:
-                formatted_lines.append(f"{indent}{line}" if line else "")
+        line_iterator = iter(lines)
+        first_line = next(line_iterator)
+        formatted_lines.append(
+            f"{marker_type}{first_line_indent}{first_line}"
+            if first_line
+            else marker_type
+        )
+        for line in line_iterator:
+            formatted_lines.append(f"{indent}{line}" if line else "")
 
         text += "\n".join(formatted_lines)
         if child_idx != len(node.children) - 1:
@@ -581,53 +582,53 @@ def ordered_list(
         lines = list_item_text.split("\n")
         formatted_lines = []
         conseucutive_numbering = options.get("mdformat", {}).get(CONSECUTIVE_KEY)
-        for line_index, line in enumerate(lines):
-            if line_index == 0:
-                if conseucutive_numbering:
-                    # Prefix first line of the list item with consecutive numbering,
-                    # padded with zeros to make all markers of even length.
-                    # E.g.
-                    #   002. This is the first list item
-                    #   003. Second item
-                    #   ...
-                    #   112. Last item
-                    number = starting_number + list_item_index
-                    pad = len(str(list_len + starting_number - 1))
-                    indentation = " " * (pad + len(f"{marker_type}{first_line_indent}"))
-                    number_str = str(number).rjust(pad, "0")
-                    formatted_lines.append(
-                        f"{number_str}{marker_type}{first_line_indent}{line}"
-                        if line
-                        else f"{number_str}{marker_type}"
-                    )
-                else:
-                    # Prefix first line of first item with the starting number of the
-                    # list. Prefix following list items with the number one
-                    # prefixed by zeros to make the list item marker of even length
-                    # with the first one.
-                    # E.g.
-                    #   5321. This is the first list item
-                    #   0001. Second item
-                    #   0001. Third item
-                    first_item_marker = f"{starting_number}{marker_type}"
-                    other_item_marker = (
-                        "0" * (len(str(starting_number)) - 1) + "1" + marker_type
-                    )
-                    indentation = " " * len(first_item_marker + first_line_indent)
-                    if list_item_index == 0:
-                        formatted_lines.append(
-                            f"{first_item_marker}{first_line_indent}{line}"
-                            if line
-                            else first_item_marker
-                        )
-                    else:
-                        formatted_lines.append(
-                            f"{other_item_marker}{first_line_indent}{line}"
-                            if line
-                            else other_item_marker
-                        )
+        line_iterator = iter(lines)
+        first_line = next(line_iterator)
+        if conseucutive_numbering:
+            # Prefix first line of the list item with consecutive numbering,
+            # padded with zeros to make all markers of even length.
+            # E.g.
+            #   002. This is the first list item
+            #   003. Second item
+            #   ...
+            #   112. Last item
+            number = starting_number + list_item_index
+            pad = len(str(list_len + starting_number - 1))
+            indentation = " " * (pad + len(f"{marker_type}{first_line_indent}"))
+            number_str = str(number).rjust(pad, "0")
+            formatted_lines.append(
+                f"{number_str}{marker_type}{first_line_indent}{first_line}"
+                if first_line
+                else f"{number_str}{marker_type}"
+            )
+        else:
+            # Prefix first line of first item with the starting number of the
+            # list. Prefix following list items with the number one
+            # prefixed by zeros to make the list item marker of even length
+            # with the first one.
+            # E.g.
+            #   5321. This is the first list item
+            #   0001. Second item
+            #   0001. Third item
+            first_item_marker = f"{starting_number}{marker_type}"
+            other_item_marker = (
+                "0" * (len(str(starting_number)) - 1) + "1" + marker_type
+            )
+            indentation = " " * len(first_item_marker + first_line_indent)
+            if list_item_index == 0:
+                formatted_lines.append(
+                    f"{first_item_marker}{first_line_indent}{first_line}"
+                    if first_line
+                    else first_item_marker
+                )
             else:
-                formatted_lines.append(f"{indentation}{line}" if line else "")
+                formatted_lines.append(
+                    f"{other_item_marker}{first_line_indent}{first_line}"
+                    if first_line
+                    else other_item_marker
+                )
+        for line in line_iterator:
+            formatted_lines.append(f"{indentation}{line}" if line else "")
 
         text += "\n".join(formatted_lines)
         if list_item_index != len(node.children) - 1:
