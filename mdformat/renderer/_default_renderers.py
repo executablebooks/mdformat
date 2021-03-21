@@ -543,9 +543,8 @@ def bullet_list(
     text = ""
     for child_idx, child in enumerate(node.children):
         list_item = child.render(renderer_funcs, options, env)
-        lines = list_item.split("\n")
         formatted_lines = []
-        line_iterator = iter(lines)
+        line_iterator = iter(list_item.split("\n"))
         first_line = next(line_iterator)
         formatted_lines.append(
             f"{marker_type}{first_line_indent}{first_line}"
@@ -567,6 +566,7 @@ def ordered_list(
     options: Mapping[str, Any],
     env: MutableMapping,
 ) -> str:
+    consecutive_numbering = options.get("mdformat", {}).get(CONSECUTIVE_KEY)
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     block_separator = "\n" if is_tight_list(node) else "\n\n"
@@ -579,12 +579,10 @@ def ordered_list(
     text = ""
     for list_item_index, list_item in enumerate(node.children):
         list_item_text = list_item.render(renderer_funcs, options, env)
-        lines = list_item_text.split("\n")
         formatted_lines = []
-        conseucutive_numbering = options.get("mdformat", {}).get(CONSECUTIVE_KEY)
-        line_iterator = iter(lines)
+        line_iterator = iter(list_item_text.split("\n"))
         first_line = next(line_iterator)
-        if conseucutive_numbering:
+        if consecutive_numbering:
             # Prefix first line of the list item with consecutive numbering,
             # padded with zeros to make all markers of even length.
             # E.g.

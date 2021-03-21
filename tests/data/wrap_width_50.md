@@ -15,3 +15,16 @@ _THIS IS THE LONG EMPHASIS SECTION. IT SHOULD BE WRAPPED ON ITS OWN LINE_
 We want to wrap before the link
 [THIS IS THE LINK THAT SHOULD BE ON ITS OWN LINE](https://www.python.org/)
 .
+
+
+Wrap boundary
+.
+z zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+
+z zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+.
+z zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+
+z
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+.
