@@ -122,8 +122,8 @@ class SyntaxTreeNode:
             return [self]
         return self.parent.children
 
-    @property  # noqa: A003
-    def type(self) -> str:
+    @property
+    def type(self) -> str:  # noqa: A003
         """Get a string type of the represented syntax.
 
         - "root" for root nodes
@@ -224,8 +224,8 @@ class SyntaxTreeNode:
             return {}
         return dict(token_attrs)
 
-    @property  # noqa: A003
-    def map(self) -> Optional[Tuple[int, int]]:
+    @property
+    def map(self) -> Optional[Tuple[int, int]]:  # noqa: A003
         """Source map info.
 
         Format: `Tuple[ line_begin, line_end ]`
