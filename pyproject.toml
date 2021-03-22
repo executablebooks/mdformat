@@ -55,6 +55,10 @@ pre-commit = "*"
 mypy = "*"  # this is separate to pre-commit, since it requires an external env
 bump2version = "*"
 
+# Docs
+sphinx = "*"
+myst-parser = "*"
+
 
 [tool.isort]
 # Force imports to be sorted by module, independent of import type
