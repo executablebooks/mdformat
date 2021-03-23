@@ -6,6 +6,23 @@
 
 > CommonMark compliant Markdown formatter
 
+```{toctree}
+---
+maxdepth: 2
+caption: Using mdformat
+---
+using/test1.md
+```
+
+```{toctree}
+---
+maxdepth: 2
+caption: Reference and contributing
+---
+contributing/test2.md
+GitHub repository <https://github.com/executablebooks/mdformat>
+```
+
 Mdformat is an opinionated Markdown formatter
 that can be used to enforce a consistent style in Markdown files.
 Mdformat is a Unix-style command-line tool as well as a Python library.
