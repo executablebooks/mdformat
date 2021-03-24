@@ -93,61 +93,11 @@ optional arguments:
 
 ## Python API usage
 
-### Format text
-
-```python
-import mdformat
-
-unformatted = "\n\n# A header\n\n"
-formatted = mdformat.text(unformatted)
-assert formatted == "# A header\n"
-```
-
-### Format a file
-
-Format file `README.md` in place:
-
-```python
-import mdformat
-
-# Input filepath as a string...
-mdformat.file("README.md")
-
-# ...or a pathlib.Path object
-import pathlib
-
-filepath = pathlib.Path("README.md")
-mdformat.file(filepath)
-```
-
-### Options
-
-Any options available in the CLI are also available in the Python API,
-with equivalent option names.
-
-For instance, to switch on consecutive numbering of ordered lists,
-and set a word wrap target width of 60 characters, do
-
-```python
-import mdformat
-mdformat.file("FILENAME.md", options={"number": True, "wrap": 60})
-```
+TODO: add a readthedocs link
 
 ## Usage as a pre-commit hook
 
-`mdformat` can be used as a [pre-commit](https://github.com/pre-commit/pre-commit) hook.
-Add the following to your project's `.pre-commit-config.yaml` to enable this:
-
-```yaml
-- repo: https://github.com/executablebooks/mdformat
-  rev: 0.6.1  # Use the ref you want to point at
-  hooks:
-  - id: mdformat
-    # optional
-    additional_dependencies:
-    - mdformat-tables
-    - mdformat-black
-```
+TODO: add a readthedocs link
 
 ## Code formatter plugins
 
