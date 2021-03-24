@@ -15,8 +15,14 @@ Find out more in the [docs](https://mdformat.readthedocs.io).
 
 ## Installing
 
+Install with CommonMark support:
 ```bash
 pip install mdformat
+```
+
+Alternatively install with GitHub Flavored Markdown (GFM) support:
+```bash
+pip install mdformat-gfm
 ```
 
 ## Command line usage
@@ -73,25 +79,13 @@ optional arguments:
                         paragraph word wrap mode (default: keep)
 ```
 
-## Python API usage
-
-TODO: update the link
-
-Read more in the [docs](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#python-api-usage).
-
-## Usage as a pre-commit hook
-
-TODO: update the link
-
-Read more in the [docs](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#usage-as-a-pre-commit-hook).
-
-## Plugins
-
-Mdformat offers an extensible plugin system for both code fence content formatting and parser extensions (like GFM tables).
-Read more in the docs:
-
-TODO: update the links
-
-- [Plugin usage](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
-- [Plugin development](https://mdformat.readthedocs.io/en/latest/developers/contributing.html)
-- [List of existing plugins](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
+## Documentation
+This README merely provides a quickstart guide for the command line interface.
+For more information refer to the [documentation](https://mdformat.readthedocs.io).
+Here's a few pointers to get you started:
+- [Python API usage](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#python-api-usage)
+- [Usage as a pre-commit hook](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#usage-as-a-pre-commit-hook)
+- Plugins
+  - [Plugin usage](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
+  - [Plugin development](https://mdformat.readthedocs.io/en/latest/developers/contributing.html)
+  - [List of existing plugins](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
