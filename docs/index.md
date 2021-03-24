@@ -11,7 +11,7 @@
 maxdepth: 2
 caption: Using mdformat
 ---
-using/test1.md
+using/style.md
 ```
 
 ```{toctree}
