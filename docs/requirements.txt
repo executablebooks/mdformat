@@ -3,3 +3,4 @@
 # https://github.com/readthedocs/readthedocs.org/issues/5572
 
 myst-parser
+furo

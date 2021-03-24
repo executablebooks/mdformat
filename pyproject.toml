@@ -58,6 +58,7 @@ bump2version = "*"
 # Docs
 sphinx = "*"
 myst-parser = "*"
+furo = "*"
 
 
 [tool.isort]
