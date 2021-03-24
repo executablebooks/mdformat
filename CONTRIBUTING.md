@@ -37,10 +37,10 @@ and for further information also see the
    Alternatively you can run the tests *via* `tox`,
    which will automate the poetry install into a virtual environment, before calling pytest.
 
-1. Test the pre-commit hook against the repository
+1. Test the pre-commit hook against the README.md file
 
    ```bash
-   pre-commit try-repo . mdformat --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
+   pre-commit try-repo . mdformat --files README.md
    ```
 
 1. Commit, push, and make a PR.

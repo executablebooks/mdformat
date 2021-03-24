@@ -23,7 +23,7 @@ Mdformat by default will not change word wrapping.
 The rationale for this is to support [Semantic Line Breaks](https://sembr.org/).
 
 For a comprehensive description and rationalization of the style,
-read [the style guide](https://github.com/executablebooks/mdformat/blob/master/STYLE.md).
+read [the style guide](https://github.com/executablebooks/mdformat/TODO/UPDATE-ME.md).
 
 **NOTE:**
 The formatting style produced by mdformat may change in each version.

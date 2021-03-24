@@ -29,8 +29,8 @@ packages = [
 include = ["mdformat/py.typed"]
 
 [tool.poetry.urls]
-"Changelog" = "https://github.com/executablebooks/mdformat/blob/master/CHANGELOG.md"
-"Style guide" = "https://github.com/executablebooks/mdformat/blob/master/STYLE.md"
+"Changelog" = "https://github.com/TODO/UPDATE-ME.md"
+"Style guide" = "https://github.com/TODO/UPDATE-ME.md"
 
 [tool.poetry.scripts]
 mdformat = "mdformat.__main__:run"
@@ -111,7 +111,7 @@ commands =
 [testenv:py{36,37,38,39}-hook]
 skip_install = True
 deps = pre-commit
-commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
+commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files README.md
 
 [testenv:py{36,37,38,39}-cli]
 commands = mdformat {posargs}
