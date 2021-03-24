@@ -24,6 +24,8 @@ read [the style guide](users/style.md).
 The formatting style produced by mdformat may change in each version.
 It is recommended to pin mdformat dependency version.
 
+## Table of Contents
+
 ```{toctree}
 ---
 maxdepth: 2
