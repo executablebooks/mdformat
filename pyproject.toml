@@ -9,6 +9,7 @@ version = "0.6.1"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO
 authors = ["Taneli Hukkinen <hukkinj1@users.noreply.github.com>"]
 description = "CommonMark compliant Markdown formatter"
 repository = "https://github.com/executablebooks/mdformat"
+documentation = "https://mdformat.readthedocs.io"
 readme = "README.md"
 license = "MIT"
 classifiers = [
@@ -29,8 +30,8 @@ packages = [
 include = ["mdformat/py.typed"]
 
 [tool.poetry.urls]
-"Changelog" = "https://github.com/executablebooks/mdformat/blob/master/CHANGELOG.md"
-"Style guide" = "https://github.com/executablebooks/mdformat/blob/master/STYLE.md"
+"Changelog" = "https://mdformat.readthedocs.io/en/latest/developers/changelog.html"
+"Style guide" = "https://mdformat.readthedocs.io/en/latest/users/style.html"
 
 [tool.poetry.scripts]
 mdformat = "mdformat.__main__:run"
@@ -54,6 +55,11 @@ coverage = { version = "*", extras = ["toml"] }
 pre-commit = "*"
 mypy = "*"  # this is separate to pre-commit, since it requires an external env
 bump2version = "*"
+
+# Docs
+sphinx = "*"
+myst-parser = "*"
+furo = "*"
 
 
 [tool.isort]
@@ -107,7 +113,7 @@ commands =
 [testenv:py{36,37,38,39}-hook]
 skip_install = True
 deps = pre-commit
-commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
+commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files README.md
 
 [testenv:py{36,37,38,39}-cli]
 commands = mdformat {posargs}
