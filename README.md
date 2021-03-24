@@ -16,11 +16,13 @@ Find out more in the [docs](https://mdformat.readthedocs.io).
 ## Installing
 
 Install with CommonMark support:
+
 ```bash
 pip install mdformat
 ```
 
 Alternatively install with GitHub Flavored Markdown (GFM) support:
+
 ```bash
 pip install mdformat-gfm
 ```
@@ -80,9 +82,11 @@ optional arguments:
 ```
 
 ## Documentation
+
 This README merely provides a quickstart guide for the command line interface.
 For more information refer to the [documentation](https://mdformat.readthedocs.io).
 Here's a few pointers to get you started:
+
 - [Style guide](https://mdformat.readthedocs.io/en/latest/users/style.html)
 - [Python API usage](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#python-api-usage)
 - [Usage as a pre-commit hook](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#usage-as-a-pre-commit-hook)
