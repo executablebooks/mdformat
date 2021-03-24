@@ -11,25 +11,7 @@ Mdformat is an opinionated Markdown formatter
 that can be used to enforce a consistent style in Markdown files.
 Mdformat is a Unix-style command-line tool as well as a Python library.
 
-The features/opinions of the formatter include:
-
-- Consistent indentation and whitespace across the board
-- Always use ATX style headings
-- Move all link references to the bottom of the document (sorted by label)
-- Reformat indented code blocks as fenced code blocks
-- Use `1.` as the ordered list marker if possible, also for noninitial list items
-
-Mdformat by default will not change word wrapping.
-The rationale for this is to support [Semantic Line Breaks](https://sembr.org/).
-
-For a comprehensive description and rationalization of the style,
-read [the style guide](https://github.com/executablebooks/mdformat/TODO/UPDATE-ME.md).
-
-**NOTE:**
-The formatting style produced by mdformat may change in each version.
-It is recommended to pin mdformat dependency version.
-
-Mdformat offers an extensible plugin system for both code fence content formatting and parser extensions (like tables).
+Find out more in the [docs](https://mdformat.readthedocs.io).
 
 ## Installing
 
@@ -93,14 +75,23 @@ optional arguments:
 
 ## Python API usage
 
-TODO: add a readthedocs link
+TODO: update the link
+
+Read more in the [docs](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#python-api-usage).
 
 ## Usage as a pre-commit hook
 
-TODO: add a readthedocs link
+TODO: update the link
+
+Read more in the [docs](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#usage-as-a-pre-commit-hook).
 
 ## Plugins
 
-TODO: add a readthedocs link to plugin usage
-TODO: add a readthedocs link to plugin development
-TODO: add a readthedocs link to existing plugins list
+Mdformat offers an extensible plugin system for both code fence content formatting and parser extensions (like GFM tables).
+Read more in the docs:
+
+TODO: update the links
+
+- [Plugin usage](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
+- [Plugin development](https://mdformat.readthedocs.io/en/latest/developers/contributing.html)
+- [List of existing plugins](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
