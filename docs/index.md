@@ -9,17 +9,18 @@
 ```{toctree}
 ---
 maxdepth: 2
-caption: Using mdformat
+caption: For users
 ---
-using/style.md
+users/style.md
 ```
 
 ```{toctree}
 ---
 maxdepth: 2
-caption: Reference and contributing
+caption: For developers
 ---
-contributing/test2.md
+developers/contributing.md
+developers/changelog.md
 GitHub repository <https://github.com/executablebooks/mdformat>
 ```
 
