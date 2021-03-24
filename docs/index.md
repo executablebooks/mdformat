@@ -29,7 +29,7 @@ It is recommended to pin mdformat dependency version.
 maxdepth: 2
 caption: For users
 ---
-users/installon_and_usage.md
+users/instalon_and_usage.md
 users/plugins.md
 users/style.md
 ```
