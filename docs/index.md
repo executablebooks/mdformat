@@ -1,4 +1,4 @@
-# mdformat
+# ![mdformat](_static/logo.svg)
 
 > CommonMark compliant Markdown formatter
 
@@ -23,6 +23,8 @@ read [the style guide](users/style.md).
 **NOTE:**
 The formatting style produced by mdformat may change in each version.
 It is recommended to pin mdformat dependency version.
+
+## Table of Contents
 
 ```{toctree}
 ---

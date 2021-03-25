@@ -1,6 +1,6 @@
 # Contributing
 
-Welcome to the `mdformat` repository!
+Welcome to the mdformat developer docs!
 We're excited you're here and want to contribute. ✨
 
 Please discuss new features in an issue before submitting a PR
@@ -95,7 +95,6 @@ from mdformat.renderer.typing import RendererFunc
 
 def update_mdit(mdit: MarkdownIt) -> None:
    """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
-   pass
 
 
 # A mapping from `RenderTreeNode.type` value to a `RendererFunc` that can

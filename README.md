@@ -3,7 +3,7 @@
 [![codecov.io](https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg)](https://codecov.io/gh/executablebooks/mdformat)
 [![PyPI version](https://img.shields.io/pypi/v/mdformat)](https://pypi.org/project/mdformat)
 
-# mdformat
+# ![mdformat](https://raw.githubusercontent.com/executablebooks/mdformat/master/docs/_static/logo.svg)
 
 > CommonMark compliant Markdown formatter
 
@@ -95,3 +95,12 @@ Here's a few pointers to get you started:
   - [Plugin development](https://mdformat.readthedocs.io/en/latest/developers/contributing.html)
   - [List of existing plugins](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
 - [Changelog](https://mdformat.readthedocs.io/en/latest/developers/changelog.html)
+
+## Frequently Asked Questions
+
+### What's wrong with the mdformat logo? It renders incorrectly and is just terrible in general.
+
+Nope, the logo is actually pretty great – you're terrible.
+The logo is more a piece of art than a logo anyways,
+depicting the horrors of poorly formatted text documents.
+I made it.
