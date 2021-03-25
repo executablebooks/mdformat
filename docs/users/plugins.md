@@ -1,6 +1,8 @@
 # Plugins
 
 Mdformat offers an extensible plugin system for both code fence content formatting and Markdown parser extensions (like GFM tables).
+This document explains how to use plugins.
+If you want to create a new plugin, refer to the [contributing](../developers/contributing.md) docs.
 
 ## Code formatter plugins
 
@@ -20,10 +22,6 @@ unformatted = "```python\n'''black converts quotes'''\n```\n"
 formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
-
-Read the
-[contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
-if you wish to implement a new code formatter plugin.
 
 ### Existing plugins
 
@@ -86,10 +84,6 @@ unformatted = "content...\n"
 # Pass in `extensions` here! It is an iterable of extensions that should be loaded
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
-
-Read the
-[contribution guide](https://github.com/executablebooks/mdformat/blob/master/CONTRIBUTING.md#developing-code-formatter-plugins)
-if you wish to implement a new parser extension plugin.
 
 ### Existing plugins
 

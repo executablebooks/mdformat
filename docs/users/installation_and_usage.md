@@ -2,8 +2,16 @@
 
 ## Installing
 
+Install with CommonMark support:
+
 ```bash
 pip install mdformat
+```
+
+Alternatively install with GitHub Flavored Markdown (GFM) support:
+
+```bash
+pip install mdformat-gfm
 ```
 
 ## Command line usage
@@ -91,15 +99,19 @@ mdformat.file(filepath)
 
 ### Options
 
-Any options available in the CLI are also available in the Python API,
-with equivalent option names.
-
-For instance, to switch on consecutive numbering of ordered lists,
-and set a word wrap target width of 60 characters, do
+All formatting style modifying options available in the CLI are also available in the Python API,
+with equivalent option names:
 
 ```python
 import mdformat
-mdformat.file("FILENAME.md", options={"number": True, "wrap": 60})
+
+mdformat.file(
+    "FILENAME.md",
+    options={
+        "number": True,  # switch on consecutive numbering of ordered lists
+        "wrap": 60,  # set word wrap width to 60 characters
+    }
+)
 ```
 
 ## Usage as a pre-commit hook
@@ -112,8 +124,8 @@ Add the following to your project's `.pre-commit-config.yaml` to enable this:
   rev: 0.6.1  # Use the ref you want to point at
   hooks:
   - id: mdformat
-    # optional
+    # Optionally add plugins
     additional_dependencies:
-    - mdformat-tables
+    - mdformat-gfm
     - mdformat-black
 ```

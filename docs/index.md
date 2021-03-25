@@ -1,4 +1,4 @@
-# mdformat
+# ![mdformat](_static/logo.svg)
 
 > CommonMark compliant Markdown formatter
 

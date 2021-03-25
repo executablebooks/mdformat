@@ -1,6 +1,7 @@
 # List dependencies in a format that readthedocs.org understands.
-# Move to .readthedocs.yaml when this issue is resolved:
-# https://github.com/readthedocs/readthedocs.org/issues/5572
+# Move these to pyproject.toml and use the Poetry lockfile if readthedocs.org
+# ever supports that.
 
-myst-parser
-furo
+sphinx == 3.5.3
+myst-parser == 0.13.5
+furo == 2021.3.20b30
