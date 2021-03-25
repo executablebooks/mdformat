@@ -1,4 +1,6 @@
+from pathlib import Path
 import re
+import tempfile
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
@@ -71,3 +73,20 @@ def is_md_equal(
         html_texts[key] = html
 
     return html_texts["md1"] == html_texts["md2"]
+
+
+def atomic_write(path: Path, text: str) -> None:
+    """An atomic function for writing to a file.
+
+    Writes a temporary file first and then replaces the original file
+    with the temporary one. This is to avoid a moment where only empty
+    or partial content exists on disk.
+    """
+    _fd, tmp_path_str = tempfile.mkstemp(dir=path.parent)
+    tmp_path = Path(tmp_path_str)
+    try:
+        tmp_path.write_text(text, encoding="utf-8")
+        tmp_path.replace(path)
+    except BaseException:
+        tmp_path.unlink()
+        raise

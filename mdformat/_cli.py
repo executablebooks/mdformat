@@ -8,7 +8,7 @@ import textwrap
 from typing import Any, Generator, Iterable, List, Mapping, Optional, Sequence, Union
 
 import mdformat
-from mdformat._util import is_md_equal
+from mdformat._util import atomic_write, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 from mdformat.renderer._util import CONSECUTIVE_KEY
@@ -86,7 +86,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 )
                 return 1
             if path:
-                path.write_text(formatted_str, encoding="utf-8")
+                atomic_write(path, formatted_str)
             else:
                 sys.stdout.write(formatted_str)
     if format_errors_found:
