@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Union
 
-from mdformat._util import EMPTY_MAP, build_mdit
+from mdformat._util import EMPTY_MAP, atomic_write, build_mdit
 from mdformat.renderer import MDRenderer
 
 
@@ -54,4 +54,4 @@ def file(
         extensions=extensions,
         codeformatters=codeformatters,
     )
-    f.write_text(formatted_md, encoding="utf-8")
+    atomic_write(f, formatted_md)
