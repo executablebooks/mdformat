@@ -83,12 +83,11 @@ def atomic_write(path: Path, text: str) -> None:
     with the temporary one. This is to avoid a moment where only empty
     or partial content exists on disk.
     """
-    with tempfile.NamedTemporaryFile(
-        mode="w", dir=path.parent, delete=False, encoding="utf-8"
-    ) as tmp_f:
-        try:
-            tmp_f.write(text)
-            os.replace(tmp_f.name, path)
-        except BaseException:
-            os.remove(tmp_f.name)
-            raise
+    fd, tmp_path = tempfile.mkstemp(dir=path.parent)
+    try:
+        with open(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+        os.replace(tmp_path, path)
+    except BaseException:
+        os.remove(tmp_path)
+        raise
