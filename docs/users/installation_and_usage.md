@@ -1,71 +1,18 @@
 # Installation and usage
 
-## Installing
-
-Install with CommonMark support:
-
-```bash
-pip install mdformat
+```{include} ../../README.md
+:start-after: <!-- start installing -->
+:end-before: <!-- end installing -->
 ```
 
-Alternatively install with GitHub Flavored Markdown (GFM) support:
-
-```bash
-pip install mdformat-gfm
+```{warning}
+The formatting style produced by mdformat may change in each version.
+It is recommended to pin mdformat dependency version.
 ```
 
-## Command line usage
-
-### Format files
-
-Format files `README.md` and `CHANGELOG.md` in place
-
-```bash
-mdformat README.md CHANGELOG.md
-```
-
-Format `.md` files in current working directory recursively
-
-```bash
-mdformat .
-```
-
-Read Markdown from standard input until `EOF`.
-Write formatted Markdown to standard output.
-
-```bash
-mdformat -
-```
-
-### Check formatting
-
-```bash
-mdformat --check README.md CHANGELOG.md
-```
-
-This will not apply any changes to the files.
-If a file is not properly formatted, the exit code will be non-zero.
-
-### Options
-
-```console
-foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number]
-                [--wrap {keep,no,INTEGER}]
-                [paths [paths ...]]
-
-CommonMark compliant Markdown formatter
-
-positional arguments:
-  paths                 files to format
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --check               do not apply changes to files
-  --version             show program's version number and exit
-  --number              apply consecutive numbering to ordered lists
-  --wrap {keep,no,INTEGER}
-                        paragraph word wrap mode (default: keep)
+```{include} ../../README.md
+:start-after: <!-- start cli-usage -->
+:end-before: <!-- end cli-usage -->
 ```
 
 ## Python API usage
