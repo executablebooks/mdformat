@@ -115,4 +115,4 @@ Here's a few pointers to get you started:
 Nope, the logo is actually pretty great – you're terrible.
 The logo is more a piece of art than a logo anyways,
 depicting the horrors of poorly formatted text documents.
-I made it.
+I made it myself.
