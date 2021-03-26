@@ -38,5 +38,13 @@ caption: For contributors
 hidden: true
 ---
 developers/contributing.md
+```
+
+```{toctree}
+---
+caption: External links
+hidden: true
+---
 GitHub repository <https://github.com/executablebooks/mdformat>
+PyPI page <https://pypi.org/project/mdformat/>
 ```
