@@ -65,7 +65,7 @@ def is_text_inside_autolink(node: "RenderTreeNode") -> bool:
     return (
         node.parent  # type: ignore
         and node.parent.type == "link"
-        and node.parent.markup == "autolink"
+        and node.parent.info == "auto"
     )
 
 
