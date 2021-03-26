@@ -7,11 +7,17 @@
 
 > CommonMark compliant Markdown formatter
 
+<!-- start mini-description -->
+
 Mdformat is an opinionated Markdown formatter
 that can be used to enforce a consistent style in Markdown files.
 Mdformat is a Unix-style command-line tool as well as a Python library.
 
+<!-- end mini-description -->
+
 Find out more in the [docs](https://mdformat.readthedocs.io).
+
+<!-- start installing -->
 
 ## Installing
 
@@ -26,6 +32,10 @@ Alternatively install with GitHub Flavored Markdown (GFM) support:
 ```bash
 pip install mdformat-gfm
 ```
+
+<!-- end installing -->
+
+<!-- start cli-usage -->
 
 ## Command line usage
 
@@ -81,6 +91,8 @@ optional arguments:
                         paragraph word wrap mode (default: keep)
 ```
 
+<!-- end cli-usage -->
+
 ## Documentation
 
 This README merely provides a quickstart guide for the command line interface.
@@ -92,9 +104,9 @@ Here's a few pointers to get you started:
 - [Usage as a pre-commit hook](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#usage-as-a-pre-commit-hook)
 - Plugins
   - [Plugin usage](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
-  - [Plugin development](https://mdformat.readthedocs.io/en/latest/developers/contributing.html)
+  - [Plugin development guide](https://mdformat.readthedocs.io/en/latest/developers/contributing.html)
   - [List of existing plugins](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
-- [Changelog](https://mdformat.readthedocs.io/en/latest/developers/changelog.html)
+- [Changelog](https://mdformat.readthedocs.io/en/latest/users/changelog.html)
 
 ## Frequently Asked Questions
 

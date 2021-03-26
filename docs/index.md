@@ -2,9 +2,10 @@
 
 > CommonMark compliant Markdown formatter
 
-Mdformat is an opinionated Markdown formatter
-that can be used to enforce a consistent style in Markdown files.
-Mdformat is a Unix-style command-line tool as well as a Python library.
+```{include} ../README.md
+:start-after: <!-- start mini-description -->
+:end-before: <!-- end mini-description -->
+```
 
 The features/opinions of the formatter include:
 
@@ -14,34 +15,28 @@ The features/opinions of the formatter include:
 - Reformat indented code blocks as fenced code blocks
 - Use `1.` as the ordered list marker if possible, also for noninitial list items
 
-Mdformat by default will not change word wrapping.
+Mdformat will not change word wrapping by default.
 The rationale for this is to support [Semantic Line Breaks](https://sembr.org/).
 
 For a comprehensive description and rationalization of the style,
 read [the style guide](users/style.md).
 
-**NOTE:**
-The formatting style produced by mdformat may change in each version.
-It is recommended to pin mdformat dependency version.
-
-## Table of Contents
-
 ```{toctree}
 ---
-maxdepth: 2
 caption: For users
+hidden: true
 ---
 users/installation_and_usage.md
 users/plugins.md
 users/style.md
+users/changelog.md
 ```
 
 ```{toctree}
 ---
-maxdepth: 2
-caption: For developers
+caption: For contributors
+hidden: true
 ---
 developers/contributing.md
-developers/changelog.md
 GitHub repository <https://github.com/executablebooks/mdformat>
 ```
