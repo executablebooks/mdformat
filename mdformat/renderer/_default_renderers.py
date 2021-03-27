@@ -275,10 +275,10 @@ def link(
     options: Mapping[str, Any],
     env: MutableMapping,
 ) -> str:
-    text = ""
-    for child in node.children:
-        text += child.render(renderer_funcs, options, env)
-    if node.markup == "autolink":
+    text = "".join(
+        child.render(renderer_funcs, options, env) for child in node.children
+    )
+    if node.info == "auto":
         return "<" + text + ">"
 
     ref_label = node.meta.get("label")
