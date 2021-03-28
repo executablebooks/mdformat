@@ -30,8 +30,8 @@ packages = [
 include = ["mdformat/py.typed"]
 
 [tool.poetry.urls]
-"Changelog" = "https://mdformat.readthedocs.io/en/latest/users/changelog.html"
-"Style guide" = "https://mdformat.readthedocs.io/en/latest/users/style.html"
+"Changelog" = "https://mdformat.readthedocs.io/en/stable/users/changelog.html"
+"Style guide" = "https://mdformat.readthedocs.io/en/stable/users/style.html"
 
 [tool.poetry.scripts]
 mdformat = "mdformat.__main__:run"

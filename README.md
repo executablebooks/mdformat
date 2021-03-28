@@ -99,14 +99,14 @@ This README merely provides a quickstart guide for the command line interface.
 For more information refer to the [documentation](https://mdformat.readthedocs.io).
 Here's a few pointers to get you started:
 
-- [Style guide](https://mdformat.readthedocs.io/en/latest/users/style.html)
-- [Python API usage](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#python-api-usage)
-- [Usage as a pre-commit hook](https://mdformat.readthedocs.io/en/latest/users/installation_and_usage.html#usage-as-a-pre-commit-hook)
+- [Style guide](https://mdformat.readthedocs.io/en/stable/users/style.html)
+- [Python API usage](https://mdformat.readthedocs.io/en/stable/users/installation_and_usage.html#python-api-usage)
+- [Usage as a pre-commit hook](https://mdformat.readthedocs.io/en/stable/users/installation_and_usage.html#usage-as-a-pre-commit-hook)
 - Plugins
-  - [Plugin usage](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
-  - [Plugin development guide](https://mdformat.readthedocs.io/en/latest/developers/contributing.html)
-  - [List of existing plugins](https://mdformat.readthedocs.io/en/latest/users/plugins.html)
-- [Changelog](https://mdformat.readthedocs.io/en/latest/users/changelog.html)
+  - [Plugin usage](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
+  - [Plugin development guide](https://mdformat.readthedocs.io/en/stable/developers/contributing.html)
+  - [List of existing plugins](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
+- [Changelog](https://mdformat.readthedocs.io/en/stable/users/changelog.html)
 
 ## Frequently Asked Questions
 
