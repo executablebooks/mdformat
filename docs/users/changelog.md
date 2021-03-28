@@ -3,6 +3,18 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.6.2
+
+- Added
+  - Sphinx docs
+  - Atomic file writes.
+    Markdown content now stays on disk every nanosecond of the formatting process.
+
+## 0.6.1
+
+- Fixed
+  - A line starting blockquote marker (">") is now escaped.
+
 ## 0.6.0
 
 **NOTE:** Parser extension plugin API has changed in this release.
