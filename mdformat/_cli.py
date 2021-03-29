@@ -120,21 +120,21 @@ def make_arg_parser(
     parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
     codeformatters: Mapping[str, Callable[[str, str], str]],
 ) -> argparse.ArgumentParser:
-    plugin_versions = get_plugin_versions(parser_extensions, codeformatters)
+    plugin_versions_str = get_plugin_versions_str(parser_extensions, codeformatters)
     parser = argparse.ArgumentParser(
         description="CommonMark compliant Markdown formatter",
-        epilog="Installed plugins: "
-        + ", ".join(f"{name}: {version}" for name, version in plugin_versions.items())
-        if plugin_versions
+        epilog=f"Installed plugins: {plugin_versions_str}"
+        if plugin_versions_str
         else None,
     )
     parser.add_argument("paths", nargs="*", help="files to format")
     parser.add_argument(
         "--check", action="store_true", help="do not apply changes to files"
     )
-    parser.add_argument(
-        "--version", action="version", version=f"mdformat {mdformat.__version__}"
-    )
+    version_str = f"mdformat {mdformat.__version__}"
+    if plugin_versions_str:
+        version_str += f" ({plugin_versions_str})"
+    parser.add_argument("--version", action="version", version=version_str)
     parser.add_argument(
         f"--{CONSECUTIVE_KEY}",
         action="store_true",
@@ -248,3 +248,11 @@ def get_plugin_versions(
             package_version = "unknown"
         versions[package_name] = package_version
     return versions
+
+
+def get_plugin_versions_str(
+    parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
+    codeformatters: Mapping[str, Callable[[str, str], str]],
+) -> str:
+    plugin_versions = get_plugin_versions(parser_extensions, codeformatters)
+    return ", ".join(f"{name}: {version}" for name, version in plugin_versions.items())

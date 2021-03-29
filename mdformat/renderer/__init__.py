@@ -63,7 +63,7 @@ class MDRenderer:
                 if token_name in updated_renderers:
                     LOGGER.warning(
                         "Plugin conflict. More than one plugin defined a renderer"
-                        f' for "{token_name}" token or token pair.'
+                        f' for "{token_name}" syntax.'
                     )
                 else:
                     updated_renderers[token_name] = renderer_func
