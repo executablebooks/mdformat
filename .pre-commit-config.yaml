@@ -17,6 +17,10 @@ repos:
   rev: e66be67b9b6811913470f70c28b4d50f94d05b22  # frozen: 20.8b1
   hooks:
   - id: black
+- repo: https://github.com/myint/docformatter
+  rev: 67919ee01837761f2d954d7fbb08c12cdd38ec5a  # frozen: v1.4
+  hooks:
+  - id: docformatter
 - repo: https://gitlab.com/pycqa/flake8
   rev: 56370aae451722f9d77a5ccd6fb6e231a4a8e651  # frozen: 3.9.0
   hooks:
@@ -25,7 +29,3 @@ repos:
     - flake8-bugbear
     - flake8-builtins
     - flake8-comprehensions
-- repo: https://github.com/myint/docformatter
-  rev: 67919ee01837761f2d954d7fbb08c12cdd38ec5a  # frozen: v1.4
-  hooks:
-  - id: docformatter

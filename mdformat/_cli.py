@@ -1,13 +1,26 @@
 import argparse
 import contextlib
+import itertools
 import logging
 from pathlib import Path
 import shutil
 import sys
 import textwrap
-from typing import Any, Generator, Iterable, List, Mapping, Optional, Sequence, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Union,
+)
 
 import mdformat
+from mdformat._compat import importlib_metadata
 from mdformat._util import atomic_write, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
@@ -31,7 +44,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         for plugin in enabled_parserplugins.values()
     )
 
-    arg_parser = make_arg_parser(enabled_parserplugins.values())
+    arg_parser = make_arg_parser(enabled_parserplugins, enabled_codeformatters)
     args = arg_parser.parse_args(cli_args)
     if not args.paths:
         print_paragraphs(["No files have been passed in. Doing nothing."])
@@ -104,10 +117,16 @@ def validate_wrap_arg(value: str) -> Union[str, int]:
 
 
 def make_arg_parser(
-    parser_plugins: Iterable[mdformat.plugins.ParserExtensionInterface],
+    parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
+    codeformatters: Mapping[str, Callable[[str, str], str]],
 ) -> argparse.ArgumentParser:
+    plugin_versions = get_plugin_versions(parser_extensions, codeformatters)
     parser = argparse.ArgumentParser(
-        description="CommonMark compliant Markdown formatter"
+        description="CommonMark compliant Markdown formatter",
+        epilog="Installed plugins: "
+        + ", ".join(f"{name}: {version}" for name, version in plugin_versions.items())
+        if plugin_versions
+        else None,
     )
     parser.add_argument("paths", nargs="*", help="files to format")
     parser.add_argument(
@@ -128,7 +147,7 @@ def make_arg_parser(
         metavar="{keep,no,INTEGER}",
         help="paragraph word wrap mode (default: keep)",
     )
-    for plugin in parser_plugins:
+    for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
             plugin.add_cli_options(parser)
     return parser
@@ -208,3 +227,24 @@ def log_handler_applied(
         yield
     finally:
         logger.removeHandler(handler)
+
+
+def get_plugin_versions(
+    parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
+    codeformatters: Mapping[str, Callable[[str, str], str]],
+) -> Dict[str, str]:
+    versions = {}
+    for iface in itertools.chain(parser_extensions.values(), codeformatters.values()):
+        # Packages and modules should have `__package__`
+        if hasattr(iface, "__package__"):
+            package_name = iface.__package__  # type: ignore
+        else:  # class or function
+            module_name = iface.__module__
+            package_name = module_name.split(".", maxsplit=1)[0]
+        try:
+            package_version = importlib_metadata.version(package_name)
+        except importlib_metadata.PackageNotFoundError:
+            # In test scenarios the package may not exist
+            package_version = "unknown"
+        versions[package_name] = package_version
+    return versions
