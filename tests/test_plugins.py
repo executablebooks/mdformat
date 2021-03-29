@@ -5,6 +5,7 @@ from typing import Any, Mapping, MutableMapping
 from unittest.mock import patch
 
 from markdown_it import MarkdownIt
+import pytest
 
 import mdformat
 from mdformat._cli import run
@@ -215,3 +216,13 @@ def test_code_format_warnings(monkeypatch, tmp_path, capsys):
         captured.err
         == "Warning: Failed formatting content of a json code block (line 1 before formatting)\n"  # noqa: E501
     )
+
+
+def test_plugin_versions_in_cli_help(monkeypatch, capsys):
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExampleTablePlugin)
+    with pytest.raises(SystemExit) as exc_info:
+        run(["--help"])
+    assert exc_info.value.code == 0
+    captured = capsys.readouterr()
+    assert "Installed plugins:" in captured.out
+    assert "tests: unknown" in captured.out
