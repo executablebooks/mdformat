@@ -1,17 +1,10 @@
 import argparse
-import sys
 from typing import Callable, Dict, Mapping
 
 from markdown_it import MarkdownIt
 
+from mdformat._compat import Protocol, importlib_metadata
 from mdformat.renderer.typing import RendererFunc
-
-if sys.version_info >= (3, 8):
-    from importlib import metadata as importlib_metadata
-    from typing import Protocol
-else:
-    import importlib_metadata
-    from typing_extensions import Protocol
 
 
 def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:

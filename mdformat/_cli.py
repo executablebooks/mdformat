@@ -20,15 +20,11 @@ from typing import (
 )
 
 import mdformat
+from mdformat._compat import importlib_metadata
 from mdformat._util import atomic_write, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 from mdformat.renderer._util import CONSECUTIVE_KEY
-
-if sys.version_info >= (3, 8):
-    from importlib import metadata as importlib_metadata
-else:
-    import importlib_metadata
 
 
 class RendererWarningPrinter(logging.Handler):
