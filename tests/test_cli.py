@@ -116,7 +116,7 @@ def test_version(capsys):
         run(["--version"])
     assert exc_info.value.code == 0
     captured = capsys.readouterr()
-    assert captured.out == f"mdformat {mdformat.__version__}\n"
+    assert captured.out.startswith(f"mdformat {mdformat.__version__}")
 
 
 def test_no_wrap(tmp_path):
