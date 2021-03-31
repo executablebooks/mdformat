@@ -2,7 +2,7 @@ import html.entities
 import re
 from typing import TYPE_CHECKING
 
-from mdformat.renderer import _codepoints
+from mdformat import codepoints
 
 if TYPE_CHECKING:
     from mdformat.renderer import RenderTreeNode
@@ -72,7 +72,7 @@ def is_text_inside_autolink(node: "RenderTreeNode") -> bool:
 def maybe_add_link_brackets(link: str) -> str:
     """Surround URI with brackets if required by spec."""
     if not link or (
-        _codepoints.ASCII_CTRL | _codepoints.ASCII_SPACE | {"(", ")"}
+        codepoints.ASCII_CTRL | codepoints.ASCII_WHITESPACE | {"(", ")"}
     ).intersection(link):
         return "<" + link + ">"
     return link
@@ -123,8 +123,8 @@ def escape_asterisk_emphasis(text: str) -> str:
         prev_char = text[i - 1] if (i - 1) >= 0 else None
         next_char = text[i + 1] if (i + 1) < text_length else None
         if (
-            prev_char in _codepoints.UNICODE_WHITESPACE
-            and next_char in _codepoints.UNICODE_WHITESPACE
+            prev_char in codepoints.UNICODE_WHITESPACE
+            and next_char in codepoints.UNICODE_WHITESPACE
         ):
             escaped_text += current_char
             continue
@@ -146,8 +146,8 @@ def escape_underscore_emphasis(text: str) -> str:
         return text
 
     bad_neighbor_chars = (
-        _codepoints.UNICODE_WHITESPACE
-        | _codepoints.UNICODE_PUNCTUATION
+        codepoints.UNICODE_WHITESPACE
+        | codepoints.UNICODE_PUNCTUATION
         | frozenset({None})
     )
     escaped_text = ""
@@ -160,8 +160,8 @@ def escape_underscore_emphasis(text: str) -> str:
         prev_char = text[i - 1] if (i - 1) >= 0 else None
         next_char = text[i + 1] if (i + 1) < text_length else None
         if (
-            prev_char in _codepoints.UNICODE_WHITESPACE
-            and next_char in _codepoints.UNICODE_WHITESPACE
+            prev_char in codepoints.UNICODE_WHITESPACE
+            and next_char in codepoints.UNICODE_WHITESPACE
         ) or (
             prev_char not in bad_neighbor_chars and next_char not in bad_neighbor_chars
         ):
@@ -177,7 +177,7 @@ def decimalify_leading_whitespace(text: str) -> str:
     start_whitespace = ""
     start_whitespace_count = 0
     for ws_char in text:
-        if ws_char in _codepoints.UNICODE_WHITESPACE:
+        if ws_char in codepoints.UNICODE_WHITESPACE:
             start_whitespace += f"&#{ord(ws_char)};"
             start_whitespace_count += 1
         else:
@@ -190,7 +190,7 @@ def decimalify_trailing_whitespace(text: str) -> str:
     end_whitespace = ""
     end_whitespace_count = 0
     for ws_char in reversed(text):
-        if ws_char in _codepoints.UNICODE_WHITESPACE:
+        if ws_char in codepoints.UNICODE_WHITESPACE:
             end_whitespace = f"&#{ord(ws_char)};" + end_whitespace
             end_whitespace_count += 1
         else:
