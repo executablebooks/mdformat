@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.6.3
+
+- Added
+  - A list of installed plugins and their versions in the output of `--help` and `--version` CLI commands
+  - `mdformat.codepoints` as public API
+
 ## 0.6.2
 
 - Added
