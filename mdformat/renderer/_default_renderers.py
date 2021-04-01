@@ -409,9 +409,8 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -
     text = text.lstrip("\x00")
 
     # Because we set `drop_whitespace=False` for the wrapper, we now need
-    # to manually drop some whitespace
-    text = text.replace("\n ", "\n")
-    text = text.replace(" \n", "\n")
+    # to manually drop any whitespace surrounding a newline
+    text = re.sub(r"[\n ]*\n[\n ]*", "\n", text)
 
     return text
 
