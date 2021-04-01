@@ -1,7 +1,7 @@
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Union
+from typing import Any, ContextManager, Iterable, Mapping, Union
 
-from mdformat._util import EMPTY_MAP, atomic_write, build_mdit
+from mdformat._util import EMPTY_MAP, NULL_CTX, atomic_write, build_mdit
 from mdformat.renderer import MDRenderer
 
 
@@ -11,15 +11,17 @@ def text(
     options: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
+    _first_pass_contextmanager: ContextManager = NULL_CTX,
 ) -> str:
     """Format a Markdown string."""
-    mdit = build_mdit(
-        MDRenderer,
-        mdformat_opts=options,
-        extensions=extensions,
-        codeformatters=codeformatters,
-    )
-    rendering = mdit.render(md)
+    with _first_pass_contextmanager:
+        mdit = build_mdit(
+            MDRenderer,
+            mdformat_opts=options,
+            extensions=extensions,
+            codeformatters=codeformatters,
+        )
+        rendering = mdit.render(md)
 
     # If word wrap is changed, add a second pass of rendering.
     # Some escapes will be different depending on word wrap, so
