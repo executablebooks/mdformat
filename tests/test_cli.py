@@ -169,3 +169,17 @@ def test_wrap(tmp_path):
         "to wrap. Here's some more text to wrap. Here's some more\n"
         "text to wrap.\n"
     )
+
+
+def test_consecutive_wrap_width_lines(tmp_path):
+    """Test a case where two consecutive lines' width equals wrap width.
+
+    There was a bug where this would cause an extra newline and split
+    the paragraph, hence the test.
+    """
+    wrap_width = 20
+    file_path = tmp_path / "test_markdown.md"
+    text = "A" * wrap_width + "\n" + "A" * wrap_width + "\n"
+    file_path.write_text(text)
+    assert run([str(file_path), f"--wrap={wrap_width}"]) == 0
+    assert file_path.read_text() == text
