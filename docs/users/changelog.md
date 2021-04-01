@@ -3,6 +3,14 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.6.4
+
+- Fixed
+  - Warnings being printed twice when wrap mode is other than "keep"
+    ([#167](https://github.com/executablebooks/mdformat/pull/167))
+  - An extra newline being added when consecutive lines' width equals wrap width
+    ([#166](https://github.com/executablebooks/mdformat/pull/166))
+
 ## 0.6.3
 
 - Added
