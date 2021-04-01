@@ -8,8 +8,10 @@ from typing import Any, Iterable, Mapping
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
 
+from mdformat._compat import nullcontext
 import mdformat.plugins
 
+NULL_CTX = nullcontext()
 EMPTY_MAP: MappingProxyType = MappingProxyType({})
 
 

@@ -68,13 +68,15 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             path_str = "-"
             original_str = sys.stdin.read()
 
-        with log_handler_applied(mdformat.renderer.LOGGER, renderer_warning_printer):
-            formatted_str = mdformat.text(
-                original_str,
-                options=options,
-                extensions=enabled_parserplugins,
-                codeformatters=enabled_codeformatters,
-            )
+        formatted_str = mdformat.text(
+            original_str,
+            options=options,
+            extensions=enabled_parserplugins,
+            codeformatters=enabled_codeformatters,
+            _first_pass_contextmanager=log_handler_applied(
+                mdformat.renderer.LOGGER, renderer_warning_printer
+            ),
+        )
 
         if args.check:
             if formatted_str != original_str:
