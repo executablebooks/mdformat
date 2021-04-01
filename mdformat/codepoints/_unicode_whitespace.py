@@ -3,30 +3,30 @@
 Run this module to generate and print an up-to-date set of characters.
 """
 UNICODE_WHITESPACE = frozenset(
-    {
+    (
         "\t",
+        "\n",
+        "\x0b",
+        "\x0c",
+        "\r",
+        " ",
+        "\xa0",
+        "\u1680",
+        "\u2000",
+        "\u2001",
+        "\u2002",
+        "\u2003",
+        "\u2004",
+        "\u2005",
+        "\u2006",
+        "\u2007",
         "\u2008",
         "\u2009",
-        "\u3000",
-        "\u1680",
-        "\u2005",
-        "\u2003",
-        "\x0c",
         "\u200a",
-        "\u2006",
-        " ",
-        "\x0b",
-        "\r",
-        "\u2001",
-        "\u205f",
-        "\u2002",
-        "\n",
-        "\xa0",
         "\u202f",
-        "\u2004",
-        "\u2007",
-        "\u2000",
-    }
+        "\u205f",
+        "\u3000",
+    )
 )
 
 if __name__ == "__main__":
@@ -38,4 +38,4 @@ if __name__ == "__main__":
     UNICODE_WHITESPACE = frozenset(
         c for c in UNICODE_CHARS if unicodedata.category(c) == "Zs"
     ) | frozenset(string.whitespace)
-    print(repr(UNICODE_WHITESPACE))
+    print(f"frozenset({tuple(sorted(UNICODE_WHITESPACE))})")
