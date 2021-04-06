@@ -102,17 +102,37 @@ Here's a few pointers to get you started:
 - [Style guide](https://mdformat.readthedocs.io/en/stable/users/style.html)
 - [Python API usage](https://mdformat.readthedocs.io/en/stable/users/installation_and_usage.html#python-api-usage)
 - [Usage as a pre-commit hook](https://mdformat.readthedocs.io/en/stable/users/installation_and_usage.html#usage-as-a-pre-commit-hook)
-- Plugins
-  - [Plugin usage](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
-  - [Plugin development guide](https://mdformat.readthedocs.io/en/stable/developers/contributing.html)
-  - [List of existing plugins](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
+- [Plugin usage](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
+- [Plugin development guide](https://mdformat.readthedocs.io/en/stable/developers/contributing.html)
+- [List of code block formatter plugins](https://mdformat.readthedocs.io/en/stable/users/plugins.html#existing-plugins)
+- [List of parser extension plugins](https://mdformat.readthedocs.io/en/stable/users/plugins.html#id1)
 - [Changelog](https://mdformat.readthedocs.io/en/stable/users/changelog.html)
 
 ## Frequently Asked Questions
+
+### Why not use Prettier instead?
+
+Mdformat is pure Python code!
+Python and pip are pre-installed on virtually any Linux distribution,
+and Python is pre-installed on macOS, meaning that typically little to no additional installations are required to run mdformat.
+Prettier requires Node.js/npm. This argument also holds true when using together with [pre-commit](https://github.com/pre-commit/pre-commit) (also Python).
+
+[Prettier](https://github.com/prettier/prettier) suffers from [numerous](https://github.com/prettier/prettier/issues?q=is%3Aopen+label%3Alang%3Amarkdown+label%3Atype%3Abug+) bugs,
+many of which cause changes in Markdown AST and rendered HTML.
+Many of these bugs are a consequence of using [`remark-parse`](https://github.com/remarkjs/remark/tree/main/packages/remark-parse) v8.x as Markdown parser which,
+according to the author themselves,
+is [inferior to markdown-it](https://github.com/remarkjs/remark/issues/75#issuecomment-143532326) used by mdformat.
+`remark-parse` v9.x is advertised as CommonMark compliant and presumably would fix many of the issues, but is not used by Prettier yet (current latest Prettier being v2.2.1).
+
+Mdformat's parser extension plugin API allows not only customization of the Markdown specification in use,
+but also advanced features like [automatic table of contents generation](https://github.com/hukkinj1/mdformat-toc).
+The code formatter plugin API enables integration of embedded code formatting for any programming language.
 
 ### What's wrong with the mdformat logo? It renders incorrectly and is just terrible in general.
 
 Nope, the logo is actually pretty great – you're terrible.
 The logo is more a piece of art than a logo anyways,
 depicting the horrors of poorly formatted text documents.
-I made it myself.
+I made it myself!
+
+That said, if you have any graphic design skills and want to contribute a revised version, a PR is more than welcome 😄.
