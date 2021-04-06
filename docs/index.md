@@ -21,6 +21,11 @@ The rationale for this is to support [Semantic Line Breaks](https://sembr.org/).
 For a comprehensive description and rationalization of the style,
 read [the style guide](users/style.md).
 
+```{include} ../README.md
+:start-after: <!-- start faq -->
+:end-before: <!-- end faq -->
+```
+
 ```{toctree}
 ---
 caption: For users
