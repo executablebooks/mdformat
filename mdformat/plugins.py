@@ -8,8 +8,8 @@ from mdformat.renderer.typing import RendererFunc
 
 
 def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:
-    codeformatter_entrypoints = importlib_metadata.entry_points().get(
-        "mdformat.codeformatter", ()
+    codeformatter_entrypoints = importlib_metadata.entry_points(
+        group="mdformat.codeformatter"
     )
     return {ep.name: ep.load() for ep in codeformatter_entrypoints}
 
@@ -40,8 +40,8 @@ class ParserExtensionInterface(Protocol):
 
 
 def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:
-    parser_extension_entrypoints = importlib_metadata.entry_points().get(
-        "mdformat.parser_extension", ()
+    parser_extension_entrypoints = importlib_metadata.entry_points(
+        group="mdformat.parser_extension"
     )
     return {ep.name: ep.load() for ep in parser_extension_entrypoints}
 
