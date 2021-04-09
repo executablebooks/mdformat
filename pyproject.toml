@@ -39,13 +39,15 @@ mdformat = "mdformat.__main__:run"
 [tool.poetry.dependencies]
 python = "^3.6.1"
 markdown-it-py = ">=0.5.5,<0.7.0"
-importlib-metadata = { version = ">=0.12", python = "<3.8" }
+importlib-metadata = { version = ">=3.6.0", python = "<3.10" }
 typing-extensions= { version = ">=3.7.4", python = "<3.8" }
 
 [tool.poetry.dev-dependencies]
 # Tests
 pytest = "*"
-pytest-randomly = "*"
+# TODO: re-enable when https://github.com/jaraco/backports.entry_points_selectable/pull/3
+#       is merged and released
+#pytest-randomly = "*"
 pytest-cov = "*"
 # This is a dependency of pytest-cov that we list explicitly because we
 # want the "toml" extra for pyproject.toml support.
