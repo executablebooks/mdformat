@@ -30,9 +30,10 @@ class ParserExtensionInterface(Protocol):
     RENDERERS: Mapping[str, Renderer]
 
     # A mapping from `RenderTreeNode.type` to a `Postprocessor` that does
-    # postprocessing for the output of the `Renderer` function. `Postprocessor`s
-    # are collaborative: any number of plugins can define a postprocessor for a
-    # syntax type and all of them will run in series.
+    # postprocessing for the output of the `Renderer` function. Unlike
+    # `Renderer`s, `Postprocessor`s are collaborative: any number of
+    # plugins can define a postprocessor for a syntax type and all of them
+    # will run in series.
     # (optional)
     POSTPROCESSORS: Mapping[str, Postprocessor]
 

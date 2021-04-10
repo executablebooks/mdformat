@@ -73,12 +73,11 @@ class MDRenderer:
                     )
                 else:
                     updated_renderers[syntax_name] = renderer_func
-            for syntax_name, pp in getattr(plugin, "POSTPROCESSORS", ()):
+            for syntax_name, pp in getattr(plugin, "POSTPROCESSORS", {}).items():
                 if syntax_name not in postprocessors:
                     postprocessors[syntax_name] = (pp,)
                 else:
                     postprocessors[syntax_name] += (pp,)
-
         renderer_map = MappingProxyType({**DEFAULT_RENDERERS, **updated_renderers})
         postprocessor_map = MappingProxyType(postprocessors)
         render_context = RenderContext(renderer_map, postprocessor_map, options, env)
