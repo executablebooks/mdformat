@@ -65,7 +65,7 @@ class SyntaxTreeNode:
             self._set_children_from_tokens(tokens)
             return
 
-        if not tokens:
+        if not tokens:  # pragma: no cover
             raise ValueError(
                 "Can only create root from empty token sequence."
                 " Set `create_root=True`."
