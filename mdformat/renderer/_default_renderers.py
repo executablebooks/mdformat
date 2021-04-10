@@ -4,8 +4,9 @@ import re
 import sys
 import textwrap
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, Mapping, MutableMapping, Optional, Union
+from typing import TYPE_CHECKING, Mapping, Optional, Union
 
+from mdformat.renderer._tree import RenderContext
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
@@ -20,7 +21,7 @@ from mdformat.renderer._util import (
     longest_consecutive_sequence,
     maybe_add_link_brackets,
 )
-from mdformat.renderer.typing import RendererFunc
+from mdformat.renderer.typing import Renderer
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal
@@ -33,36 +34,22 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-def make_render_children(separator: str) -> RendererFunc:
+def make_render_children(separator: str) -> Renderer:
     def render_children(
         node: "RenderTreeNode",
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
+        context: RenderContext,
     ) -> str:
-        return separator.join(
-            child.render(renderer_funcs, options, env) for child in node.children
-        )
+        return separator.join(child.render(context) for child in node.children)
 
     return render_children
 
 
-def hr(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def hr(node: "RenderTreeNode", context: RenderContext) -> str:
     thematic_break_width = 70
     return "_" * thematic_break_width
 
 
-def code_inline(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def code_inline(node: "RenderTreeNode", context: RenderContext) -> str:
     code = node.content
     all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
@@ -74,48 +61,23 @@ def code_inline(
     return f"`{code}`"
 
 
-def html_block(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def html_block(node: "RenderTreeNode", context: RenderContext) -> str:
     return node.content.rstrip("\n")
 
 
-def html_inline(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def html_inline(node: "RenderTreeNode", context: RenderContext) -> str:
     return node.content
 
 
-def hardbreak(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def hardbreak(node: "RenderTreeNode", context: RenderContext) -> str:
     return "\\" + "\n"
 
 
-def softbreak(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def softbreak(node: "RenderTreeNode", context: RenderContext) -> str:
     return "\n"
 
 
-def text(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def text(node: "RenderTreeNode", context: RenderContext) -> str:
     """Process a text token.
 
     Text should always be a child of an inline token. An inline token
@@ -156,12 +118,7 @@ def text(
     return text
 
 
-def fence(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def fence(node: "RenderTreeNode", context: RenderContext) -> str:
     info_str = node.info.strip()
     lang = info_str.split()[0] if info_str.split() else ""
     code_block = node.content
@@ -174,8 +131,8 @@ def fence(
         fence_char = "`"
 
     # Format the code block using enabled codeformatter funcs
-    if lang in options.get("codeformatters", {}):
-        fmt_func = options["codeformatters"][lang]
+    if lang in context.options.get("codeformatters", {}):
+        fmt_func = context.options["codeformatters"][lang]
         try:
             code_block = fmt_func(code_block, info_str)
         except Exception:
@@ -197,26 +154,16 @@ def fence(
     return f"{fence_str}{info_str}\n{code_block}{fence_str}"
 
 
-def code_block(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    return fence(node, renderer_funcs, options, env)
+def code_block(node: "RenderTreeNode", context: RenderContext) -> str:
+    return fence(node, context)
 
 
-def image(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    description = _render_inline_as_text(node, renderer_funcs, options, env)
+def image(node: "RenderTreeNode", context: RenderContext) -> str:
+    description = _render_inline_as_text(node, context)
 
     ref_label = node.meta.get("label")
     if ref_label:
-        env.setdefault("used_refs", set()).add(ref_label)
+        context.env.setdefault("used_refs", set()).add(ref_label)
         ref_label_repr = ref_label.lower()
         if description.lower() == ref_label_repr:
             return f"![{description}]"
@@ -230,35 +177,20 @@ def image(
     return f"![{description}]({uri})"
 
 
-def _render_inline_as_text(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def _render_inline_as_text(node: "RenderTreeNode", context: RenderContext) -> str:
     """Special kludge for image `alt` attributes to conform CommonMark spec.
 
     Don't try to use it! Spec requires to show `alt` content with
     stripped markup, instead of simple escaping.
     """
 
-    def text_renderer(
-        node: "RenderTreeNode",
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
-    ) -> str:
+    def text_renderer(node: "RenderTreeNode", context: RenderContext) -> str:
         return node.content
 
-    def image_renderer(
-        node: "RenderTreeNode",
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
-    ) -> str:
-        return _render_inline_as_text(node, renderer_funcs, options, env)
+    def image_renderer(node: "RenderTreeNode", context: RenderContext) -> str:
+        return _render_inline_as_text(node, context)
 
-    inline_renderer_funcs: Mapping[str, RendererFunc] = defaultdict(
+    inline_renderers: Mapping[str, Renderer] = defaultdict(
         lambda: make_render_children(""),
         {
             "text": text_renderer,
@@ -266,24 +198,20 @@ def _render_inline_as_text(
             "link": link,
         },
     )
-    return make_render_children("")(node, inline_renderer_funcs, options, env)
-
-
-def link(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    text = "".join(
-        child.render(renderer_funcs, options, env) for child in node.children
+    inline_context = RenderContext(
+        inline_renderers, context.postprocessors, context.options, context.env
     )
+    return make_render_children("")(node, inline_context)
+
+
+def link(node: "RenderTreeNode", context: RenderContext) -> str:
+    text = "".join(child.render(context) for child in node.children)
     if node.info == "auto":
         return "<" + text + ">"
 
     ref_label = node.meta.get("label")
     if ref_label:
-        env.setdefault("used_refs", set()).add(ref_label)
+        context.env.setdefault("used_refs", set()).add(ref_label)
         ref_label_repr = ref_label.lower()
         if text.lower() == ref_label_repr:
             return f"[{text}]"
@@ -298,35 +226,20 @@ def link(
     return f'[{text}]({uri} "{title}")'
 
 
-def em(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    text = make_render_children(separator="")(node, renderer_funcs, options, env)
+def em(node: "RenderTreeNode", context: RenderContext) -> str:
+    text = make_render_children(separator="")(node, context)
     indicator = node.markup
     return indicator + text + indicator
 
 
-def strong(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    text = make_render_children(separator="")(node, renderer_funcs, options, env)
+def strong(node: "RenderTreeNode", context: RenderContext) -> str:
+    text = make_render_children(separator="")(node, context)
     indicator = node.markup
     return indicator + text + indicator
 
 
-def heading(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    text = make_render_children(separator="")(node, renderer_funcs, options, env)
+def heading(node: "RenderTreeNode", context: RenderContext) -> str:
+    text = make_render_children(separator="")(node, context)
 
     if node.markup == "=":
         prefix = "# "
@@ -348,13 +261,8 @@ def heading(
     return prefix + text
 
 
-def blockquote(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    text = make_render_children(separator="\n\n")(node, renderer_funcs, options, env)
+def blockquote(node: "RenderTreeNode", context: RenderContext) -> str:
+    text = make_render_children(separator="\n\n")(node, context)
     lines = text.splitlines()
     if not lines:
         return ">"
@@ -415,27 +323,22 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -
     return text
 
 
-def paragraph(  # noqa: C901
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def paragraph(node: "RenderTreeNode", context: RenderContext) -> str:  # noqa: C901
     inline_node = node.children[0]
 
-    wrap_mode = options.get("mdformat", {}).get("wrap", "keep")
+    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
     if isinstance(wrap_mode, int) or wrap_mode == "no":
         text = ""
         buffer = ""
         for child in inline_node.children:
             if child.type in {"text", "softbreak"}:
-                buffer += child.render(renderer_funcs, options, env)
+                buffer += child.render(context)
             else:
                 if buffer:
                     text += _wrap(buffer, width=wrap_mode, preceding_text=text)
                 buffer = ""
 
-                no_wrap_section = child.render(renderer_funcs, options, env)
+                no_wrap_section = child.render(context)
                 # Add preceding wrap if the section extends
                 # beyond target wrap width
                 if (
@@ -449,7 +352,7 @@ def paragraph(  # noqa: C901
         if buffer:
             text += _wrap(buffer, width=wrap_mode, preceding_text=text)
     else:
-        text = inline_node.render(renderer_funcs, options, env)
+        text = inline_node.render(context)
 
     lines = text.split("\n")
     for i in range(len(lines)):
@@ -509,12 +412,7 @@ def paragraph(  # noqa: C901
     return text
 
 
-def list_item(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def list_item(node: "RenderTreeNode", context: RenderContext) -> str:
     """Return one list item as string.
 
     This returns just the content. List item markers and indentation are
@@ -522,26 +420,21 @@ def list_item(
     """
     is_tight = is_tight_list_item(node)
     block_separator = "\n" if is_tight else "\n\n"
-    text = make_render_children(block_separator)(node, renderer_funcs, options, env)
+    text = make_render_children(block_separator)(node, context)
 
     if not text.strip():
         return ""
     return text
 
 
-def bullet_list(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
+def bullet_list(node: "RenderTreeNode", context: RenderContext) -> str:
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     indent = " " * len(marker_type + first_line_indent)
     block_separator = "\n" if is_tight_list(node) else "\n\n"
     text = ""
     for child_idx, child in enumerate(node.children):
-        list_item = child.render(renderer_funcs, options, env)
+        list_item = child.render(context)
         formatted_lines = []
         line_iterator = iter(list_item.split("\n"))
         first_line = next(line_iterator)
@@ -559,13 +452,8 @@ def bullet_list(
     return text
 
 
-def ordered_list(
-    node: "RenderTreeNode",
-    renderer_funcs: Mapping[str, RendererFunc],
-    options: Mapping[str, Any],
-    env: MutableMapping,
-) -> str:
-    consecutive_numbering = options.get("mdformat", {}).get(CONSECUTIVE_KEY)
+def ordered_list(node: "RenderTreeNode", context: RenderContext) -> str:
+    consecutive_numbering = context.options.get("mdformat", {}).get(CONSECUTIVE_KEY)
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     block_separator = "\n" if is_tight_list(node) else "\n\n"
@@ -577,7 +465,7 @@ def ordered_list(
 
     text = ""
     for list_item_index, list_item in enumerate(node.children):
-        list_item_text = list_item.render(renderer_funcs, options, env)
+        list_item_text = list_item.render(context)
         formatted_lines = []
         line_iterator = iter(list_item_text.split("\n"))
         first_line = next(line_iterator)
@@ -633,7 +521,7 @@ def ordered_list(
     return text
 
 
-DEFAULT_RENDERER_FUNCS: Mapping[str, RendererFunc] = MappingProxyType(
+DEFAULT_RENDERERS: Mapping[str, Renderer] = MappingProxyType(
     {
         "inline": make_render_children(""),
         "root": make_render_children("\n\n"),

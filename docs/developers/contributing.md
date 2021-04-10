@@ -90,17 +90,17 @@ Mdformat parser extension plugins need to adhere to the `mdformat.plugins.Parser
 ```python
 from typing import Mapping
 from markdown_it import MarkdownIt
-from mdformat.renderer.typing import RendererFunc
+from mdformat.renderer.typing import Renderer
 
 
 def update_mdit(mdit: MarkdownIt) -> None:
-   """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
+    """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
 
 
-# A mapping from `RenderTreeNode.type` value to a `RendererFunc` that can
+# A mapping from `RenderTreeNode.type` value to a `Renderer` that can
 # render the given `RenderTreeNode` type. These functions override the default
-# `RendererFunc`s defined in `mdformat.renderer.DEFAULT_RENDERER_FUNCS`.
-RENDERER_FUNCS: Mapping[str, RendererFunc]
+# `Renderer`s defined in `mdformat.renderer.DEFAULT_RENDERERS`.
+RENDERERS: Mapping[str, Renderer]
 ```
 
 This interface needs to be exposed via entry point distribution metadata.

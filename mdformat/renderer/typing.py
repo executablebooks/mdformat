@@ -1,18 +1,12 @@
-from typing import TYPE_CHECKING, Any, Callable, Mapping, MutableMapping
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
-    from mdformat.renderer import RenderTreeNode
+    from mdformat.renderer import RenderContext, RenderTreeNode
 
 
-RendererFunc = Callable[
-    [
-        "RenderTreeNode",
-        # There is a recursion here. This should be
-        # `Mapping[str, RendererFunc],` but mypy doesn't support this until
-        # https://github.com/python/mypy/issues/731 is implemented.
-        Mapping[str, Callable[..., str]],
-        Mapping[str, Any],
-        MutableMapping,
-    ],
+Renderer = Callable[
+    ["RenderTreeNode", "RenderContext"],
     str,
 ]
+
+Postprocessor = Callable[[str, "RenderTreeNode", "RenderContext"], str]

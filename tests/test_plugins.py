@@ -1,7 +1,6 @@
 import argparse
 import json
 from textwrap import dedent
-from typing import Any, Mapping, MutableMapping
 from unittest.mock import patch
 
 from markdown_it import MarkdownIt
@@ -10,8 +9,7 @@ import pytest
 import mdformat
 from mdformat._cli import run
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
-from mdformat.renderer import MDRenderer, RenderTreeNode
-from mdformat.renderer.typing import RendererFunc
+from mdformat.renderer import MDRenderer, RenderContext, RenderTreeNode
 
 
 def example_formatter(code, info):
@@ -47,14 +45,11 @@ class TextEditorPlugin:
         pass
 
     def _text_renderer(  # type: ignore
-        tree: RenderTreeNode,
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
+        tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return "All text is like this now!"
 
-    RENDERER_FUNCS = {"text": _text_renderer}
+    RENDERERS = {"text": _text_renderer}
 
 
 def test_single_token_extension(monkeypatch):
@@ -88,14 +83,11 @@ class ExampleTablePlugin:
         mdit.enable("table")
 
     def _table_renderer(  # type: ignore
-        tree: RenderTreeNode,
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
+        tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return "dummy 21"
 
-    RENDERER_FUNCS = {"table": _table_renderer}
+    RENDERERS = {"table": _table_renderer}
 
 
 def test_table(monkeypatch):
@@ -167,14 +159,11 @@ class ExampleASTChangingPlugin:
         pass
 
     def _text_renderer(  # type: ignore
-        tree: RenderTreeNode,
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
+        tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return ExampleASTChangingPlugin.TEXT_REPLACEMENT
 
-    RENDERER_FUNCS = {"text": _text_renderer}
+    RENDERERS = {"text": _text_renderer}
 
 
 def test_ast_changing_plugin(monkeypatch, tmp_path):

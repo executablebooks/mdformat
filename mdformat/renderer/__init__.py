@@ -1,4 +1,10 @@
-__all__ = ("MDRenderer", "LOGGER", "RenderTreeNode", "DEFAULT_RENDERER_FUNCS")
+__all__ = (
+    "MDRenderer",
+    "LOGGER",
+    "RenderTreeNode",
+    "DEFAULT_RENDERERS",
+    "RenderContext",
+)
 
 
 import logging
@@ -8,9 +14,8 @@ from typing import Any, Mapping, MutableMapping, Sequence
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
-from mdformat.renderer._default_renderers import DEFAULT_RENDERER_FUNCS
-from mdformat.renderer._tree import SyntaxTreeNode
-from mdformat.renderer.typing import RendererFunc
+from mdformat.renderer._default_renderers import DEFAULT_RENDERERS
+from mdformat.renderer._tree import RenderContext, RenderTreeNode
 
 LOGGER = logging.getLogger(__name__)
 
@@ -58,18 +63,26 @@ class MDRenderer:
         # Update RENDERER_MAP defaults with renderer functions defined
         # by plugins.
         updated_renderers = {}
+        postprocessors = {}
         for plugin in options.get("parser_extension", []):
-            for token_name, renderer_func in plugin.RENDERER_FUNCS.items():
-                if token_name in updated_renderers:
+            for syntax_name, renderer_func in plugin.RENDERERS.items():
+                if syntax_name in updated_renderers:
                     LOGGER.warning(
                         "Plugin conflict. More than one plugin defined a renderer"
-                        f' for "{token_name}" syntax.'
+                        f' for "{syntax_name}" syntax.'
                     )
                 else:
-                    updated_renderers[token_name] = renderer_func
-        renderer_map = MappingProxyType({**DEFAULT_RENDERER_FUNCS, **updated_renderers})
+                    updated_renderers[syntax_name] = renderer_func
+            for syntax_name, pp in getattr(plugin, "POSTPROCESSORS", ()):
+                if syntax_name not in postprocessors:
+                    postprocessors[syntax_name] = (pp,)
+                else:
+                    postprocessors[syntax_name] += (pp,)
 
-        text = tree.render(renderer_map, options, env)
+        renderer_map = MappingProxyType({**DEFAULT_RENDERERS, **updated_renderers})
+        postprocessor_map = MappingProxyType(postprocessors)
+        render_context = RenderContext(renderer_map, postprocessor_map, options, env)
+        text = tree.render(render_context)
         if finalize:
             if env.get("used_refs"):
                 text += "\n\n"
@@ -91,14 +104,3 @@ class MDRenderer:
                 item += f' "{title}"'
             ref_list.append(item)
         return "\n".join(ref_list)
-
-
-class RenderTreeNode(SyntaxTreeNode):
-    def render(
-        self,
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
-    ) -> str:
-        renderer_func = renderer_funcs[self.type]
-        return renderer_func(self, renderer_funcs, options, env)
