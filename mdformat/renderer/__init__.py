@@ -6,16 +6,16 @@ __all__ = (
     "RenderContext",
 )
 
-
 import logging
 from types import MappingProxyType
-from typing import Any, Mapping, MutableMapping, Sequence
+from typing import Any, Dict, Mapping, MutableMapping, Sequence, Tuple
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
 from mdformat.renderer._default_renderers import DEFAULT_RENDERERS
 from mdformat.renderer._tree import RenderContext, RenderTreeNode
+from mdformat.renderer.typing import Postprocessor
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class MDRenderer:
         # Update RENDERER_MAP defaults with renderer functions defined
         # by plugins.
         updated_renderers = {}
-        postprocessors = {}
+        postprocessors: Dict[str, Tuple[Postprocessor, ...]] = {}
         for plugin in options.get("parser_extension", []):
             for syntax_name, renderer_func in plugin.RENDERERS.items():
                 if syntax_name in updated_renderers:
