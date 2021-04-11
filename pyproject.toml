@@ -45,9 +45,7 @@ typing-extensions= { version = ">=3.7.4", python = "<3.8" }
 [tool.poetry.dev-dependencies]
 # Tests
 pytest = "*"
-# TODO: re-enable when https://github.com/jaraco/backports.entry_points_selectable/pull/3
-#       is merged and released
-#pytest-randomly = "*"
+pytest-randomly = "*"
 pytest-cov = "*"
 # This is a dependency of pytest-cov that we list explicitly because we
 # want the "toml" extra for pyproject.toml support.
