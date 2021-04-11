@@ -291,6 +291,9 @@ class SyntaxTreeNode:
 
 
 class RenderContext(NamedTuple):
+    """A collection of data that needs to be passed to every `Renderer`
+    method."""
+
     renderers: Mapping[str, Renderer]
     postprocessors: Mapping[str, Iterable[Postprocessor]]
     options: Mapping[str, Any]
@@ -298,6 +301,8 @@ class RenderContext(NamedTuple):
 
 
 class RenderTreeNode(SyntaxTreeNode):
+    """A syntax tree node capable of making a text rendering of itself."""
+
     def render(self, context: RenderContext) -> str:
         renderer = context.renderers[self.type]
         text = renderer(self, context)
