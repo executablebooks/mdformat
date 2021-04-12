@@ -16,6 +16,7 @@ Note that there is currently no guarantee for a stable Markdown formatting style
   - Renamed `ParserExtensionInterface.RENDERER_FUNCS` as `ParserExtensionInterface.RENDERERS`
   - Renamed `mdformat.renderer.typing.RendererFunc` as `mdformat.renderer.typing.Render`
   - `mdformat.renderer.typing.Render` signature changed. Now takes `RenderContext` as input.
+  - Renamed `mdformat.renderer.DEFAULT_RENDERER_FUNCS` as `mdformat.renderer.DEFAULT_RENDERERS`
 
 ## 0.6.4
 
