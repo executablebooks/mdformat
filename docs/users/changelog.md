@@ -3,6 +3,11 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.1
+
+- Added
+  - `RenderContext.with_default_renderer_for`: A convenience method for copying a render context with a renderers set to defaults
+
 ## 0.7.0
 
 **NOTE:** Parser extension plugin API has changed in this release.
