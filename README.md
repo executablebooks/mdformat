@@ -3,7 +3,11 @@
 [![codecov.io](https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg)](https://codecov.io/gh/executablebooks/mdformat)
 [![PyPI version](https://img.shields.io/pypi/v/mdformat)](https://pypi.org/project/mdformat)
 
+<div align="center">
+
 # ![mdformat](https://raw.githubusercontent.com/executablebooks/mdformat/master/docs/_static/logo.svg)
+
+</div>
 
 > CommonMark compliant Markdown formatter
 
