@@ -291,8 +291,8 @@ class SyntaxTreeNode:
 
 
 class RenderContext(NamedTuple):
-    """A collection of data that needs to be passed to every `Renderer`
-    method."""
+    """A collection of data that is passed as input to `Render` and
+    `Postprocess` functions."""
 
     renderers: Mapping[str, Render]
     postprocessors: Mapping[str, Iterable[Postprocess]]

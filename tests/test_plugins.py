@@ -215,3 +215,64 @@ def test_plugin_versions_in_cli_help(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "Installed plugins:" in captured.out
     assert "tests: unknown" in captured.out
+
+
+class PrefixPostprocessPlugin:
+    """A plugin that postprocesses text, adding a prefix."""
+
+    CHANGES_AST = True
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        pass
+
+    def _text_postprocess(  # type: ignore
+        text: str, tree: RenderTreeNode, context: RenderContext
+    ) -> str:
+        return "Prefixed!" + text
+
+    RENDERERS = {}
+    POSTPROCESSORS = {"text": _text_postprocess}
+
+
+class SuffixPostprocessPlugin:
+    """A plugin that postprocesses text, adding a suffix."""
+
+    CHANGES_AST = True
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        pass
+
+    def _text_postprocess(  # type: ignore
+        text: str, tree: RenderTreeNode, context: RenderContext
+    ) -> str:
+        return text + "Suffixed!"
+
+    RENDERERS = {}
+    POSTPROCESSORS = {"text": _text_postprocess}
+
+
+def test_postprocess_plugins(monkeypatch):
+    """Test that postprocessors work collaboratively."""
+    suffix_plugin_name = "suffixer"
+    prefix_plugin_name = "prefixer"
+    monkeypatch.setitem(PARSER_EXTENSIONS, suffix_plugin_name, SuffixPostprocessPlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, prefix_plugin_name, PrefixPostprocessPlugin)
+    text = mdformat.text(
+        dedent(
+            """\
+            # Example Heading.
+
+            Example paragraph.
+            """
+        ),
+        extensions=[suffix_plugin_name, prefix_plugin_name],
+    )
+    assert text == dedent(
+        """\
+        # Prefixed!Example Heading.Suffixed!
+
+        Prefixed!Example paragraph.Suffixed!
+        """
+    )
