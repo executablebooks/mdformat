@@ -3,6 +3,20 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## **unreleased**
+
+**NOTE:** Parser extension plugin API has changed in this release.
+
+- Added
+  - `POSTPROCESSORS` mapping to parser extension plugin API (i.e. `ParserExtensionInterface`),
+    providing a way for plugins to render syntax collaboratively.
+  - `Postprocess` type alias to `mdformat.renderer.typing`
+  - `mdformat.renderer.RenderContext`: a context object passed as input to `Render` and `Postprocess` functions
+- Changed
+  - Renamed `ParserExtensionInterface.RENDERER_FUNCS` as `ParserExtensionInterface.RENDERERS`
+  - Renamed `mdformat.renderer.typing.RendererFunc` as `mdformat.renderer.typing.Render`
+  - `mdformat.renderer.typing.Render` signature changed. Now takes `RenderContext` as input.
+
 ## 0.6.4
 
 - Fixed
