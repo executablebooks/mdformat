@@ -231,7 +231,7 @@ class PrefixPostprocessPlugin:
     ) -> str:
         return "Prefixed!" + text
 
-    RENDERERS = {}
+    RENDERERS: dict = {}
     POSTPROCESSORS = {"text": _text_postprocess}
 
 
@@ -249,7 +249,7 @@ class SuffixPostprocessPlugin:
     ) -> str:
         return text + "Suffixed!"
 
-    RENDERERS = {}
+    RENDERERS: dict = {}
     POSTPROCESSORS = {"text": _text_postprocess}
 
 
