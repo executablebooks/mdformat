@@ -15,7 +15,7 @@ from markdown_it.token import Token
 
 from mdformat.renderer._default_renderers import DEFAULT_RENDERERS
 from mdformat.renderer._tree import RenderContext, RenderTreeNode
-from mdformat.renderer.typing import Postprocessor
+from mdformat.renderer.typing import Postprocess
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class MDRenderer:
         # Update RENDERER_MAP defaults with renderer functions defined
         # by plugins.
         updated_renderers = {}
-        postprocessors: Dict[str, Tuple[Postprocessor, ...]] = {}
+        postprocessors: Dict[str, Tuple[Postprocess, ...]] = {}
         for plugin in options.get("parser_extension", []):
             for syntax_name, renderer_func in plugin.RENDERERS.items():
                 if syntax_name in updated_renderers:

@@ -14,7 +14,7 @@ from typing import (
 
 from markdown_it.token import Token
 
-from mdformat.renderer.typing import Postprocessor, Renderer
+from mdformat.renderer.typing import Postprocess, Render
 
 
 def _removesuffix(string: str, suffix: str) -> str:
@@ -294,8 +294,8 @@ class RenderContext(NamedTuple):
     """A collection of data that needs to be passed to every `Renderer`
     method."""
 
-    renderers: Mapping[str, Renderer]
-    postprocessors: Mapping[str, Iterable[Postprocessor]]
+    renderers: Mapping[str, Render]
+    postprocessors: Mapping[str, Iterable[Postprocess]]
     options: Mapping[str, Any]
     env: MutableMapping
 

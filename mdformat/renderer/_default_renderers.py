@@ -21,7 +21,7 @@ from mdformat.renderer._util import (
     longest_consecutive_sequence,
     maybe_add_link_brackets,
 )
-from mdformat.renderer.typing import Renderer
+from mdformat.renderer.typing import Render
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-def make_render_children(separator: str) -> Renderer:
+def make_render_children(separator: str) -> Render:
     def render_children(
         node: "RenderTreeNode",
         context: RenderContext,
@@ -190,7 +190,7 @@ def _render_inline_as_text(node: "RenderTreeNode", context: RenderContext) -> st
     def image_renderer(node: "RenderTreeNode", context: RenderContext) -> str:
         return _render_inline_as_text(node, context)
 
-    inline_renderers: Mapping[str, Renderer] = defaultdict(
+    inline_renderers: Mapping[str, Render] = defaultdict(
         lambda: make_render_children(""),
         {
             "text": text_renderer,
@@ -521,7 +521,7 @@ def ordered_list(node: "RenderTreeNode", context: RenderContext) -> str:
     return text
 
 
-DEFAULT_RENDERERS: Mapping[str, Renderer] = MappingProxyType(
+DEFAULT_RENDERERS: Mapping[str, Render] = MappingProxyType(
     {
         "inline": make_render_children(""),
         "root": make_render_children("\n\n"),
