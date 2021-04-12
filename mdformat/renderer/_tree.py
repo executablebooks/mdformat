@@ -1,20 +1,8 @@
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Mapping,
-    MutableMapping,
-    NamedTuple,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-)
+from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, TypeVar
 
 from markdown_it.token import Token
 
-from mdformat.renderer.typing import Postprocess, Render
+from mdformat.renderer._context import RenderContext
 
 
 def _removesuffix(string: str, suffix: str) -> str:
@@ -288,16 +276,6 @@ class SyntaxTreeNode:
         Used for tight lists to hide paragraphs.
         """
         return self._attribute_token().hidden
-
-
-class RenderContext(NamedTuple):
-    """A collection of data that is passed as input to `Render` and
-    `Postprocess` functions."""
-
-    renderers: Mapping[str, Render]
-    postprocessors: Mapping[str, Iterable[Postprocess]]
-    options: Mapping[str, Any]
-    env: MutableMapping
 
 
 class RenderTreeNode(SyntaxTreeNode):

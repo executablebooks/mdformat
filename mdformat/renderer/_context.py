@@ -4,9 +4,17 @@ import re
 import sys
 import textwrap
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Mapping, Optional, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    Mapping,
+    MutableMapping,
+    NamedTuple,
+    Optional,
+    Union,
+)
 
-from mdformat.renderer._tree import RenderContext
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
@@ -21,7 +29,7 @@ from mdformat.renderer._util import (
     longest_consecutive_sequence,
     maybe_add_link_brackets,
 )
-from mdformat.renderer.typing import Render
+from mdformat.renderer.typing import Postprocess, Render
 
 if sys.version_info < (3, 8):
     from typing_extensions import Literal
@@ -37,19 +45,19 @@ LOGGER = logging.getLogger(__name__)
 def make_render_children(separator: str) -> Render:
     def render_children(
         node: "RenderTreeNode",
-        context: RenderContext,
+        context: "RenderContext",
     ) -> str:
         return separator.join(child.render(context) for child in node.children)
 
     return render_children
 
 
-def hr(node: "RenderTreeNode", context: RenderContext) -> str:
+def hr(node: "RenderTreeNode", context: "RenderContext") -> str:
     thematic_break_width = 70
     return "_" * thematic_break_width
 
 
-def code_inline(node: "RenderTreeNode", context: RenderContext) -> str:
+def code_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     code = node.content
     all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
@@ -61,23 +69,23 @@ def code_inline(node: "RenderTreeNode", context: RenderContext) -> str:
     return f"`{code}`"
 
 
-def html_block(node: "RenderTreeNode", context: RenderContext) -> str:
+def html_block(node: "RenderTreeNode", context: "RenderContext") -> str:
     return node.content.rstrip("\n")
 
 
-def html_inline(node: "RenderTreeNode", context: RenderContext) -> str:
+def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     return node.content
 
 
-def hardbreak(node: "RenderTreeNode", context: RenderContext) -> str:
+def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
     return "\\" + "\n"
 
 
-def softbreak(node: "RenderTreeNode", context: RenderContext) -> str:
+def softbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
     return "\n"
 
 
-def text(node: "RenderTreeNode", context: RenderContext) -> str:
+def text(node: "RenderTreeNode", context: "RenderContext") -> str:
     """Process a text token.
 
     Text should always be a child of an inline token. An inline token
@@ -118,7 +126,7 @@ def text(node: "RenderTreeNode", context: RenderContext) -> str:
     return text
 
 
-def fence(node: "RenderTreeNode", context: RenderContext) -> str:
+def fence(node: "RenderTreeNode", context: "RenderContext") -> str:
     info_str = node.info.strip()
     lang = info_str.split()[0] if info_str.split() else ""
     code_block = node.content
@@ -154,11 +162,11 @@ def fence(node: "RenderTreeNode", context: RenderContext) -> str:
     return f"{fence_str}{info_str}\n{code_block}{fence_str}"
 
 
-def code_block(node: "RenderTreeNode", context: RenderContext) -> str:
+def code_block(node: "RenderTreeNode", context: "RenderContext") -> str:
     return fence(node, context)
 
 
-def image(node: "RenderTreeNode", context: RenderContext) -> str:
+def image(node: "RenderTreeNode", context: "RenderContext") -> str:
     description = _render_inline_as_text(node, context)
 
     ref_label = node.meta.get("label")
@@ -177,17 +185,17 @@ def image(node: "RenderTreeNode", context: RenderContext) -> str:
     return f"![{description}]({uri})"
 
 
-def _render_inline_as_text(node: "RenderTreeNode", context: RenderContext) -> str:
+def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> str:
     """Special kludge for image `alt` attributes to conform CommonMark spec.
 
     Don't try to use it! Spec requires to show `alt` content with
     stripped markup, instead of simple escaping.
     """
 
-    def text_renderer(node: "RenderTreeNode", context: RenderContext) -> str:
+    def text_renderer(node: "RenderTreeNode", context: "RenderContext") -> str:
         return node.content
 
-    def image_renderer(node: "RenderTreeNode", context: RenderContext) -> str:
+    def image_renderer(node: "RenderTreeNode", context: "RenderContext") -> str:
         return _render_inline_as_text(node, context)
 
     inline_renderers: Mapping[str, Render] = defaultdict(
@@ -204,7 +212,7 @@ def _render_inline_as_text(node: "RenderTreeNode", context: RenderContext) -> st
     return make_render_children("")(node, inline_context)
 
 
-def link(node: "RenderTreeNode", context: RenderContext) -> str:
+def link(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = "".join(child.render(context) for child in node.children)
     if node.info == "auto":
         return "<" + text + ">"
@@ -226,19 +234,19 @@ def link(node: "RenderTreeNode", context: RenderContext) -> str:
     return f'[{text}]({uri} "{title}")'
 
 
-def em(node: "RenderTreeNode", context: RenderContext) -> str:
+def em(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = make_render_children(separator="")(node, context)
     indicator = node.markup
     return indicator + text + indicator
 
 
-def strong(node: "RenderTreeNode", context: RenderContext) -> str:
+def strong(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = make_render_children(separator="")(node, context)
     indicator = node.markup
     return indicator + text + indicator
 
 
-def heading(node: "RenderTreeNode", context: RenderContext) -> str:
+def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = make_render_children(separator="")(node, context)
 
     if node.markup == "=":
@@ -261,7 +269,7 @@ def heading(node: "RenderTreeNode", context: RenderContext) -> str:
     return prefix + text
 
 
-def blockquote(node: "RenderTreeNode", context: RenderContext) -> str:
+def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = make_render_children(separator="\n\n")(node, context)
     lines = text.splitlines()
     if not lines:
@@ -323,7 +331,7 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -
     return text
 
 
-def paragraph(node: "RenderTreeNode", context: RenderContext) -> str:  # noqa: C901
+def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
     inline_node = node.children[0]
 
     wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
@@ -412,7 +420,7 @@ def paragraph(node: "RenderTreeNode", context: RenderContext) -> str:  # noqa: C
     return text
 
 
-def list_item(node: "RenderTreeNode", context: RenderContext) -> str:
+def list_item(node: "RenderTreeNode", context: "RenderContext") -> str:
     """Return one list item as string.
 
     This returns just the content. List item markers and indentation are
@@ -427,7 +435,7 @@ def list_item(node: "RenderTreeNode", context: RenderContext) -> str:
     return text
 
 
-def bullet_list(node: "RenderTreeNode", context: RenderContext) -> str:
+def bullet_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     indent = " " * len(marker_type + first_line_indent)
@@ -452,7 +460,7 @@ def bullet_list(node: "RenderTreeNode", context: RenderContext) -> str:
     return text
 
 
-def ordered_list(node: "RenderTreeNode", context: RenderContext) -> str:
+def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     consecutive_numbering = context.options.get("mdformat", {}).get(CONSECUTIVE_KEY)
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
@@ -546,3 +554,24 @@ DEFAULT_RENDERERS: Mapping[str, Render] = MappingProxyType(
         "list_item": list_item,
     }
 )
+
+
+class RenderContext(NamedTuple):
+    """A collection of data that is passed as input to `Render` and
+    `Postprocess` functions."""
+
+    renderers: Mapping[str, Render]
+    postprocessors: Mapping[str, Iterable[Postprocess]]
+    options: Mapping[str, Any]
+    env: MutableMapping
+
+    def with_default_renderer_for(self, *syntax_names: str) -> "RenderContext":
+        renderers = dict(self.renderers)
+        for syntax in syntax_names:
+            if syntax in DEFAULT_RENDERERS:
+                renderers[syntax] = DEFAULT_RENDERERS[syntax]
+            else:
+                renderers.pop(syntax, None)
+        return RenderContext(
+            MappingProxyType(renderers), self.postprocessors, self.options, self.env
+        )
