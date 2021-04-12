@@ -1,4 +1,8 @@
+<div align="center">
+
 # ![mdformat](_static/logo.svg)
+
+</div>
 
 > CommonMark compliant Markdown formatter
 
