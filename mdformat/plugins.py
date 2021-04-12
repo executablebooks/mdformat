@@ -4,7 +4,7 @@ from typing import Callable, Dict, Mapping
 from markdown_it import MarkdownIt
 
 from mdformat._compat import Protocol, importlib_metadata
-from mdformat.renderer.typing import RendererFunc
+from mdformat.renderer.typing import Postprocess, Render
 
 
 def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:
@@ -24,10 +24,18 @@ class ParserExtensionInterface(Protocol):
     # (optional, default: False)
     CHANGES_AST: bool = False
 
-    # A mapping from `RenderTreeNode.type` to a `RendererFunc` that can
+    # A mapping from `RenderTreeNode.type` to a `Render` function that can
     # render the given `RenderTreeNode` type. These override the default
-    # `RendererFunc`s defined in `mdformat.renderer.DEFAULT_RENDERER_FUNCS`.
-    RENDERER_FUNCS: Mapping[str, RendererFunc]
+    # `Render` funcs defined in `mdformat.renderer.DEFAULT_RENDERERS`.
+    RENDERERS: Mapping[str, Render]
+
+    # A mapping from `RenderTreeNode.type` to a `Postprocess` that does
+    # postprocessing for the output of the `Render` function. Unlike
+    # `Render` funcs, `Postprocess` funcs are collaborative: any number of
+    # plugins can define a postprocessor for a syntax type and all of them
+    # will run in series.
+    # (optional)
+    POSTPROCESSORS: Mapping[str, Postprocess]
 
     @staticmethod
     def add_cli_options(parser: argparse.ArgumentParser) -> None:

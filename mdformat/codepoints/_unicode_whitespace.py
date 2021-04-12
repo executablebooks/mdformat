@@ -29,7 +29,7 @@ UNICODE_WHITESPACE = frozenset(
     )
 )
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     import string
     import sys
     import unicodedata

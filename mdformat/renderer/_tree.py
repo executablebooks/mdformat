@@ -1,6 +1,20 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, TypeVar
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    MutableMapping,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+)
 
 from markdown_it.token import Token
+
+from mdformat.renderer.typing import Postprocess, Render
 
 
 def _removesuffix(string: str, suffix: str) -> str:
@@ -51,7 +65,7 @@ class SyntaxTreeNode:
             self._set_children_from_tokens(tokens)
             return
 
-        if not tokens:
+        if not tokens:  # pragma: no cover
             raise ValueError(
                 "Can only create root from empty token sequence."
                 " Set `create_root=True`."
@@ -274,3 +288,24 @@ class SyntaxTreeNode:
         Used for tight lists to hide paragraphs.
         """
         return self._attribute_token().hidden
+
+
+class RenderContext(NamedTuple):
+    """A collection of data that is passed as input to `Render` and
+    `Postprocess` functions."""
+
+    renderers: Mapping[str, Render]
+    postprocessors: Mapping[str, Iterable[Postprocess]]
+    options: Mapping[str, Any]
+    env: MutableMapping
+
+
+class RenderTreeNode(SyntaxTreeNode):
+    """A syntax tree node capable of making a text rendering of itself."""
+
+    def render(self, context: RenderContext) -> str:
+        renderer = context.renderers[self.type]
+        text = renderer(self, context)
+        for postprocessor in context.postprocessors.get(self.type, ()):
+            text = postprocessor(text, self, context)
+        return text

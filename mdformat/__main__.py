@@ -9,5 +9,5 @@ def run() -> NoReturn:
     sys.exit(exit_code)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     run()

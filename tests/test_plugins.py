@@ -1,7 +1,6 @@
 import argparse
 import json
 from textwrap import dedent
-from typing import Any, Mapping, MutableMapping
 from unittest.mock import patch
 
 from markdown_it import MarkdownIt
@@ -10,8 +9,7 @@ import pytest
 import mdformat
 from mdformat._cli import run
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
-from mdformat.renderer import MDRenderer, RenderTreeNode
-from mdformat.renderer.typing import RendererFunc
+from mdformat.renderer import MDRenderer, RenderContext, RenderTreeNode
 
 
 def example_formatter(code, info):
@@ -47,14 +45,11 @@ class TextEditorPlugin:
         pass
 
     def _text_renderer(  # type: ignore
-        tree: RenderTreeNode,
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
+        tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return "All text is like this now!"
 
-    RENDERER_FUNCS = {"text": _text_renderer}
+    RENDERERS = {"text": _text_renderer}
 
 
 def test_single_token_extension(monkeypatch):
@@ -88,14 +83,11 @@ class ExampleTablePlugin:
         mdit.enable("table")
 
     def _table_renderer(  # type: ignore
-        tree: RenderTreeNode,
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
+        tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return "dummy 21"
 
-    RENDERER_FUNCS = {"table": _table_renderer}
+    RENDERERS = {"table": _table_renderer}
 
 
 def test_table(monkeypatch):
@@ -167,14 +159,11 @@ class ExampleASTChangingPlugin:
         pass
 
     def _text_renderer(  # type: ignore
-        tree: RenderTreeNode,
-        renderer_funcs: Mapping[str, RendererFunc],
-        options: Mapping[str, Any],
-        env: MutableMapping,
+        tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return ExampleASTChangingPlugin.TEXT_REPLACEMENT
 
-    RENDERER_FUNCS = {"text": _text_renderer}
+    RENDERERS = {"text": _text_renderer}
 
 
 def test_ast_changing_plugin(monkeypatch, tmp_path):
@@ -226,3 +215,64 @@ def test_plugin_versions_in_cli_help(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "Installed plugins:" in captured.out
     assert "tests: unknown" in captured.out
+
+
+class PrefixPostprocessPlugin:
+    """A plugin that postprocesses text, adding a prefix."""
+
+    CHANGES_AST = True
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        pass
+
+    def _text_postprocess(  # type: ignore
+        text: str, tree: RenderTreeNode, context: RenderContext
+    ) -> str:
+        return "Prefixed!" + text
+
+    RENDERERS: dict = {}
+    POSTPROCESSORS = {"text": _text_postprocess}
+
+
+class SuffixPostprocessPlugin:
+    """A plugin that postprocesses text, adding a suffix."""
+
+    CHANGES_AST = True
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        pass
+
+    def _text_postprocess(  # type: ignore
+        text: str, tree: RenderTreeNode, context: RenderContext
+    ) -> str:
+        return text + "Suffixed!"
+
+    RENDERERS: dict = {}
+    POSTPROCESSORS = {"text": _text_postprocess}
+
+
+def test_postprocess_plugins(monkeypatch):
+    """Test that postprocessors work collaboratively."""
+    suffix_plugin_name = "suffixer"
+    prefix_plugin_name = "prefixer"
+    monkeypatch.setitem(PARSER_EXTENSIONS, suffix_plugin_name, SuffixPostprocessPlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, prefix_plugin_name, PrefixPostprocessPlugin)
+    text = mdformat.text(
+        dedent(
+            """\
+            # Example Heading.
+
+            Example paragraph.
+            """
+        ),
+        extensions=[suffix_plugin_name, prefix_plugin_name],
+    )
+    assert text == dedent(
+        """\
+        # Prefixed!Example Heading.Suffixed!
+
+        Prefixed!Example paragraph.Suffixed!
+        """
+    )
