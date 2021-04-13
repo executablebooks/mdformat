@@ -2,6 +2,6 @@
 # Move these to pyproject.toml and use the Poetry lockfile if readthedocs.org
 # ever supports that.
 
-sphinx == 3.5.4
+sphinx == 3.5.3
 myst-parser == 0.13.6
 furo == 2021.4.11b34
