@@ -6,7 +6,8 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 ## 0.7.1
 
 - Added
-  - `RenderContext.with_default_renderer_for`: A convenience method for copying a render context with a renderers set to defaults
+  - `RenderContext.with_default_renderer_for`:
+    A convenience method for copying a render context with a set of renderers set to defaults
 
 ## 0.7.0
 
