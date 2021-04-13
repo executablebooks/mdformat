@@ -121,7 +121,8 @@ Here's a few pointers to get you started:
 Mdformat is pure Python code!
 Python is pre-installed on macOS and virtually any Linux distribution,
 meaning that typically little to no additional installations are required to run mdformat.
-This argument also holds true when using together with [pre-commit](https://github.com/pre-commit/pre-commit) (also Python).
+This argument also holds true when using together with
+[pre-commit](https://github.com/pre-commit/pre-commit) (also Python).
 Prettier on the other hand requires Node.js/npm.
 
 Prettier suffers from [numerous](https://github.com/prettier/prettier/issues?q=is%3Aopen+label%3Alang%3Amarkdown+label%3Atype%3Abug+) bugs,
@@ -129,10 +130,15 @@ many of which cause changes in Markdown AST and rendered HTML.
 Many of these bugs are a consequence of using [`remark-parse`](https://github.com/remarkjs/remark/tree/main/packages/remark-parse) v8.x as Markdown parser which,
 according to the author themselves,
 is [inferior to markdown-it](https://github.com/remarkjs/remark/issues/75#issuecomment-143532326) used by mdformat.
-`remark-parse` v9.x is advertised as CommonMark compliant and presumably would fix many of the issues, but is not used by Prettier yet (Prettier being at v2.2.1 at the time of writing).
+`remark-parse` v9.x is advertised as CommonMark compliant
+and presumably would fix many of the issues,
+but is not used by Prettier (v2.2.1) yet.
 
-Prettier, being able to format many languages other than Markdown, is a large package with 63 direct dependencies (mdformat only has 2 in Python 3.8+).
-This can be a disadvantage in many environments, one example being size optimized Docker images.
+Prettier (v2.2.1), being able to format many languages other than Markdown,
+is a large package with 63 direct dependencies
+(mdformat only has 2 in Python 3.8+).
+This can be a disadvantage in many environments,
+one example being size optimized Docker images.
 
 Mdformat's parser extension plugin API allows not only customization of the Markdown specification in use,
 but also advanced features like [automatic table of contents generation](https://github.com/hukkinj1/mdformat-toc).
