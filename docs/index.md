@@ -2,9 +2,9 @@
 
 # ![mdformat](_static/logo.svg)
 
-</div>
-
 > CommonMark compliant Markdown formatter
+
+</div>
 
 ```{include} ../README.md
 :start-after: <!-- start mini-description -->
