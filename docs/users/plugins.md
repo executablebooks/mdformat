@@ -2,7 +2,7 @@
 
 Mdformat offers an extensible plugin system for both code fence content formatting and Markdown parser extensions (like GFM tables).
 This document explains how to use plugins.
-If you want to create a new plugin, refer to the [contributing](../developers/contributing.md) docs.
+If you want to create a new plugin, refer to the [contributing](../contributors/contributing.md) docs.
 
 ## Code formatter plugins
 

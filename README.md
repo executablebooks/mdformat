@@ -107,7 +107,7 @@ Here's a few pointers to get you started:
 - [Python API usage](https://mdformat.readthedocs.io/en/stable/users/installation_and_usage.html#python-api-usage)
 - [Usage as a pre-commit hook](https://mdformat.readthedocs.io/en/stable/users/installation_and_usage.html#usage-as-a-pre-commit-hook)
 - [Plugin usage](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
-- [Plugin development guide](https://mdformat.readthedocs.io/en/stable/developers/contributing.html)
+- [Plugin development guide](https://mdformat.readthedocs.io/en/stable/contributors/contributing.html)
 - [List of code block formatter plugins](https://mdformat.readthedocs.io/en/stable/users/plugins.html#existing-plugins)
 - [List of parser extension plugins](https://mdformat.readthedocs.io/en/stable/users/plugins.html#id1)
 - [Changelog](https://mdformat.readthedocs.io/en/stable/users/changelog.html)
