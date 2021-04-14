@@ -55,3 +55,23 @@ html_show_sphinx = False
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+# -- Options for MyST parser -------------------------------------------------
+
+# Disable MyST syntax incompatible with vanilla mdformat
+# (i.e. disable everything except "directives")
+myst_disable_syntax = [
+    "table",
+    "front_matter",
+    "myst_line_comment",
+    "myst_block_break",
+    "myst_target",
+    "myst_role",
+    "math_inline",
+    "math_block",
+    "footnote_def",
+    "footnote_inline",
+    "footnote_ref",
+    "footnote_tail",
+]
