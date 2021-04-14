@@ -808,7 +808,7 @@ UNICODE_PUNCTUATION = frozenset(
     )
 )
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     import string
     import sys
     import unicodedata

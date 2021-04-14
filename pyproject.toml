@@ -117,3 +117,16 @@ commands = mdformat {posargs}
 
 [tool.coverage.run]
 omit = ["tests/*", "*/site-packages/*"]
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    # Ellipsis lines after @typing.overload
+    '\.\.\.',
+    # Code for static type checkers
+    "if TYPE_CHECKING:",
+    # Scripts
+    'if __name__ == .__main__.:',
+]
