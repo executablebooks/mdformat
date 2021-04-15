@@ -3,6 +3,11 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.2
+
+- Fixed
+  - Style: Stop adding a newline character to empty documents.
+
 ## 0.7.1
 
 - Added
