@@ -336,3 +336,10 @@ Keep shortcut reference links (dont convert to full reference)
 [foo]: /url "title"
 [image]: train.jpg
 .
+
+
+Empty document has no newline
+.
+
+.
+.
