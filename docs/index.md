@@ -46,7 +46,7 @@ users/changelog.md
 caption: For contributors
 hidden: true
 ---
-developers/contributing.md
+contributors/contributing.md
 ```
 
 ```{toctree}
