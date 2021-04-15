@@ -86,7 +86,8 @@ class MDRenderer:
             if env.get("used_refs"):
                 text += "\n\n"
                 text += self._write_references(env)
-            text += "\n"
+            if text:
+                text += "\n"
         return text
 
     @staticmethod
