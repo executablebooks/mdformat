@@ -31,6 +31,16 @@ zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 .
 
 
+Newline in image description
+.
+Blii blaa. There is a newline in this image ![here
+it is](https://github.com/executablebooks/)
+.
+Blii blaa. There is a newline in this image ![here
+it is](https://github.com/executablebooks/)
+.
+
+
 Newline in link text
 .
 Blii blaa. There is a newline in this link [here
