@@ -375,9 +375,8 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
         if lines[i].startswith("\t"):
             lines[i] = "&#9;" + lines[i][1:]
 
-        # Make sure a paragraph line does not start with "#"
-        # (otherwise it will be interpreted as an ATX heading).
-        if lines[i].startswith("#"):
+        # If a line looks like an ATX heading, escape the first hash.
+        if re.match(r"#{1,6}( |\t|$)", lines[i]):
             lines[i] = f"\\{lines[i]}"
 
         # Make sure a paragraph line does not start with ">"
