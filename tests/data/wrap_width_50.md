@@ -28,3 +28,13 @@ z zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 z
 zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 .
+
+
+Newline in link text
+.
+Blii blaa. There is a newline in this link [here
+it is](https://github.com/executablebooks/)
+.
+Blii blaa. There is a newline in this link
+[here it is](https://github.com/executablebooks/)
+.
