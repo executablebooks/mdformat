@@ -214,6 +214,12 @@ def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> 
 
 def link(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = "".join(child.render(context) for child in node.children)
+
+    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
+    if isinstance(wrap_mode, int) or wrap_mode == "no":
+        # Collapse all whitespace to a single space char
+        text = re.sub(r"\s+", " ", text)
+
     if node.info == "auto":
         return "<" + text + ">"
 
