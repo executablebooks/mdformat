@@ -343,3 +343,11 @@ Empty document has no newline
 
 .
 .
+
+
+Don't escape hash not followed by space
+.
+#No space after hash -> no need to escape
+.
+#No space after hash -> no need to escape
+.
