@@ -38,3 +38,29 @@ it is](https://github.com/executablebooks/)
 Blii blaa. There is a newline in this link
 [here it is](https://github.com/executablebooks/)
 .
+
+
+Max width lines
+.
+Brackets are always dedented and that a trailing
+Aproduces smaller diffs; when you add or remove an
+So, having the closing bracket dedented provides a
+Sections of the code that otherwise share the same
+List and the docstring in the example above).
+.
+Brackets are always dedented and that a trailing
+Aproduces smaller diffs; when you add or remove an
+So, having the closing bracket dedented provides a
+Sections of the code that otherwise share the same
+List and the docstring in the example above).
+.
+
+
+No space between normal section and no-break section
+.
+As around `:` operators for "simple expressions"
+(`ham[lower:upper]`), and extra.
+.
+As around `:` operators for "simple expressions"
+(`ham[lower:upper]`), and extra.
+.
