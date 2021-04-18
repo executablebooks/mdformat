@@ -20,9 +20,6 @@ def test_style(fixture_file, options):
     cases = read_fixture_file(Path(__file__).parent / "data" / fixture_file)
     for case in cases:
         line, title, text, expected = case
-        # This is a pytest.xfail() case
-        if title == "No space between normal section and no-break section":
-            continue
         md_new = mdformat.text(text, options=options)
         if md_new != expected:
             print(md_new)

@@ -15,6 +15,7 @@ from typing import (
     Union,
 )
 
+from mdformat import codepoints
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
@@ -303,7 +304,7 @@ def _last_line_width(text: str) -> int:
     return width
 
 
-def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -> str:
+def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
     # Collapse all whitespace to a single space char
     text = re.sub(r"\s+", " ", text)
     if width == "no":
@@ -316,25 +317,7 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -
         expand_tabs=False,
         replace_whitespace=False,
     )
-
-    # Prepend the text with as many null characters as the width of the last
-    # line in `preceding_text`. This forces a line break to happen sooner if
-    # the line already has content in `preceding_text`. Null characters are
-    # used because they can not naturally be present in the text.
-    text = _last_line_width(preceding_text) * "\x00" + text
-
-    is_trailing_space = text[-1] == " "
-
-    # Do the wrapping
-    text = wrapper.fill(text)
-    # The wrapper removes a possible trailing space. We need to add it back.
-    if is_trailing_space:
-        text += " "
-
-    # Remove the added null characters now that wrapping is done
-    text = text.lstrip("\x00")
-
-    return text
+    return wrapper.fill(text)
 
 
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
@@ -343,28 +326,21 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
     wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
     if isinstance(wrap_mode, int) or wrap_mode == "no":
         text = ""
-        buffer = ""
+        null_replacements = ""
         for child in inline_node.children:
             if child.type in {"text", "softbreak"}:
-                buffer += child.render(context)
+                text += child.render(context)
             else:
-                if buffer:
-                    text += _wrap(buffer, width=wrap_mode, preceding_text=text)
-                buffer = ""
-
                 no_wrap_section = child.render(context)
-                # Add preceding wrap if the section extends
-                # beyond target wrap width
-                if (
-                    isinstance(wrap_mode, int)
-                    and text.endswith(" ")
-                    and _last_line_width(text) + _first_line_width(no_wrap_section)
-                    > wrap_mode
-                ):
-                    text = text[:-1] + "\n"
-                text += no_wrap_section
-        if buffer:
-            text += _wrap(buffer, width=wrap_mode, preceding_text=text)
+                for c in no_wrap_section:
+                    if c in codepoints.UNICODE_WHITESPACE:
+                        text += "\x00"
+                        null_replacements += c
+                    else:
+                        text += c
+        text = _wrap(text, width=wrap_mode)
+        replacement_iterator = iter(null_replacements)
+        text = "".join(next(replacement_iterator) if c == "\x00" else c for c in text)
     else:
         text = inline_node.render(context)
 

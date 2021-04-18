@@ -62,5 +62,5 @@ As around `:` operators for "simple expressions"
 (`ham[lower:upper]`), and extra.
 .
 As around `:` operators for "simple expressions"
-(`ham[lower:upper]`), and extra
+(`ham[lower:upper]`), and extra.
 .
