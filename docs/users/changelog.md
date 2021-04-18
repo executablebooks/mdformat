@@ -3,6 +3,13 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.3
+
+- Fixed
+  - Style: Convert link text newlines to spaces in wrap altering modes.
+- Changed
+  - Style: No longer escape line starting hashes not followed by a space.
+
 ## 0.7.2
 
 - Fixed
