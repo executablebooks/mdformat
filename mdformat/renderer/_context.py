@@ -317,7 +317,8 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
         expand_tabs=False,
         replace_whitespace=False,
     )
-    return wrapper.fill(text)
+    wrapped = wrapper.fill(text)
+    return " " + wrapped if text.startswith(" ") else wrapped
 
 
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
