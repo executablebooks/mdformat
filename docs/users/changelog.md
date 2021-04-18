@@ -7,7 +7,6 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 
 - Fixed
   - Style: Convert link text newlines to spaces in wrap altering modes.
-
 - Changed
   - Style: No longer escape line starting hashes not followed by a space.
 
