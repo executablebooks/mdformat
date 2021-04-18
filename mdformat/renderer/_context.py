@@ -315,7 +315,6 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -
         width=width,
         expand_tabs=False,
         replace_whitespace=False,
-        drop_whitespace=False,
     )
 
     # Prepend the text with as many null characters as the width of the last
@@ -324,15 +323,16 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]], preceding_text: str) -
     # used because they can not naturally be present in the text.
     text = _last_line_width(preceding_text) * "\x00" + text
 
+    is_trailing_space = text[-1] == " "
+
     # Do the wrapping
     text = wrapper.fill(text)
+    # The wrapper removes a possible trailing space. We need to add it back.
+    if is_trailing_space:
+        text += " "
 
     # Remove the added null characters now that wrapping is done
     text = text.lstrip("\x00")
-
-    # Because we set `drop_whitespace=False` for the wrapper, we now need
-    # to manually drop any whitespace surrounding a newline
-    text = re.sub(r"[\n ]*\n[\n ]*", "\n", text)
 
     return text
 
