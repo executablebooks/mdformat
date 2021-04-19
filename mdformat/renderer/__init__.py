@@ -4,6 +4,7 @@ __all__ = (
     "RenderTreeNode",
     "DEFAULT_RENDERERS",
     "RenderContext",
+    "WRAP_POINT",
 )
 
 import logging
@@ -13,7 +14,7 @@ from typing import Any, Dict, Mapping, MutableMapping, Sequence, Tuple
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
-from mdformat.renderer._context import DEFAULT_RENDERERS, RenderContext
+from mdformat.renderer._context import DEFAULT_RENDERERS, WRAP_POINT, RenderContext
 from mdformat.renderer._tree import RenderTreeNode
 from mdformat.renderer.typing import Postprocess
 
