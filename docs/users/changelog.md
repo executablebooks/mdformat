@@ -5,6 +5,9 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 
 ## 0.7.4
 
+- New
+  - `mdformat.renderer.WRAP_POINT` for plugins to show where word wrap is allowed to occur.
+  - `mdformat.renderer.RenderContext.do_wrap` for plugins to check whether word wrap is enabled.
 - Changed
   - Style: Emphasis and strong emphasis are now wrapped.
   - Style: Word wrap width target is now respected more precisely in a few edge cases.
