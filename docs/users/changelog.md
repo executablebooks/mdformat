@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.4
+
+- Changed
+  - Style: Inline code, emphasis, and strong emphasis are now wrapped.
+  - Style: Word wrap width target is now respected more precisely in a few edge cases.
+
 ## 0.7.3
 
 - Fixed

@@ -64,9 +64,22 @@ def code_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
     if longest_backtick_seq:
         separator = "`" * (longest_backtick_seq + 1)
+        if "null_replacements" in context.env:
+            context.env["null_replacements"] += " " + " "
+            return f"{separator}\x00{code}\x00{separator}"
         return f"{separator} {code} {separator}"
     if code.startswith(" ") and code.endswith(" ") and not all_chars_are_whitespace:
+        if "null_replacements" in context.env:
+            context.env["null_replacements"] += " " + " "
+            return f"`\x00{code}\x00`"
         return f"` {code} `"
+    if "null_replacements" in context.env:
+        if code and code[0] in codepoints.UNICODE_WHITESPACE:
+            context.env["null_replacements"] += code[0]
+            code = "\x00" + code[1:]
+        if len(code) >= 2 and code[-1] in codepoints.UNICODE_WHITESPACE:
+            context.env["null_replacements"] += code[-1]
+            code = code[:-1] + "\x00"
     return f"`{code}`"
 
 
@@ -79,6 +92,9 @@ def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 
 def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
+    if "null_replacements" in context.env:
+        context.env["null_replacements"] += "\n"
+        return "\\" + "\x00"
     return "\\" + "\n"
 
 
@@ -327,20 +343,21 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
     wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
     if isinstance(wrap_mode, int) or wrap_mode == "no":
         text = ""
-        null_replacements = ""
+        context.env["null_replacements"] = ""
         for child in inline_node.children:
-            if child.type in {"text", "softbreak"}:
+            if child.type in {"text", "softbreak", "em", "strong", "code_inline"}:
                 text += child.render(context)
             else:
                 no_wrap_section = child.render(context)
                 for c in no_wrap_section:
                     if c in codepoints.UNICODE_WHITESPACE:
                         text += "\x00"
-                        null_replacements += c
+                        context.env["null_replacements"] += c
                     else:
                         text += c
         text = _wrap(text, width=wrap_mode)
-        replacement_iterator = iter(null_replacements)
+        replacement_iterator = iter(context.env["null_replacements"])
+        del context.env["null_replacements"]
         text = "".join(next(replacement_iterator) if c == "\x00" else c for c in text)
     else:
         text = inline_node.render(context)
