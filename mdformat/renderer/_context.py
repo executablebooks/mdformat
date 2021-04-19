@@ -91,7 +91,7 @@ def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 
 def softbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
-    if context.do_wrap:
+    if context.do_wrap and _in_paragraph(node):
         return WRAP_POINT
     return "\n"
 
@@ -134,7 +134,7 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
     if text.endswith("!") and next_sibling and next_sibling.type == "link":
         text = text[:-1] + "\\!"
 
-    if context.do_wrap:
+    if context.do_wrap and _in_paragraph(node):
         text = re.sub(r"\s+", WRAP_POINT, text)
 
     return text
@@ -267,7 +267,6 @@ def strong(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = make_render_children(separator="")(node, context)
-    text = text.replace(WRAP_POINT, " ")
 
     if node.markup == "=":
         prefix = "# "
@@ -367,6 +366,14 @@ def _recover_preserve_chars(text: str, replacements: str) -> str:
     return "".join(
         next(replacement_iterator) if c == PRESERVE_CHAR else c for c in text
     )
+
+
+def _in_paragraph(node: "RenderTreeNode") -> bool:
+    while node.parent:
+        if node.parent.type == "paragraph":
+            return True
+        node = node.parent
+    return False
 
 
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
