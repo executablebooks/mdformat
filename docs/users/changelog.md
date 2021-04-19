@@ -3,7 +3,7 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
-## 0.7.4
+## 0.8.0
 
 - Added
   - `mdformat.renderer.WRAP_POINT` for plugins to show where word wrap is allowed to occur.
