@@ -1,14 +1,13 @@
 Wrap before no-wrap section
 .
-No need to wrap before the inline code block `THIS IS THE LONG INLINE CODE BLOCK. ITS CONTENT SHOULD BE WRAPPED LIKE NORMAL TEXT`.
+We want to wrap before the inline code block `THIS IS THE LONG INLINE CODE BLOCK. IT SHOULD BE ON IT'S OWN LINE`.
 
 No need to wrap before the emphasis section _THIS IS THE LONG EMPHASIS SECTION. ITS CONTENT SHOULD BE WRAPPED LIKE NORMAL TEXT_
 
 We want to wrap before the link [THIS IS THE LINK THAT SHOULD BE ON ITS OWN LINE](https://www.python.org/)
 .
-No need to wrap before the inline code block `THIS
-IS THE LONG INLINE CODE BLOCK. ITS CONTENT SHOULD
-BE WRAPPED LIKE NORMAL TEXT`.
+We want to wrap before the inline code block
+`THIS IS THE LONG INLINE CODE BLOCK. IT SHOULD BE ON ITS OWN LINE`.
 
 No need to wrap before the emphasis section _THIS
 IS THE LONG EMPHASIS SECTION. ITS CONTENT SHOULD

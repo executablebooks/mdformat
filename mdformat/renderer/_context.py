@@ -12,6 +12,7 @@ from typing import (
     MutableMapping,
     NamedTuple,
     Optional,
+    Tuple,
     Union,
 )
 
@@ -64,22 +65,9 @@ def code_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
     if longest_backtick_seq:
         separator = "`" * (longest_backtick_seq + 1)
-        if "null_replacements" in context.env:
-            context.env["null_replacements"] += " " + " "
-            return f"{separator}\x00{code}\x00{separator}"
         return f"{separator} {code} {separator}"
     if code.startswith(" ") and code.endswith(" ") and not all_chars_are_whitespace:
-        if "null_replacements" in context.env:
-            context.env["null_replacements"] += " " + " "
-            return f"`\x00{code}\x00`"
         return f"` {code} `"
-    if "null_replacements" in context.env:
-        if code and code[0] in codepoints.UNICODE_WHITESPACE:
-            context.env["null_replacements"] += code[0]
-            code = "\x00" + code[1:]
-        if len(code) >= 2 and code[-1] in codepoints.UNICODE_WHITESPACE:
-            context.env["null_replacements"] += code[-1]
-            code = code[:-1] + "\x00"
     return f"`{code}`"
 
 
@@ -99,6 +87,9 @@ def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 
 def softbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
+    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
+    if isinstance(wrap_mode, int) or wrap_mode == "no":
+        return "\x00"
     return "\n"
 
 
@@ -139,6 +130,10 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
     next_sibling = node.next_sibling
     if text.endswith("!") and next_sibling and next_sibling.type == "link":
         text = text[:-1] + "\\!"
+
+    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
+    if isinstance(wrap_mode, int) or wrap_mode == "no":
+        text = re.sub(r"\s+", "\x00", text)
 
     return text
 
@@ -234,8 +229,8 @@ def link(node: "RenderTreeNode", context: "RenderContext") -> str:
 
     wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
     if isinstance(wrap_mode, int) or wrap_mode == "no":
-        # Collapse all whitespace to a single space char
-        text = re.sub(r"\s+", " ", text)
+        # Prevent line breaks
+        text = text.replace("\x00", " ")
 
     if node.info == "auto":
         return "<" + text + ">"
@@ -271,6 +266,7 @@ def strong(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = make_render_children(separator="")(node, context)
+    text = text.replace("\x00", " ")
 
     if node.markup == "=":
         prefix = "# "
@@ -322,9 +318,9 @@ def _last_line_width(text: str) -> int:
 
 def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
     # Collapse all whitespace to a single space char
-    text = re.sub(r"\s+", " ", text)
+    text, null_replacements = _replace_whitespace_with_null(text)
     if width == "no":
-        return text
+        return _replace_null_with_whitespace(text, null_replacements)
 
     wrapper = textwrap.TextWrapper(
         break_long_words=False,
@@ -334,18 +330,28 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
         replace_whitespace=False,
     )
     wrapped = wrapper.fill(text)
+    wrapped = _replace_null_with_whitespace(wrapped, null_replacements)
     return " " + wrapped if text.startswith(" ") else wrapped
 
 
-def _replace_whitespace_with_null(text: str, context: "RenderContext") -> str:
+def _replace_whitespace_with_null(text: str) -> Tuple[str, str]:
     nulled_text = ""
+    null_replacements = ""
     for c in text:
-        if c in codepoints.UNICODE_WHITESPACE:
+        if c == "\x00":
+            if not nulled_text or nulled_text[-1] != " ":
+                nulled_text += " "
+        elif c in codepoints.UNICODE_WHITESPACE:
             nulled_text += "\x00"
-            context.env["null_replacements"] += c
+            null_replacements += c
         else:
             nulled_text += c
-    return nulled_text
+    return nulled_text, null_replacements
+
+
+def _replace_null_with_whitespace(text: str, null_replacements: str) -> str:
+    replacement_iterator = iter(null_replacements)
+    return "".join(next(replacement_iterator) if c == "\x00" else c for c in text)
 
 
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
@@ -354,17 +360,9 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
     wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
     if isinstance(wrap_mode, int) or wrap_mode == "no":
         text = ""
-        context.env["null_replacements"] = ""
         for child in inline_node.children:
-            if child.type in {"text", "softbreak", "em", "strong", "code_inline"}:
-                text += child.render(context)
-            else:
-                no_wrap_section = child.render(context)
-                text += _replace_whitespace_with_null(no_wrap_section, context)
+            text += child.render(context)
         text = _wrap(text, width=wrap_mode)
-        replacement_iterator = iter(context.env["null_replacements"])
-        del context.env["null_replacements"]
-        text = "".join(next(replacement_iterator) if c == "\x00" else c for c in text)
     else:
         text = inline_node.render(context)
 
