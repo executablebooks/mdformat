@@ -43,6 +43,13 @@ if TYPE_CHECKING:
 
 LOGGER = logging.getLogger(__name__)
 
+# A marker used to point a location where word wrap is allowed
+# to occur.
+WRAP_POINT = "\x00"
+# A marker used to indicate location of a character that should be preserved
+# during word wrap. Should be converted to the actual character after wrap.
+PRESERVE_CHAR = "\x00"
+
 
 def make_render_children(separator: str) -> Render:
     def render_children(
@@ -80,16 +87,12 @@ def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 
 def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
-    if "null_replacements" in context.env:
-        context.env["null_replacements"] += "\n"
-        return "\\" + "\x00"
     return "\\" + "\n"
 
 
 def softbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
-    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
-    if isinstance(wrap_mode, int) or wrap_mode == "no":
-        return "\x00"
+    if context.do_wrap:
+        return WRAP_POINT
     return "\n"
 
 
@@ -131,9 +134,8 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
     if text.endswith("!") and next_sibling and next_sibling.type == "link":
         text = text[:-1] + "\\!"
 
-    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
-    if isinstance(wrap_mode, int) or wrap_mode == "no":
-        text = re.sub(r"\s+", "\x00", text)
+    if context.do_wrap:
+        text = re.sub(r"\s+", WRAP_POINT, text)
 
     return text
 
@@ -227,10 +229,9 @@ def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> 
 def link(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = "".join(child.render(context) for child in node.children)
 
-    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
-    if isinstance(wrap_mode, int) or wrap_mode == "no":
+    if context.do_wrap:
         # Prevent line breaks
-        text = text.replace("\x00", " ")
+        text = text.replace(WRAP_POINT, " ")
 
     if node.info == "auto":
         return "<" + text + ">"
@@ -266,7 +267,7 @@ def strong(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
     text = make_render_children(separator="")(node, context)
-    text = text.replace("\x00", " ")
+    text = text.replace(WRAP_POINT, " ")
 
     if node.markup == "=":
         prefix = "# "
@@ -317,15 +318,15 @@ def _last_line_width(text: str) -> int:
 
 
 def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
-    """Wrap text at locations pointed by null characters.
+    """Wrap text at locations pointed by `WRAP_POINT`s.
 
-    Converts null characters ("\x00") to either a space or newline
-    character, thus wrapping the text. Already existing whitespace will
-    be preserved as is.
+    Converts `WRAP_POINT`s to either a space or newline character, thus
+    wrapping the text. Already existing whitespace will be preserved as
+    is.
     """
-    text, null_replacements = _replace_whitespace_with_null(text)
+    text, replacements = _prepare_wrap(text)
     if width == "no":
-        return _replace_null_with_whitespace(text, null_replacements)
+        return _recover_preserve_chars(text, replacements)
 
     wrapper = textwrap.TextWrapper(
         break_long_words=False,
@@ -335,28 +336,37 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
         replace_whitespace=False,
     )
     wrapped = wrapper.fill(text)
-    wrapped = _replace_null_with_whitespace(wrapped, null_replacements)
+    wrapped = _recover_preserve_chars(wrapped, replacements)
     return " " + wrapped if text.startswith(" ") else wrapped
 
 
-def _replace_whitespace_with_null(text: str) -> Tuple[str, str]:
-    nulled_text = ""
-    null_replacements = ""
+def _prepare_wrap(text: str) -> Tuple[str, str]:
+    """Prepare text for wrap.
+
+    Convert `WRAP_POINT`s to spaces. Convert whitespace to
+    `PRESERVE_CHAR`s. Return a tuple with the prepared string, and
+    another string consisting of replacement characters for
+    `PRESERVE_CHAR`s.
+    """
+    result = ""
+    replacements = ""
     for c in text:
-        if c == "\x00":
-            if not nulled_text or nulled_text[-1] != " ":
-                nulled_text += " "
+        if c == WRAP_POINT:
+            if not result or result[-1] != " ":
+                result += " "
         elif c in codepoints.UNICODE_WHITESPACE:
-            nulled_text += "\x00"
-            null_replacements += c
+            result += PRESERVE_CHAR
+            replacements += c
         else:
-            nulled_text += c
-    return nulled_text, null_replacements
+            result += c
+    return result, replacements
 
 
-def _replace_null_with_whitespace(text: str, null_replacements: str) -> str:
-    replacement_iterator = iter(null_replacements)
-    return "".join(next(replacement_iterator) if c == "\x00" else c for c in text)
+def _recover_preserve_chars(text: str, replacements: str) -> str:
+    replacement_iterator = iter(replacements)
+    return "".join(
+        next(replacement_iterator) if c == PRESERVE_CHAR else c for c in text
+    )
 
 
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
@@ -570,6 +580,11 @@ class RenderContext(NamedTuple):
     postprocessors: Mapping[str, Iterable[Postprocess]]
     options: Mapping[str, Any]
     env: MutableMapping
+
+    @property
+    def do_wrap(self) -> bool:
+        wrap_mode = self.options.get("mdformat", {}).get("wrap", "keep")
+        return isinstance(wrap_mode, int) or wrap_mode == "no"
 
     def with_default_renderer_for(self, *syntax_names: str) -> "RenderContext":
         renderers = dict(self.renderers)
