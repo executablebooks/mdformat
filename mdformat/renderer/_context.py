@@ -337,6 +337,17 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
     return " " + wrapped if text.startswith(" ") else wrapped
 
 
+def _replace_whitespace_with_null(text: str, context: "RenderContext") -> str:
+    nulled_text = ""
+    for c in text:
+        if c in codepoints.UNICODE_WHITESPACE:
+            nulled_text += "\x00"
+            context.env["null_replacements"] += c
+        else:
+            nulled_text += c
+    return nulled_text
+
+
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
     inline_node = node.children[0]
 
@@ -349,12 +360,7 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
                 text += child.render(context)
             else:
                 no_wrap_section = child.render(context)
-                for c in no_wrap_section:
-                    if c in codepoints.UNICODE_WHITESPACE:
-                        text += "\x00"
-                        context.env["null_replacements"] += c
-                    else:
-                        text += c
+                text += _replace_whitespace_with_null(no_wrap_section, context)
         text = _wrap(text, width=wrap_mode)
         replacement_iterator = iter(context.env["null_replacements"])
         del context.env["null_replacements"]

@@ -76,3 +76,11 @@ break](python.org)_
 _[hard\
 break](python.org)_
 .
+
+
+Link in emphasis
+.
+_[do not add line breaks in a link. That's the style, at least currently](python.org)_
+.
+_[do not add line breaks in a link. That's the style, at least currently](python.org)_
+.
