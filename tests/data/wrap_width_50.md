@@ -1,6 +1,6 @@
 Wrap before no-wrap section
 .
-We want to wrap before the inline code block `THIS IS THE LONG INLINE CODE BLOCK. IT SHOULD BE ON IT'S OWN LINE`.
+We want to wrap before the inline code block `THIS IS THE LONG INLINE CODE BLOCK. IT SHOULD BE ON ITS OWN LINE`.
 
 No need to wrap before the emphasis section _THIS IS THE LONG EMPHASIS SECTION. ITS CONTENT SHOULD BE WRAPPED LIKE NORMAL TEXT_
 

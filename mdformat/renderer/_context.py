@@ -317,7 +317,12 @@ def _last_line_width(text: str) -> int:
 
 
 def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
-    # Collapse all whitespace to a single space char
+    """Wrap text at locations pointed by null characters.
+
+    Converts null characters ("\x00") to either a space or newline
+    character, thus wrapping the text. Already existing whitespace will
+    be preserved as is.
+    """
     text, null_replacements = _replace_whitespace_with_null(text)
     if width == "no":
         return _replace_null_with_whitespace(text, null_replacements)
@@ -359,9 +364,7 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
 
     wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
     if isinstance(wrap_mode, int) or wrap_mode == "no":
-        text = ""
-        for child in inline_node.children:
-            text += child.render(context)
+        text = "".join(child.render(context) for child in inline_node.children)
         text = _wrap(text, width=wrap_mode)
     else:
         text = inline_node.render(context)
