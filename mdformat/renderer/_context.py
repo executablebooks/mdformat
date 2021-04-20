@@ -86,22 +86,22 @@ def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     return node.content
 
 
-def _in_heading(node: "RenderTreeNode") -> bool:
+def _in_block(block_name: str, node: "RenderTreeNode") -> bool:
     while node.parent:
-        if node.parent.type == "heading":
+        if node.parent.type == block_name:
             return True
         node = node.parent
     return False
 
 
 def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
-    if _in_heading(node):
+    if _in_block("heading", node):
         return "<br /> "
     return "\\" + "\n"
 
 
 def softbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
-    if context.do_wrap and _in_paragraph(node):
+    if context.do_wrap and _in_block("paragraph", node):
         return WRAP_POINT
     return "\n"
 
@@ -144,7 +144,7 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
     if text.endswith("!") and next_sibling and next_sibling.type == "link":
         text = text[:-1] + "\\!"
 
-    if context.do_wrap and _in_paragraph(node):
+    if context.do_wrap and _in_block("paragraph", node):
         text = re.sub(r"\s+", WRAP_POINT, text)
 
     return text
@@ -287,7 +287,7 @@ def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
 
     # There can be newlines in setext headers, but we make an ATX
     # header always. Convert newlines to spaces.
-    text = text.replace("\n", " ").rstrip()
+    text = text.replace("\n", " ")
 
     # If the text ends in a sequence of hashes (#), the hashes will be
     # interpreted as an optional closing sequence of the heading, and
@@ -306,24 +306,6 @@ def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
     quoted_lines = (f"> {line}" if line else ">" for line in lines)
     quoted_str = "\n".join(quoted_lines)
     return quoted_str
-
-
-def _first_line_width(text: str) -> int:
-    width = 0
-    for c in text:
-        if c == "\n":
-            return width
-        width += 1
-    return width
-
-
-def _last_line_width(text: str) -> int:
-    width = 0
-    for c in reversed(text):
-        if c == "\n":
-            return width
-        width += 1
-    return width
 
 
 def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
@@ -376,14 +358,6 @@ def _recover_preserve_chars(text: str, replacements: str) -> str:
     return "".join(
         next(replacement_iterator) if c == PRESERVE_CHAR else c for c in text
     )
-
-
-def _in_paragraph(node: "RenderTreeNode") -> bool:
-    while node.parent:
-        if node.parent.type == "paragraph":
-            return True
-        node = node.parent
-    return False
 
 
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
