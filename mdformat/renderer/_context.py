@@ -195,7 +195,7 @@ def image(node: "RenderTreeNode", context: "RenderContext") -> str:
 
     if context.do_wrap:
         # Prevent line breaks
-        text = text.replace(WRAP_POINT, " ")
+        description = description.replace(WRAP_POINT, " ")
 
     ref_label = node.meta.get("label")
     if ref_label:
