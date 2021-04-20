@@ -86,7 +86,17 @@ def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     return node.content
 
 
+def _in_heading(node: "RenderTreeNode") -> bool:
+    while node.parent:
+        if node.parent.type == "heading":
+            return True
+        node = node.parent
+    return False
+
+
 def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
+    if _in_heading(node):
+        return "<br /> "
     return "\\" + "\n"
 
 

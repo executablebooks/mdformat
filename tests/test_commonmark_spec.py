@@ -78,6 +78,7 @@ EXTRA_CASES = (
     {"name": "escaped thematic break (hyphen)", "md": "\\-\\-\\-\n"},
     {"name": "escaped thematic break (underscore)", "md": "\\_\\_\\_\n"},
     {"name": "escaped thematic break (asterisk)", "md": "\\*\\*\\*\n"},
+    {"name": "Hard break in setext heading", "md": "line1\\\nline2\n====\n"},
 )
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 
