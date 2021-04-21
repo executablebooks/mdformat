@@ -61,6 +61,7 @@ EXTRA_CASES = (
     {"name": "whitespace only", "md": "  \n\n \n  \n"},
     {"name": "starts with em space", "md": "&emsp;\n"},
     {"name": "starts with space", "md": "&#32;\n"},
+    {"name": "trailing space", "md": "trailing space      &#32;\n"},
     {"name": "soft breaks", "md": "this is\nall one\nparagraph\n"},
     {"name": "escape underscore", "md": "# foo _bar_ \\_baz\\_\n"},
     {
@@ -76,8 +77,10 @@ EXTRA_CASES = (
     {"name": "image link with brackets 4", "md": "![a](<b)c>)\n"},
     {"name": "image link with brackets 5", "md": '![a](<b)c> "some title")\n'},
     {"name": "escaped thematic break (hyphen)", "md": "\\-\\-\\-\n"},
-    {"name": "escaped thematic break (underscore)", "md": "\\_\\_\\_\n"},
-    {"name": "escaped thematic break (asterisk)", "md": "\\*\\*\\*\n"},
+    {"name": "escaped thematic break (underscore v1)", "md": "\\_\\_\\_\n"},
+    {"name": "escaped thematic break (underscore v2)", "md": "&#32;_ _ _&#32;\n"},
+    {"name": "escaped thematic break (asterisk v1)", "md": "\\*\\*\\*\n"},
+    {"name": "escaped thematic break (asterisk v2)", "md": "&#32;* * *&#32;\n"},
     {"name": "Hard break in setext heading", "md": "line1\\\nline2\n====\n"},
 )
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
