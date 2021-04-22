@@ -25,16 +25,22 @@ Find out more in the [docs](https://mdformat.readthedocs.io).
 
 ## Installing
 
-Install with CommonMark support:
+Install with [CommonMark](https://spec.commonmark.org/current/) support:
 
 ```bash
 pip install mdformat
 ```
 
-Alternatively install with GitHub Flavored Markdown (GFM) support:
+Alternatively install with [GitHub Flavored Markdown (GFM)](https://github.github.com/gfm/) support:
 
 ```bash
 pip install mdformat-gfm
+```
+
+Or with [Markedly Structured Text (MyST)](https://myst-parser.readthedocs.io/en/latest/using/syntax.html) support:
+
+```bash
+pip install mdformat-myst
 ```
 
 <!-- end installing -->
