@@ -82,6 +82,15 @@ EXTRA_CASES = (
     {"name": "escaped thematic break (asterisk v1)", "md": "\\*\\*\\*\n"},
     {"name": "escaped thematic break (asterisk v2)", "md": "&#32;* * *&#32;\n"},
     {"name": "Hard break in setext heading", "md": "line1\\\nline2\n====\n"},
+    {
+        "name": "a mix of leading and trailing whitespace",
+        "md": "&#9;foo\n"
+        "&#32;&#32; foo &#9;&#32;\n"
+        "&#9;foo \t\n"
+        "  foo  \n"
+        "\u2005foo\u2005\n"
+        "foo\n",
+    },
 )
 ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
 

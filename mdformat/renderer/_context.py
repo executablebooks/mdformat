@@ -20,8 +20,8 @@ from mdformat import codepoints
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
-    decimalify_leading_whitespace,
-    decimalify_trailing_whitespace,
+    decimalify_leading,
+    decimalify_trailing,
     escape_asterisk_emphasis,
     escape_underscore_emphasis,
     get_list_marker_type,
@@ -368,12 +368,17 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
     else:
         text = inline_node.render(context)
 
+    # A paragraph can start or end in whitespace e.g. if the whitespace was
+    # in decimal representation form. We need to re-decimalify it, one reason being
+    # to enable "empty" paragraphs with whitespace only.
+    text = decimalify_leading(codepoints.UNICODE_WHITESPACE, text)
+    text = decimalify_trailing(codepoints.UNICODE_WHITESPACE, text)
+
     lines = text.split("\n")
     for i in range(len(lines)):
-        # Replace line starting tabs with numeric decimal representation.
-        # A normal tab character would start a code block.
-        if lines[i].startswith("\t"):
-            lines[i] = "&#9;" + lines[i][1:]
+        # Strip whitespace to prevent issues like a line starting tab that is
+        # interpreted as start of a code block.
+        lines[i] = lines[i].strip()
 
         # If a line looks like an ATX heading, escape the first hash.
         if re.match(r"#{1,6}( |\t|$)", lines[i]):
@@ -418,9 +423,6 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
             lines[i] = lines[i].replace("=", "\\=", 1)
 
     text = "\n".join(lines)
-
-    text = decimalify_leading_whitespace(text)
-    text = decimalify_trailing_whitespace(text)
 
     return text
 

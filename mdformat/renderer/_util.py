@@ -1,6 +1,6 @@
 import html.entities
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from mdformat import codepoints
 
@@ -172,29 +172,23 @@ def escape_underscore_emphasis(text: str) -> str:
     return escaped_text
 
 
-def decimalify_leading_whitespace(text: str) -> str:
-    """Replace leading whitespace with decimal representations."""
-    start_whitespace = ""
-    start_whitespace_count = 0
-    for ws_char in text:
-        if ws_char in codepoints.UNICODE_WHITESPACE:
-            start_whitespace += f"&#{ord(ws_char)};"
-            start_whitespace_count += 1
-        else:
-            break
-    return start_whitespace + text[start_whitespace_count:]
+def decimalify_leading(char_set: Iterable[str], text: str) -> str:
+    """Replace first character with decimal representation if it's included in
+    `char_set`."""
+    if not char_set or not text:
+        return text
+    first_char = text[0]
+    if first_char in char_set:
+        return f"&#{ord(first_char)};{text[1:]}"
+    return text
 
 
-def decimalify_trailing_whitespace(text: str) -> str:
-    """Replace trailing whitespace with decimal representations."""
-    end_whitespace = ""
-    end_whitespace_count = 0
-    for ws_char in reversed(text):
-        if ws_char in codepoints.UNICODE_WHITESPACE:
-            end_whitespace = f"&#{ord(ws_char)};" + end_whitespace
-            end_whitespace_count += 1
-        else:
-            break
-    if end_whitespace:
-        return text[:-end_whitespace_count] + end_whitespace
+def decimalify_trailing(char_set: Iterable[str], text: str) -> str:
+    """Replace last character with decimal representation if it's included in
+    `char_set`."""
+    if not char_set or not text:
+        return text
+    last_char = text[-1]
+    if last_char in char_set:
+        return f"{text[:-1]}&#{ord(last_char)};"
     return text
