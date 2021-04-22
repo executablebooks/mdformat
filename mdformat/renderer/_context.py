@@ -152,7 +152,7 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 def fence(node: "RenderTreeNode", context: "RenderContext") -> str:
     info_str = node.info.strip()
-    lang = info_str.split()[0] if info_str.split() else ""
+    lang = info_str.split(maxsplit=1)[0] if info_str else ""
     code_block = node.content
 
     # Info strings of backtick code fences can not contain backticks or tildes.
@@ -170,9 +170,7 @@ def fence(node: "RenderTreeNode", context: "RenderContext") -> str:
         except Exception:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.
-            assert (
-                node.map is not None
-            ), "A fence token must always have `map` attribute set"
+            assert node.map is not None, "A fence token must have `map` attribute set"
             LOGGER.warning(
                 f"Failed formatting content of a {lang} code block "
                 f"(line {node.map[0] + 1} before formatting)"
