@@ -11,7 +11,6 @@ from typing import (
     Mapping,
     MutableMapping,
     NamedTuple,
-    Optional,
     Tuple,
     Union,
 )
@@ -200,6 +199,7 @@ def image(node: "RenderTreeNode", context: "RenderContext") -> str:
         return f"![{description}][{ref_label_repr}]"
 
     uri = node.attrs["src"]
+    assert isinstance(uri, str)
     uri = maybe_add_link_brackets(uri)
     title = node.attrs.get("title")
     if title is not None:
@@ -253,10 +253,12 @@ def link(node: "RenderTreeNode", context: "RenderContext") -> str:
         return f"[{text}][{ref_label_repr}]"
 
     uri = node.attrs["href"]
+    assert isinstance(uri, str)
     uri = maybe_add_link_brackets(uri)
     title = node.attrs.get("title")
     if title is None:
         return f"[{text}]({uri})"
+    assert isinstance(title, str)
     title = title.replace('"', '\\"')
     return f'[{text}]({uri} "{title}")'
 
@@ -474,9 +476,10 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     block_separator = "\n" if is_tight_list(node) else "\n\n"
     list_len = len(node.children)
 
-    starting_number: Optional[int] = node.attrs.get("start")
+    starting_number = node.attrs.get("start")
     if starting_number is None:
         starting_number = 1
+    assert isinstance(starting_number, int)
 
     text = ""
     for list_item_index, list_item in enumerate(node.children):
