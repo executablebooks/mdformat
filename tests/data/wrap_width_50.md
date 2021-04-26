@@ -31,12 +31,22 @@ zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 .
 
 
-Newline in link text
+No newline in image description
 .
-Blii blaa. There is a newline in this link [here
+Blii blaa. There is no newline in this image ![here
 it is](https://github.com/executablebooks/)
 .
-Blii blaa. There is a newline in this link
+Blii blaa. There is no newline in this image
+![here it is](https://github.com/executablebooks/)
+.
+
+
+No newline in link text
+.
+Blii blaa. There is no newline in this link [here
+it is](https://github.com/executablebooks/)
+.
+Blii blaa. There is no newline in this link
 [here it is](https://github.com/executablebooks/)
 .
 

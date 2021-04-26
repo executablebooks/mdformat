@@ -190,6 +190,10 @@ def code_block(node: "RenderTreeNode", context: "RenderContext") -> str:
 def image(node: "RenderTreeNode", context: "RenderContext") -> str:
     description = _render_inline_as_text(node, context)
 
+    if context.do_wrap:
+        # Prevent line breaks
+        description = description.replace(WRAP_POINT, " ")
+
     ref_label = node.meta.get("label")
     if ref_label:
         context.env.setdefault("used_refs", set()).add(ref_label)
@@ -226,6 +230,7 @@ def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> 
             "text": text_renderer,
             "image": image_renderer,
             "link": link,
+            "softbreak": softbreak,
         },
     )
     inline_context = RenderContext(
