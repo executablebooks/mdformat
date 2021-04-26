@@ -7,6 +7,8 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 
 - Fixed
   - Error rendering a hard break in a heading
+  - Some obscure leading/trailing whitespace issues
+  - Style: Convert image description newlines to spaces in wrap altering modes
 
 ## 0.7.4
 
