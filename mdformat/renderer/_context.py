@@ -11,7 +11,6 @@ from typing import (
     Mapping,
     MutableMapping,
     NamedTuple,
-    Optional,
     Tuple,
     Union,
 )
@@ -20,8 +19,8 @@ from mdformat import codepoints
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
-    decimalify_leading_whitespace,
-    decimalify_trailing_whitespace,
+    decimalify_leading,
+    decimalify_trailing,
     escape_asterisk_emphasis,
     escape_underscore_emphasis,
     get_list_marker_type,
@@ -86,22 +85,22 @@ def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     return node.content
 
 
-def _in_heading(node: "RenderTreeNode") -> bool:
+def _in_block(block_name: str, node: "RenderTreeNode") -> bool:
     while node.parent:
-        if node.parent.type == "heading":
+        if node.parent.type == block_name:
             return True
         node = node.parent
     return False
 
 
 def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
-    if _in_heading(node):
+    if _in_block("heading", node):
         return "<br /> "
     return "\\" + "\n"
 
 
 def softbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
-    if context.do_wrap and _in_paragraph(node):
+    if context.do_wrap and _in_block("paragraph", node):
         return WRAP_POINT
     return "\n"
 
@@ -144,7 +143,7 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
     if text.endswith("!") and next_sibling and next_sibling.type == "link":
         text = text[:-1] + "\\!"
 
-    if context.do_wrap and _in_paragraph(node):
+    if context.do_wrap and _in_block("paragraph", node):
         text = re.sub(r"\s+", WRAP_POINT, text)
 
     return text
@@ -152,7 +151,7 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 def fence(node: "RenderTreeNode", context: "RenderContext") -> str:
     info_str = node.info.strip()
-    lang = info_str.split()[0] if info_str.split() else ""
+    lang = info_str.split(maxsplit=1)[0] if info_str else ""
     code_block = node.content
 
     # Info strings of backtick code fences can not contain backticks or tildes.
@@ -170,9 +169,7 @@ def fence(node: "RenderTreeNode", context: "RenderContext") -> str:
         except Exception:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.
-            assert (
-                node.map is not None
-            ), "A fence token must always have `map` attribute set"
+            assert node.map is not None, "A fence token must have `map` attribute set"
             LOGGER.warning(
                 f"Failed formatting content of a {lang} code block "
                 f"(line {node.map[0] + 1} before formatting)"
@@ -206,6 +203,7 @@ def image(node: "RenderTreeNode", context: "RenderContext") -> str:
         return f"![{description}][{ref_label_repr}]"
 
     uri = node.attrs["src"]
+    assert isinstance(uri, str)
     uri = maybe_add_link_brackets(uri)
     title = node.attrs.get("title")
     if title is not None:
@@ -260,10 +258,12 @@ def link(node: "RenderTreeNode", context: "RenderContext") -> str:
         return f"[{text}][{ref_label_repr}]"
 
     uri = node.attrs["href"]
+    assert isinstance(uri, str)
     uri = maybe_add_link_brackets(uri)
     title = node.attrs.get("title")
     if title is None:
         return f"[{text}]({uri})"
+    assert isinstance(title, str)
     title = title.replace('"', '\\"')
     return f'[{text}]({uri} "{title}")'
 
@@ -292,7 +292,7 @@ def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
 
     # There can be newlines in setext headers, but we make an ATX
     # header always. Convert newlines to spaces.
-    text = text.replace("\n", " ").rstrip()
+    text = text.replace("\n", " ")
 
     # If the text ends in a sequence of hashes (#), the hashes will be
     # interpreted as an optional closing sequence of the heading, and
@@ -311,24 +311,6 @@ def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
     quoted_lines = (f"> {line}" if line else ">" for line in lines)
     quoted_str = "\n".join(quoted_lines)
     return quoted_str
-
-
-def _first_line_width(text: str) -> int:
-    width = 0
-    for c in text:
-        if c == "\n":
-            return width
-        width += 1
-    return width
-
-
-def _last_line_width(text: str) -> int:
-    width = 0
-    for c in reversed(text):
-        if c == "\n":
-            return width
-        width += 1
-    return width
 
 
 def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
@@ -383,14 +365,6 @@ def _recover_preserve_chars(text: str, replacements: str) -> str:
     )
 
 
-def _in_paragraph(node: "RenderTreeNode") -> bool:
-    while node.parent:
-        if node.parent.type == "paragraph":
-            return True
-        node = node.parent
-    return False
-
-
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
     inline_node = node.children[0]
 
@@ -401,12 +375,17 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
     else:
         text = inline_node.render(context)
 
+    # A paragraph can start or end in whitespace e.g. if the whitespace was
+    # in decimal representation form. We need to re-decimalify it, one reason being
+    # to enable "empty" paragraphs with whitespace only.
+    text = decimalify_leading(codepoints.UNICODE_WHITESPACE, text)
+    text = decimalify_trailing(codepoints.UNICODE_WHITESPACE, text)
+
     lines = text.split("\n")
     for i in range(len(lines)):
-        # Replace line starting tabs with numeric decimal representation.
-        # A normal tab character would start a code block.
-        if lines[i].startswith("\t"):
-            lines[i] = "&#9;" + lines[i][1:]
+        # Strip whitespace to prevent issues like a line starting tab that is
+        # interpreted as start of a code block.
+        lines[i] = lines[i].strip()
 
         # If a line looks like an ATX heading, escape the first hash.
         if re.match(r"#{1,6}( |\t|$)", lines[i]):
@@ -451,9 +430,6 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
             lines[i] = lines[i].replace("=", "\\=", 1)
 
     text = "\n".join(lines)
-
-    text = decimalify_leading_whitespace(text)
-    text = decimalify_trailing_whitespace(text)
 
     return text
 
@@ -505,9 +481,10 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     block_separator = "\n" if is_tight_list(node) else "\n\n"
     list_len = len(node.children)
 
-    starting_number: Optional[int] = node.attrs.get("start")
+    starting_number = node.attrs.get("start")
     if starting_number is None:
         starting_number = 1
+    assert isinstance(starting_number, int)
 
     text = ""
     for list_item_index, list_item in enumerate(node.children):
