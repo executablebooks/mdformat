@@ -38,7 +38,7 @@ mdformat = "mdformat.__main__:run"
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-markdown-it-py = ">=0.5.5,<0.7.0"
+markdown-it-py = ">=1.0.0b2,<2.0.0"
 importlib-metadata = { version = ">=3.6.0", python = "<3.10" }
 typing-extensions= { version = ">=3.7.4", python = "<3.8" }
 
