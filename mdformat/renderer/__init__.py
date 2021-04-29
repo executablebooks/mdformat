@@ -89,6 +89,8 @@ class MDRenderer:
                 text += self._write_references(env)
             if text:
                 text += "\n"
+
+        assert "\x00" not in text, "null bytes should be removed by now"
         return text
 
     @staticmethod
