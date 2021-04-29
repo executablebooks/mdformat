@@ -128,9 +128,7 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
 
     # Escape "&" if it starts a sequence that can be interpreted as
     # a character reference.
-    for char_refs_found, char_ref in enumerate(RE_CHAR_REFERENCE.finditer(text)):
-        start = char_ref.start() + char_refs_found
-        text = text[:start] + "\\" + text[start:]
+    text = RE_CHAR_REFERENCE.sub(r"\\\1", text)
 
     # The parser can give us consecutive newlines which can break
     # the markdown structure. Replace two or more consecutive newlines
@@ -367,13 +365,11 @@ def _recover_preserve_chars(text: str, replacements: str) -> str:
 
 def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
     inline_node = node.children[0]
+    text = inline_node.render(context)
 
-    wrap_mode = context.options.get("mdformat", {}).get("wrap", "keep")
-    if isinstance(wrap_mode, int) or wrap_mode == "no":
-        text = "".join(child.render(context) for child in inline_node.children)
+    if context.do_wrap:
+        wrap_mode = context.options["mdformat"]["wrap"]
         text = _wrap(text, width=wrap_mode)
-    else:
-        text = inline_node.render(context)
 
     # A paragraph can start or end in whitespace e.g. if the whitespace was
     # in decimal representation form. We need to re-decimalify it, one reason being
@@ -440,8 +436,7 @@ def list_item(node: "RenderTreeNode", context: "RenderContext") -> str:
     This returns just the content. List item markers and indentation are
     added in `bullet_list` and `ordered_list` renderers.
     """
-    is_tight = is_tight_list_item(node)
-    block_separator = "\n" if is_tight else "\n\n"
+    block_separator = "\n" if is_tight_list_item(node) else "\n\n"
     text = make_render_children(block_separator)(node, context)
 
     if not text.strip():

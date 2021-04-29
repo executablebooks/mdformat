@@ -13,10 +13,13 @@ if TYPE_CHECKING:
 #   2. hex representation, e.g. &#x1e;
 #   3. HTML5 entity reference, e.g. &nbsp;
 RE_CHAR_REFERENCE = re.compile(
-    "&("
-    "#[0-9]{1,7}"
-    "|#[Xx][0-9A-Fa-f]{1,6}"
-    "|" + "|".join({c.rstrip(";") for c in html.entities.html5}) + ");"
+    "(&("
+    + "#[0-9]{1,7}"
+    + "|"
+    + "#[Xx][0-9A-Fa-f]{1,6}"
+    + "|"
+    + "|".join({c.rstrip(";") for c in html.entities.html5})
+    + ");)"
 )
 
 # key to indicate consecutive numbering of ordered lists
