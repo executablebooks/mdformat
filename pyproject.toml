@@ -78,6 +78,7 @@ xfail_strict = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
+# Only run pytest envs when no args given to tox
 envlist = py{36,37,38,39}
 isolated_build = True
 requires =
@@ -87,31 +88,47 @@ requires =
 allowlist_externals = poetry
 
 [testenv:py{36,37,38,39}]
+description = run tests
 commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
 commands =
     pytest {posargs}
 
-[testenv:py{36,37,38,39}-pre-commit]
+[testenv:pre-commit]
+description = run linters (except mypy)
 skip_install = True
 deps = pre-commit
-commands = pre-commit run {posargs}
+commands = pre-commit run {posargs:--all}
 
-[testenv:py{36,37,38,39}-mypy]
+[testenv:mypy]
+description = run mypy
+basepython = python3.8
 commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
 commands =
     mypy {posargs:.}
 
-[testenv:py{36,37,38,39}-hook]
+[testenv:hook]
+description = test mdformat's own pre-commit hook against the README file
 skip_install = True
 deps = pre-commit
-commands = pre-commit try-repo . mdformat --verbose --show-diff-on-failure --files README.md
+commands =
+    pre-commit try-repo . mdformat --files README.md
 
-[testenv:py{36,37,38,39}-cli]
+[testenv:cli]
+description = run mdformat's own CLI
 commands = mdformat {posargs}
+
+[testenv:docs]
+description = invoke sphinx-build to build the HTML docs
+skip_install = True
+deps =
+    -r docs/requirements.txt
+commands =
+    sphinx-build -d "{toxworkdir}/docs_doctree" docs/ "{toxworkdir}/docs_out" -W -b html {posargs}
+    python -c 'import pathlib; print("documentation available under file://\\{0\\}".format(pathlib.Path(r"{toxworkdir}") / "docs_out" / "index.html"))'
 """
 
 
