@@ -53,7 +53,9 @@ coverage = { version = "*", extras = ["toml"] }
 
 # Tools
 pre-commit = "*"
-mypy = "*"  # this is separate to pre-commit, since it requires an external env
+# TODO: switch from git to pypi after next mypy release
+#mypy = "*"  # this is separate to pre-commit, since it requires an external env
+mypy = { git = "https://github.com/python/mypy.git", branch = "master" }
 bump2version = "*"
 
 
@@ -147,3 +149,25 @@ exclude_lines = [
     # Scripts
     'if __name__ == .__main__.:',
 ]
+
+
+[tool.mypy]
+warn_unreachable = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+# Disabling incremental mode is required for `warn_unused_configs = true` to work
+incremental = false
+disallow_untyped_defs = true
+check_untyped_defs = true
+strict_equality = true
+implicit_reexport = false
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "markdown_it.*"
+implicit_reexport = true
