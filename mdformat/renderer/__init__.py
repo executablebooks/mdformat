@@ -61,6 +61,8 @@ class MDRenderer:
         *,
         finalize: bool = True,
     ) -> str:
+        self._prepare_env(env)
+
         # Update RENDERER_MAP defaults with renderer functions defined
         # by plugins.
         updated_renderers = {}
@@ -81,10 +83,11 @@ class MDRenderer:
                     postprocessors[syntax_name] += (pp,)
         renderer_map = MappingProxyType({**DEFAULT_RENDERERS, **updated_renderers})
         postprocessor_map = MappingProxyType(postprocessors)
+
         render_context = RenderContext(renderer_map, postprocessor_map, options, env)
         text = tree.render(render_context)
         if finalize:
-            if env.get("used_refs"):
+            if env["used_refs"]:
                 text += "\n\n"
                 text += self._write_references(env)
             if text:
@@ -96,7 +99,7 @@ class MDRenderer:
     @staticmethod
     def _write_references(env: MutableMapping) -> str:
         ref_list = []
-        for label in sorted(env.get("used_refs", [])):
+        for label in sorted(env["used_refs"]):
             ref = env["references"][label]
             destination = ref["href"] if ref["href"] else "<>"
             destination = unescape_string(destination)
@@ -107,3 +110,9 @@ class MDRenderer:
                 item += f' "{title}"'
             ref_list.append(item)
         return "\n".join(ref_list)
+
+    def _prepare_env(self, env: MutableMapping) -> None:
+        if "indent_width" not in env:
+            env["indent_width"] = 0
+        if "used_refs" not in env:
+            env["used_refs"] = set()

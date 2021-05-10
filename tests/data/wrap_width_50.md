@@ -93,3 +93,34 @@ _[do not add line breaks in a link. That's the style, at least currently](python
 .
 _[do not add line breaks in a link. That's the style, at least currently](python.org)_
 .
+
+
+Indented blocks
+.
+no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+
+- no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+- do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+
+  10. no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+  11. do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+      > no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+      > do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+.
+no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+a
+
+- no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+
+- do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  a
+
+  10. no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+  01. do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      a
+      > no wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a
+      > do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      > a
+.
