@@ -378,6 +378,7 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
         wrap_mode = context.options["mdformat"]["wrap"]
         if isinstance(wrap_mode, int):
             wrap_mode -= context.env["indent_width"]
+            wrap_mode = max(1, wrap_mode)
         text = _wrap(text, width=wrap_mode)
 
     # A paragraph can start or end in whitespace e.g. if the whitespace was
