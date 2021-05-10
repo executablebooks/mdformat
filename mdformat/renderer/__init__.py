@@ -112,7 +112,5 @@ class MDRenderer:
         return "\n".join(ref_list)
 
     def _prepare_env(self, env: MutableMapping) -> None:
-        if "indent_width" not in env:
-            env["indent_width"] = 0
-        if "used_refs" not in env:
-            env["used_refs"] = set()
+        env["indent_width"] = 0
+        env["used_refs"] = set()

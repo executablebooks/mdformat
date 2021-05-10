@@ -551,7 +551,7 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
                     else other_item_marker
                 )
         for line in line_iterator:
-            formatted_lines.append(f"{' ' * indent_width}{line}" if line else "")
+            formatted_lines.append(" " * indent_width + line if line else "")
 
         text += "\n".join(formatted_lines)
         if list_item_index != len(node.children) - 1:
