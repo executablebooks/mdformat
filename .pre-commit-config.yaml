@@ -14,7 +14,7 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: b39999da7f451c285befac217f1f9a685774b34d  # frozen: 21.4b2
+  rev: 2f52e4b4929370ec503ee272bcc10d3176db8e89  # frozen: 21.5b1
   hooks:
   - id: black
 - repo: https://github.com/myint/docformatter
@@ -22,7 +22,7 @@ repos:
   hooks:
   - id: docformatter
 - repo: https://gitlab.com/pycqa/flake8
-  rev: 55855a5e3b1ab82f4bbcb899b368fbb0afbe7ee8  # frozen: 3.9.1
+  rev: dcd740bc0ebaf2b3d43e59a0060d157c97de13f3  # frozen: 3.9.2
   hooks:
   - id: flake8
     additional_dependencies:
