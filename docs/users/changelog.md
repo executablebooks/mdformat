@@ -3,6 +3,11 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.6
+
+- Changed
+  - Style: Reduce wrap width by indent size in lists and quotes
+
 ## 0.7.5
 
 - Fixed

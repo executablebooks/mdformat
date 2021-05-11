@@ -194,7 +194,7 @@ def image(node: "RenderTreeNode", context: "RenderContext") -> str:
 
     ref_label = node.meta.get("label")
     if ref_label:
-        context.env.setdefault("used_refs", set()).add(ref_label)
+        context.env["used_refs"].add(ref_label)
         ref_label_repr = ref_label.lower()
         if description.lower() == ref_label_repr:
             return f"![{description}]"
@@ -249,7 +249,7 @@ def link(node: "RenderTreeNode", context: "RenderContext") -> str:
 
     ref_label = node.meta.get("label")
     if ref_label:
-        context.env.setdefault("used_refs", set()).add(ref_label)
+        context.env["used_refs"].add(ref_label)
         ref_label_repr = ref_label.lower()
         if text.lower() == ref_label_repr:
             return f"[{text}]"
@@ -302,13 +302,20 @@ def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 
 def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
-    text = make_render_children(separator="\n\n")(node, context)
-    lines = text.splitlines()
-    if not lines:
-        return ">"
-    quoted_lines = (f"> {line}" if line else ">" for line in lines)
-    quoted_str = "\n".join(quoted_lines)
-    return quoted_str
+    marker = "> "
+    indent_width = len(marker)
+    context.env["indent_width"] += indent_width
+
+    try:
+        text = make_render_children(separator="\n\n")(node, context)
+        lines = text.splitlines()
+        if not lines:
+            return ">"
+        quoted_lines = (f"{marker}{line}" if line else ">" for line in lines)
+        quoted_str = "\n".join(quoted_lines)
+        return quoted_str
+    finally:
+        context.env["indent_width"] -= indent_width
 
 
 def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
@@ -369,6 +376,9 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
 
     if context.do_wrap:
         wrap_mode = context.options["mdformat"]["wrap"]
+        if isinstance(wrap_mode, int):
+            wrap_mode -= context.env["indent_width"]
+            wrap_mode = max(1, wrap_mode)
         text = _wrap(text, width=wrap_mode)
 
     # A paragraph can start or end in whitespace e.g. if the whitespace was
@@ -449,6 +459,9 @@ def bullet_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     first_line_indent = " "
     indent = " " * len(marker_type + first_line_indent)
     block_separator = "\n" if is_tight_list(node) else "\n\n"
+
+    context.env["indent_width"] += len(indent)
+
     text = ""
     for child_idx, child in enumerate(node.children):
         list_item = child.render(context)
@@ -466,6 +479,8 @@ def bullet_list(node: "RenderTreeNode", context: "RenderContext") -> str:
         text += "\n".join(formatted_lines)
         if child_idx != len(node.children) - 1:
             text += block_separator
+
+    context.env["indent_width"] -= len(indent)
     return text
 
 
@@ -480,6 +495,14 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     if starting_number is None:
         starting_number = 1
     assert isinstance(starting_number, int)
+
+    if consecutive_numbering:
+        indent_width = len(
+            f"{list_len + starting_number - 1}{marker_type}{first_line_indent}"
+        )
+    else:
+        indent_width = len(f"{starting_number}{marker_type}{first_line_indent}")
+    context.env["indent_width"] += indent_width
 
     text = ""
     for list_item_index, list_item in enumerate(node.children):
@@ -497,7 +520,6 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
             #   112. Last item
             number = starting_number + list_item_index
             pad = len(str(list_len + starting_number - 1))
-            indentation = " " * (pad + len(f"{marker_type}{first_line_indent}"))
             number_str = str(number).rjust(pad, "0")
             formatted_lines.append(
                 f"{number_str}{marker_type}{first_line_indent}{first_line}"
@@ -517,7 +539,6 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
             other_item_marker = (
                 "0" * (len(str(starting_number)) - 1) + "1" + marker_type
             )
-            indentation = " " * len(first_item_marker + first_line_indent)
             if list_item_index == 0:
                 formatted_lines.append(
                     f"{first_item_marker}{first_line_indent}{first_line}"
@@ -531,11 +552,13 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
                     else other_item_marker
                 )
         for line in line_iterator:
-            formatted_lines.append(f"{indentation}{line}" if line else "")
+            formatted_lines.append(" " * indent_width + line if line else "")
 
         text += "\n".join(formatted_lines)
         if list_item_index != len(node.children) - 1:
             text += block_separator
+
+    context.env["indent_width"] -= indent_width
     return text
 
 
