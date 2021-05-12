@@ -191,8 +191,8 @@ def _resolve_path(path: Path) -> Path:
 
     Resolve symlinks. Raise `InvalidPath` if the path does not exist.
     """
-    path = path.resolve()  # resolve symlinks
     try:
+        path = path.resolve()  # resolve symlinks
         path_exists = path.exists()
     except OSError:  # Catch "OSError: [WinError 123]" on Windows
         path_exists = False
