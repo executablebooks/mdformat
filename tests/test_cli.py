@@ -36,6 +36,31 @@ def test_format__folder(tmp_path):
     assert file_path_3.read_text() == UNFORMATTED_MARKDOWN
 
 
+def test_format__symlinks(tmp_path):
+    # Create two MD files
+    file_path_1 = tmp_path / "test_markdown1.md"
+    file_path_2 = tmp_path / "test_markdown2.md"
+    file_path_1.write_text(UNFORMATTED_MARKDOWN)
+    file_path_2.write_text(UNFORMATTED_MARKDOWN)
+
+    # Create a symlink to both files: one in the root folder, one in a sub folder
+    subdir_path = tmp_path / "subdir"
+    subdir_path.mkdir()
+    symlink_1 = subdir_path / "symlink1.md"
+    symlink_1.symlink_to(file_path_1)
+    symlink_2 = tmp_path / "symlink2.md"
+    symlink_2.symlink_to(file_path_2)
+
+    # Format file 1 via directory of the symlink, and file 2 via symlink
+    assert run([str(subdir_path), str(symlink_2)]) == 0
+
+    # Assert that files are formatted and symlinks are not overwritten
+    assert file_path_1.read_text() == FORMATTED_MARKDOWN
+    assert file_path_2.read_text() == FORMATTED_MARKDOWN
+    assert symlink_1.is_symlink()
+    assert symlink_2.is_symlink()
+
+
 def test_invalid_file(capsys):
     with pytest.raises(SystemExit) as exc_info:
         run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",))
