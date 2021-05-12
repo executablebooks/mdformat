@@ -40,7 +40,7 @@ mdformat = "mdformat.__main__:run"
 python = "^3.6.1"
 markdown-it-py = ">=1.0.0b2,<2.0.0"
 importlib-metadata = { version = ">=3.6.0", python = "<3.10" }
-typing-extensions= { version = ">=3.7.4", python = "<3.8" }
+typing-extensions = { version = ">=3.7.4", python = "<3.8" }
 
 [tool.poetry.dev-dependencies]
 # Tests
