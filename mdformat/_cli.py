@@ -165,9 +165,10 @@ class InvalidPath(Exception):
 def resolve_file_paths(path_strings: Iterable[str]) -> List[Optional[Path]]:
     """Resolve pathlib.Path objects from filepath strings.
 
-    Convert path strings to pathlib.Path objects. Check that all paths
-    are either files, directories or stdin. If not, raise InvalidPath.
-    Resolve directory paths to a list of file paths (ending with ".md").
+    Convert path strings to pathlib.Path objects. Resolve symlinks.
+    Check that all paths are either files, directories or stdin. If not,
+    raise InvalidPath. Resolve directory paths to a list of file paths
+    (ending with ".md").
     """
     file_paths: List[Optional[Path]] = []  # Path to file or None for stdin/stdout
     for path_str in path_strings:
@@ -175,18 +176,29 @@ def resolve_file_paths(path_strings: Iterable[str]) -> List[Optional[Path]]:
             file_paths.append(None)
             continue
         path_obj = Path(path_str)
-        try:
-            path_exists = path_obj.exists()
-        except OSError:  # Catch "OSError: [WinError 123]" on Windows
-            path_exists = False
-        if not path_exists:
-            raise InvalidPath(path_obj)
+        path_obj = _resolve_path(path_obj)
         if path_obj.is_dir():
             for p in path_obj.glob("**/*.md"):
+                p = _resolve_path(p)
                 file_paths.append(p)
         else:
             file_paths.append(path_obj)
     return file_paths
+
+
+def _resolve_path(path: Path) -> Path:
+    """Resolve path.
+
+    Resolve symlinks. Raise `InvalidPath` if the path does not exist.
+    """
+    try:
+        path = path.resolve()  # resolve symlinks
+        path_exists = path.exists()
+    except OSError:  # Catch "OSError: [WinError 123]" on Windows
+        path_exists = False
+    if not path_exists:
+        raise InvalidPath(path)
+    return path
 
 
 def print_paragraphs(paragraphs: Iterable[str]) -> None:

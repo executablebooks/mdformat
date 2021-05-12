@@ -49,6 +49,9 @@ def file(
         is_file = False
     if not is_file:
         raise ValueError(f'Can not format "{f}". It is not a file.')
+    if f.is_symlink():
+        raise ValueError(f'Can not format "{f}". It is a symlink.')
+
     original_md = f.read_text(encoding="utf-8")
     formatted_md = text(
         original_md,

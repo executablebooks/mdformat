@@ -26,6 +26,17 @@ def test_fmt_file__invalid_filename():
     assert "not a file" in str(exc_info.value)
 
 
+def test_fmt_file__symlink(tmp_path):
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text(UNFORMATTED_MARKDOWN)
+    symlink_path = tmp_path / "symlink.md"
+    symlink_path.symlink_to(file_path)
+
+    with pytest.raises(ValueError) as exc_info:
+        mdformat.file(symlink_path)
+    assert "It is a symlink" in str(exc_info.value)
+
+
 def test_fmt_string():
     assert mdformat.text(UNFORMATTED_MARKDOWN) == FORMATTED_MARKDOWN
 
