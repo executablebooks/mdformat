@@ -9,12 +9,12 @@ repos:
   hooks:
   - id: python-use-type-annotations
   - id: python-check-blanket-noqa
-- repo: https://github.com/timothycrosley/isort
+- repo: https://github.com/PyCQA/isort
   rev: a6222a8a125ec719724e628a5d3d0d5c60923281  # frozen: 5.8.0
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: 2f52e4b4929370ec503ee272bcc10d3176db8e89  # frozen: 21.5b1
+  rev: cf75673e1a2c993025a2113ce194d5c65f311c85  # frozen: 21.5b2
   hooks:
   - id: black
 - repo: https://github.com/myint/docformatter
