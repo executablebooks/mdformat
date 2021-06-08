@@ -50,9 +50,7 @@ pytest-cov = "*"
 
 # Tools
 pre-commit = "*"
-# TODO: switch from git to pypi after next mypy release
-#mypy = "*"  # this is separate to pre-commit, since it requires an external env
-mypy = { git = "https://github.com/python/mypy.git", branch = "master" }
+mypy = "*"  # this is separate to pre-commit, since it requires an external env
 bump2version = "*"
 
 
