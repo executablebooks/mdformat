@@ -147,6 +147,7 @@ exclude_lines = [
 
 
 [tool.mypy]
+show_error_codes = true
 warn_unreachable = true
 warn_unused_ignores = true
 warn_redundant_casts = true

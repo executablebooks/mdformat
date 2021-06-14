@@ -44,7 +44,7 @@ class TextEditorPlugin:
     def update_mdit(mdit: MarkdownIt):
         pass
 
-    def _text_renderer(  # type: ignore
+    def _text_renderer(  # type: ignore[misc]
         tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return "All text is like this now!"
@@ -82,7 +82,7 @@ class ExampleTablePlugin:
     def update_mdit(mdit: MarkdownIt):
         mdit.enable("table")
 
-    def _table_renderer(  # type: ignore
+    def _table_renderer(  # type: ignore[misc]
         tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return "dummy 21"
@@ -158,7 +158,7 @@ class ExampleASTChangingPlugin:
     def update_mdit(mdit: MarkdownIt):
         pass
 
-    def _text_renderer(  # type: ignore
+    def _text_renderer(  # type: ignore[misc]
         tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return ExampleASTChangingPlugin.TEXT_REPLACEMENT
@@ -226,7 +226,7 @@ class PrefixPostprocessPlugin:
     def update_mdit(mdit: MarkdownIt):
         pass
 
-    def _text_postprocess(  # type: ignore
+    def _text_postprocess(  # type: ignore[misc]
         text: str, tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return "Prefixed!" + text
@@ -244,7 +244,7 @@ class SuffixPostprocessPlugin:
     def update_mdit(mdit: MarkdownIt):
         pass
 
-    def _text_postprocess(  # type: ignore
+    def _text_postprocess(  # type: ignore[misc]
         text: str, tree: RenderTreeNode, context: RenderContext
     ) -> str:
         return text + "Suffixed!"
