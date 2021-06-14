@@ -251,7 +251,7 @@ def get_plugin_versions(
     for iface in itertools.chain(parser_extensions.values(), codeformatters.values()):
         # Packages and modules should have `__package__`
         if hasattr(iface, "__package__"):
-            package_name = iface.__package__  # type: ignore
+            package_name = iface.__package__  # type: ignore[attr-defined]
         else:  # class or function
             module_name = iface.__module__
             package_name = module_name.split(".", maxsplit=1)[0]

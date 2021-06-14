@@ -101,7 +101,7 @@ ALL_CASES = EXTRA_CASES + SPECTESTS_CASES
     "entry",
     ALL_CASES,
     ids=[
-        c.values[0]["name"]  # type: ignore
+        c.values[0]["name"]  # type: ignore[index]
         if isinstance(c, ParameterSet)
         else c["name"]
         for c in ALL_CASES
