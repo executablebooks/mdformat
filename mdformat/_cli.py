@@ -57,6 +57,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
 
     # Convert args to a mapping
     options: Mapping[str, Any] = vars(args)
+    sys.stdout.write(options)
 
     format_errors_found = False
     renderer_warning_printer = RendererWarningPrinter()
@@ -119,7 +120,7 @@ def validate_wrap_arg(value: str) -> Union[str, int]:
 
 
 def validate_line_ending_arg(value: str) -> str:
-    print(value)
+    sys.stdout.write(value)
     if value in {"\n", "\r", "\r\n"}:
         return value
     if value == "lf":
