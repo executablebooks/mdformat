@@ -3,7 +3,6 @@ import contextlib
 import itertools
 import logging
 from pathlib import Path
-from pprint import pprint
 import shutil
 import sys
 import textwrap
@@ -58,7 +57,6 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
 
     # Convert args to a mapping
     options: Mapping[str, Any] = vars(args)
-    pprint(options)
 
     format_errors_found = False
     renderer_warning_printer = RendererWarningPrinter()
@@ -121,7 +119,6 @@ def validate_wrap_arg(value: str) -> Union[str, int]:
 
 
 def validate_line_ending_arg(value: str) -> str:
-    pprint(value)
     if value in {"\n", "\r", "\r\n"}:
         return value
     if value == "lf":

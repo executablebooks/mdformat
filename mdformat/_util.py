@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from pprint import pprint
 import re
 import tempfile
 from types import MappingProxyType
@@ -87,8 +86,6 @@ def atomic_write(path: Path, text: str, line_ending: Optional[str] = None) -> No
     or partial content exists on disk.
     """
     fd, tmp_path = tempfile.mkstemp(dir=path.parent)
-
-    pprint(line_ending)
     try:
         with open(fd, "w", encoding="utf-8", newline=line_ending) as f:
             f.write(text)
