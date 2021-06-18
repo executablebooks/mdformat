@@ -3,6 +3,7 @@ import contextlib
 import itertools
 import logging
 from pathlib import Path
+from pprint import pprint
 import shutil
 import sys
 import textwrap
@@ -57,7 +58,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
 
     # Convert args to a mapping
     options: Mapping[str, Any] = vars(args)
-    sys.stdout.write(options)
+    pprint(options)
 
     format_errors_found = False
     renderer_warning_printer = RendererWarningPrinter()
