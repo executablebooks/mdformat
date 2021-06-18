@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import tempfile
 from types import MappingProxyType
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Optional
 
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
@@ -78,7 +78,7 @@ def is_md_equal(
     return html_texts["md1"] == html_texts["md2"]
 
 
-def atomic_write(path: Path, text: str) -> None:
+def atomic_write(path: Path, text: str, line_ending: Optional[str] = None) -> None:
     """An atomic function for writing to a file.
 
     Writes a temporary file first and then replaces the original file
@@ -87,7 +87,7 @@ def atomic_write(path: Path, text: str) -> None:
     """
     fd, tmp_path = tempfile.mkstemp(dir=path.parent)
     try:
-        with open(fd, "w", encoding="utf-8", newline="\n") as f:
+        with open(fd, "w", encoding="utf-8", newline=line_ending) as f:
             f.write(text)
         os.replace(tmp_path, path)
     except BaseException:
