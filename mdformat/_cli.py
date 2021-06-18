@@ -103,7 +103,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 )
                 return 1
             if path:
-                atomic_write(path, formatted_str, options.get("line-ending", None))
+                atomic_write(path, formatted_str, options.get("line_ending", None))
             else:
                 sys.stdout.write(formatted_str)
     if format_errors_found:
@@ -121,7 +121,7 @@ def validate_wrap_arg(value: str) -> Union[str, int]:
 
 
 def validate_line_ending_arg(value: str) -> str:
-    sys.stdout.write(value)
+    pprint(value)
     if value in {"\n", "\r", "\r\n"}:
         return value
     if value == "lf":

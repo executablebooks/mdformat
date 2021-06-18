@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
+from pprint import pprint
 import re
-import sys
 import tempfile
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Optional
@@ -88,7 +88,7 @@ def atomic_write(path: Path, text: str, line_ending: Optional[str] = None) -> No
     """
     fd, tmp_path = tempfile.mkstemp(dir=path.parent)
 
-    sys.stdout.write(line_ending)
+    pprint(line_ending)
     try:
         with open(fd, "w", encoding="utf-8", newline=line_ending) as f:
             f.write(text)
