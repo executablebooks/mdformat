@@ -21,7 +21,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.5"
+        pip install "poetry==1.1.6"
         poetry config virtualenvs.create false
         poetry install --no-interaction --no-ansi
 
@@ -50,7 +50,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.5"
+        pip install "poetry==1.1.6"
         poetry config virtualenvs.create false
         poetry install --no-interaction --no-ansi
 
@@ -76,7 +76,7 @@ jobs:
         python-version: 3.7
     - name: Install Poetry
       run: |
-        pip install "poetry==1.1.5"
+        pip install "poetry==1.1.6"
     - name: Build and publish
       run: |
         # TODO: Remove the first command as soon as this Poetry bug is fixed: https://github.com/python-poetry/poetry/issues/2210
