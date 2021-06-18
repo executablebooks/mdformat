@@ -15,7 +15,7 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: cf75673e1a2c993025a2113ce194d5c65f311c85  # frozen: 21.5b2
+  rev: 93c10bf9ebccf8d7cc686b0b9579f2e5e41c5328  # frozen: 21.6b0
   hooks:
   - id: black
 - repo: https://github.com/myint/docformatter

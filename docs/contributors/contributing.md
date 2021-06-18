@@ -78,7 +78,7 @@ If using Poetry for packaging, the entry point configuration in `pyproject.toml`
 "python" = "my_package.some_module:format_python"
 ```
 
-For a real-world example plugin, see [mdformat-black](https://github.com/hukkinj1/mdformat-black),
+For a real-world example plugin, see [mdformat-black](https://github.com/hukkin/mdformat-black),
 which formats Python code blocks with Black.
 
 ## Developing parser extension plugins
