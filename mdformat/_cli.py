@@ -119,6 +119,7 @@ def validate_wrap_arg(value: str) -> Union[str, int]:
 
 
 def validate_line_ending_arg(value: str) -> str:
+    print(value)
     if value in {"\n", "\r", "\r\n"}:
         return value
     if value == "lf":
