@@ -69,7 +69,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             path_str = str(path)
             # Unlike `path.read_text(encoding="utf-8")`, this preserves
             # line ending type.
-            original_str = path.read_bytes().decode(encoding="utf-8")
+            original_str = path.read_bytes().decode()
         else:
             path_str = "-"
             original_str = sys.stdin.read()
@@ -93,10 +93,6 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                     and RE_NON_CRLF_LINE_END.search(original_str)
                 )
             ):
-                print("original str")
-                print(repr(original_str))
-                print("formatted str")
-                print(repr(original_str))
                 format_errors_found = True
                 print_error(f'File "{path_str}" is not formatted.')
         else:

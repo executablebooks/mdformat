@@ -1,0 +1,3 @@
+# Don't do text manipulations (line ending changes). Tests require
+# unchanged files.
+* -text
