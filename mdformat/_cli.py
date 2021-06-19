@@ -170,7 +170,7 @@ def make_arg_parser(
         "--end-of-line",
         default="lf",
         choices=("lf", "crlf"),
-        help="output file line ending mode",
+        help="output file line ending mode (default: lf)",
     )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):

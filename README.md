@@ -83,9 +83,7 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ```console
 foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number]
-                [--wrap {keep,no,INTEGER}]
-                [paths [paths ...]]
+usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}] [--end-of-line {lf,crlf}] [paths [paths ...]]
 
 CommonMark compliant Markdown formatter
 
@@ -99,6 +97,8 @@ optional arguments:
   --number              apply consecutive numbering to ordered lists
   --wrap {keep,no,INTEGER}
                         paragraph word wrap mode (default: keep)
+  --end-of-line {lf,crlf}
+                        output file line ending mode (default: lf)
 ```
 
 <!-- end cli-usage -->
@@ -131,17 +131,21 @@ This argument also holds true when using together with
 [pre-commit](https://github.com/pre-commit/pre-commit) (also Python).
 Prettier on the other hand requires Node.js/npm.
 
-Prettier suffers from [numerous](https://github.com/prettier/prettier/issues?q=is%3Aopen+label%3Alang%3Amarkdown+label%3Atype%3Abug+) bugs,
+Prettier suffers from
+[numerous](https://github.com/prettier/prettier/issues?q=is%3Aopen+label%3Alang%3Amarkdown+label%3Atype%3Abug+)
+bugs,
 many of which cause changes in Markdown AST and rendered HTML.
-Many of these bugs are a consequence of using [`remark-parse`](https://github.com/remarkjs/remark/tree/main/packages/remark-parse) v8.x as Markdown parser which,
+Many of these bugs are a consequence of using
+[`remark-parse`](https://github.com/remarkjs/remark/tree/main/packages/remark-parse)
+v8.x as Markdown parser which,
 according to the author themselves,
 is [inferior to markdown-it](https://github.com/remarkjs/remark/issues/75#issuecomment-143532326) used by mdformat.
 `remark-parse` v9.x is advertised as CommonMark compliant
 and presumably would fix many of the issues,
-but is not used by Prettier (v2.2.1) yet.
+but is not used by Prettier (v2.3.1) yet.
 
-Prettier (v2.2.1), being able to format many languages other than Markdown,
-is a large package with 63 direct dependencies
+Prettier (v2.3.1), being able to format many languages other than Markdown,
+is a large package with 65 direct dependencies
 (mdformat only has 2 in Python 3.8+).
 This can be a disadvantage in many environments,
 one example being size optimized Docker images.
