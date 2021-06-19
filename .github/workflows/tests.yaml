@@ -56,7 +56,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest --cov --cov-fail-under=95
+        pytest --cov --cov-fail-under=95 -s
 
     - name: Report coverage
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.6'
