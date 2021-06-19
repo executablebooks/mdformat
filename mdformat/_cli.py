@@ -101,7 +101,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 )
                 return 1
             if path:
-                atomic_write(path, formatted_str)
+                atomic_write(path, formatted_str, options["end_of_line"])
             else:
                 sys.stdout.write(formatted_str)
     if format_errors_found:
@@ -148,6 +148,12 @@ def make_arg_parser(
         type=validate_wrap_arg,
         metavar="{keep,no,INTEGER}",
         help="paragraph word wrap mode (default: keep)",
+    )
+    parser.add_argument(
+        "--end-of-line",
+        default="lf",
+        choices=("lf", "crlf"),
+        help="output file line ending mode",
     )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):

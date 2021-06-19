@@ -78,16 +78,17 @@ def is_md_equal(
     return html_texts["md1"] == html_texts["md2"]
 
 
-def atomic_write(path: Path, text: str) -> None:
+def atomic_write(path: Path, text: str, line_ending: str) -> None:
     """An atomic function for writing to a file.
 
     Writes a temporary file first and then replaces the original file
     with the temporary one. This is to avoid a moment where only empty
     or partial content exists on disk.
     """
+    newline = "\r\n" if line_ending == "crlf" else "\n"
     fd, tmp_path = tempfile.mkstemp(dir=path.parent)
     try:
-        with open(fd, "w", encoding="utf-8") as f:
+        with open(fd, "w", encoding="utf-8", newline=newline) as f:
             f.write(text)
         os.replace(tmp_path, path)
     except BaseException:
