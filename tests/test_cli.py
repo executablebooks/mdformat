@@ -208,3 +208,17 @@ def test_consecutive_wrap_width_lines(tmp_path):
     file_path.write_text(text)
     assert run([str(file_path), f"--wrap={wrap_width}"]) == 0
     assert file_path.read_text() == text
+
+
+def test_eol__lf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\r\n")
+    assert run([str(file_path)]) == 0
+    assert file_path.read_bytes() == b"Oi\n"
+
+
+def test_eol__crlf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\n")
+    assert run([str(file_path), "--end-of-line=crlf"]) == 0
+    assert file_path.read_bytes() == b"Oi\r\n"

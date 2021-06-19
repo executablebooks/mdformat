@@ -53,3 +53,17 @@ def test_api_options():
 2. c
 """
     assert mdformat.text(non_numbered, options={"number": True}) == numbered
+
+
+def test_eol__lf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\r\n")
+    mdformat.file(str(file_path))
+    assert file_path.read_bytes() == b"Oi\n"
+
+
+def test_eol__crlf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\n")
+    mdformat.file(str(file_path), options={"end_of_line": "crlf"})
+    assert file_path.read_bytes() == b"Oi\r\n"

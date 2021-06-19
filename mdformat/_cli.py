@@ -101,7 +101,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 )
                 return 1
             if path:
-                atomic_write(path, formatted_str, options.get("line_ending", None))
+                atomic_write(path, formatted_str, options["end_of_line"])
             else:
                 sys.stdout.write(formatted_str)
     if format_errors_found:
@@ -116,20 +116,6 @@ def validate_wrap_arg(value: str) -> Union[str, int]:
     if width < 1:
         raise ValueError("wrap width must be a positive integer")
     return width
-
-
-def validate_line_ending_arg(value: str) -> str:
-    if value in {"\n", "\r", "\r\n"}:
-        return value
-    if value == "lf":
-        return "\n"
-    if value == "cr":
-        return "\r"
-    if value == "crlf":
-        return "\r\n"
-    if value == "system":
-        return None
-    raise ValueError("line-ending must be either a specifier or valid line ending.")
 
 
 def make_arg_parser(
@@ -164,11 +150,10 @@ def make_arg_parser(
         help="paragraph word wrap mode (default: keep)",
     )
     parser.add_argument(
-        "--line-ending",
-        default="system",
-        type=validate_line_ending_arg,
-        metavar="{system,lf,cr,crlf}",
-        help="output file line endings (default: system)",
+        "--end-of-line",
+        default="lf",
+        choices=("lf", "crlf"),
+        help="output file line ending mode",
     )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
