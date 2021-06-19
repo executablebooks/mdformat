@@ -71,7 +71,7 @@ def test_invalid_file(capsys):
 
 def test_check(tmp_path):
     file_path = tmp_path / "test_markdown.md"
-    file_path.write_text(FORMATTED_MARKDOWN)
+    file_path.write_bytes(FORMATTED_MARKDOWN.encode())
     assert run((str(file_path), "--check")) == 0
 
 
