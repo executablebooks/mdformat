@@ -3,6 +3,15 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.7
+
+- Fixed
+  - Output `lf` line endings on all platforms.
+    Thank you [Scott Gudeman](https://github.com/DragonCrafted87) for the issue and the PR.
+- Added
+  - Configuration option for outputting `crlf` line endings: `--end-of-line=crlf`
+  - Resolve symlinks and modify the link destination file only.
+
 ## 0.7.6
 
 - Changed

@@ -71,7 +71,7 @@ def test_invalid_file(capsys):
 
 def test_check(tmp_path):
     file_path = tmp_path / "test_markdown.md"
-    file_path.write_text(FORMATTED_MARKDOWN)
+    file_path.write_bytes(FORMATTED_MARKDOWN.encode())
     assert run((str(file_path), "--check")) == 0
 
 
@@ -109,10 +109,10 @@ def test_formatter_plugin(tmp_path, monkeypatch):
     assert file_path.read_text() == "```lang\ndummy\n```\n"
 
 
-def test_dash_stdin(capsys, monkeypatch):
+def test_dash_stdin(capfd, monkeypatch):
     monkeypatch.setattr(sys, "stdin", StringIO(UNFORMATTED_MARKDOWN))
     assert run(("-",)) == 0
-    captured = capsys.readouterr()
+    captured = capfd.readouterr()
     assert captured.out == FORMATTED_MARKDOWN
 
 
@@ -222,3 +222,22 @@ def test_eol__crlf(tmp_path):
     file_path.write_bytes(b"Oi\n")
     assert run([str(file_path), "--end-of-line=crlf"]) == 0
     assert file_path.read_bytes() == b"Oi\r\n"
+
+
+def test_eol__crlf_stdin(capfd, monkeypatch):
+    monkeypatch.setattr(sys, "stdin", StringIO("Oi\n"))
+    assert run(["-", "--end-of-line=crlf"]) == 0
+    captured = capfd.readouterr()
+    assert captured.out == "Oi\r\n"
+
+
+def test_eol__check_lf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"lol\r\n")
+    assert run((str(file_path), "--check")) == 1
+
+
+def test_eol__check_crlf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"lol\n")
+    assert run((str(file_path), "--check", "--end-of-line=crlf")) == 1

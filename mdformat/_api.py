@@ -59,4 +59,5 @@ def file(
         extensions=extensions,
         codeformatters=codeformatters,
     )
-    atomic_write(f, formatted_md, options.get("end_of_line", "lf"))
+    newline = "\r\n" if options.get("end_of_line", "lf") == "crlf" else "\n"
+    atomic_write(f, formatted_md, newline)
