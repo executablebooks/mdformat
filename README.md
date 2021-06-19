@@ -147,7 +147,7 @@ This can be a disadvantage in many environments,
 one example being size optimized Docker images.
 
 Mdformat's parser extension plugin API allows not only customization of the Markdown specification in use,
-but also advanced features like [automatic table of contents generation](https://github.com/hukkinj1/mdformat-toc).
+but also advanced features like [automatic table of contents generation](https://github.com/hukkin/mdformat-toc).
 Also provided is a code formatter plugin API enabling integration of embedded code formatting for any programming language.
 
 ### What's wrong with the mdformat logo? It renders incorrectly and is just terrible in general.
