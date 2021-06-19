@@ -69,7 +69,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             path_str = str(path)
             # Unlike `path.read_text(encoding="utf-8")`, this preserves
             # line ending type.
-            original_str = path.read_bytes().decode()
+            original_str = path.read_bytes().decode(encoding="utf-8")
         else:
             path_str = "-"
             original_str = sys.stdin.read()
