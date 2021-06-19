@@ -3,6 +3,7 @@ import contextlib
 import itertools
 import logging
 from pathlib import Path
+import re
 import shutil
 import sys
 import textwrap
@@ -25,6 +26,9 @@ from mdformat._util import atomic_write, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 from mdformat.renderer._util import CONSECUTIVE_KEY
+
+# Match "\r" and "\n" characters that are not part of a "\r\n" sequence
+RE_NON_CRLF_LINE_END = re.compile(r"(?:(?:[^\r]|^)\n|\r(?:[^\n]|$))")
 
 
 class RendererWarningPrinter(logging.Handler):
@@ -63,7 +67,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     for path in file_paths:
         if path:
             path_str = str(path)
-            original_str = path.read_text(encoding="utf-8")
+            # Unlike `path.read_text(encoding="utf-8")`, this preserves
+            # line ending type.
+            original_str = path.read_bytes().decode()
         else:
             path_str = "-"
             original_str = sys.stdin.read()
@@ -79,7 +85,14 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         )
 
         if args.check:
-            if formatted_str != original_str:
+            if (
+                (formatted_str != original_str)
+                or (args.end_of_line == "lf" and "\r" in original_str)
+                or (
+                    args.end_of_line == "crlf"
+                    and RE_NON_CRLF_LINE_END.search(original_str)
+                )
+            ):
                 format_errors_found = True
                 print_error(f'File "{path_str}" is not formatted.')
         else:
@@ -100,10 +113,14 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                     ],
                 )
                 return 1
+            newline = "\r\n" if args.end_of_line == "crlf" else "\n"
             if path:
-                atomic_write(path, formatted_str, options["end_of_line"])
+                atomic_write(path, formatted_str, newline)
             else:
-                sys.stdout.write(formatted_str)
+                with open(
+                    sys.stdout.fileno(), "w", closefd=False, newline=newline
+                ) as stdout:
+                    stdout.write(formatted_str)
     if format_errors_found:
         return 1
     return 0
