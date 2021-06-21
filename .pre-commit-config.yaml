@@ -11,7 +11,7 @@ repos:
   - id: python-check-blanket-noqa
   - id: python-check-blanket-type-ignore
 - repo: https://github.com/PyCQA/isort
-  rev: a6222a8a125ec719724e628a5d3d0d5c60923281  # frozen: 5.8.0
+  rev: 1d7e37c3ff2536abf4359f73c46c418cfec12ada  # frozen: 5.9.1
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
@@ -22,7 +22,7 @@ repos:
   rev: 67919ee01837761f2d954d7fbb08c12cdd38ec5a  # frozen: v1.4
   hooks:
   - id: docformatter
-- repo: https://gitlab.com/pycqa/flake8
+- repo: https://github.com/PyCQA/flake8
   rev: dcd740bc0ebaf2b3d43e59a0060d157c97de13f3  # frozen: 3.9.2
   hooks:
   - id: flake8
