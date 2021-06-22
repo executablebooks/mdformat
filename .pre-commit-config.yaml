@@ -10,6 +10,14 @@ repos:
   - id: python-use-type-annotations
   - id: python-check-blanket-noqa
   - id: python-check-blanket-type-ignore
+- repo: https://github.com/asottile/yesqa
+  rev: 644ede78511c02fc6f8e03e014cc1ddcfbf1e1f5  # frozen: v1.2.3
+  hooks:
+  - id: yesqa
+    additional_dependencies:
+    - flake8-bugbear
+    - flake8-builtins
+    - flake8-comprehensions
 - repo: https://github.com/PyCQA/isort
   rev: 1d7e37c3ff2536abf4359f73c46c418cfec12ada  # frozen: 5.9.1
   hooks:
