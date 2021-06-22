@@ -99,7 +99,7 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
   </tr>
   <tr>
-    <td><a href="https://github.com/hukkin/mdformat-myst">mdformat-myst</a></td>
+    <td><a href="https://github.com/executablebooks/mdformat-myst">mdformat-myst</a></td>
     <td><code>myst</code></td>
     <td>Changes target specification to <a href="https://myst-parser.readthedocs.io/en/latest/using/syntax.html">MyST</a></td>
   </tr>
@@ -117,5 +117,10 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><a href="https://github.com/butler54/mdformat-frontmatter">mdformat-frontmatter</a></td>
     <td><code>frontmatter</code></td>
     <td>Adds support for front matter, and formats YAML front matter</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-deflist">mdformat-deflist</a></td>
+    <td><code>deflist</code></td>
+    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#definition-lists">Pandoc-style</a> definition lists</td>
   </tr>
 </table>

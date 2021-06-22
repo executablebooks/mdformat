@@ -73,7 +73,7 @@ xfail_strict = true
 
 
 [tool.tox]
-legacy_tox_ini = """
+legacy_tox_ini = '''
 [tox]
 # Only run pytest envs when no args given to tox
 envlist = py{36,37,38,39}
@@ -125,8 +125,8 @@ deps =
     -r docs/requirements.txt
 commands =
     sphinx-build -d "{toxworkdir}/docs_doctree" docs/ "{toxworkdir}/docs_out" -W -b html {posargs}
-    python -c 'import pathlib; print("documentation available under file://\\{0\\}".format(pathlib.Path(r"{toxworkdir}") / "docs_out" / "index.html"))'
-"""
+    python -c 'import pathlib; print("documentation available under file://\{0\}".format(pathlib.Path(r"{toxworkdir}") / "docs_out" / "index.html"))'
+'''
 
 
 [tool.coverage.run]
