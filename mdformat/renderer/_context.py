@@ -1,4 +1,5 @@
 from collections import defaultdict
+from contextlib import contextmanager
 import logging
 import re
 import sys
@@ -7,6 +8,7 @@ from types import MappingProxyType
 from typing import (
     TYPE_CHECKING,
     Any,
+    Generator,
     Iterable,
     Mapping,
     MutableMapping,
@@ -597,6 +599,14 @@ class RenderContext(NamedTuple):
     postprocessors: Mapping[str, Iterable[Postprocess]]
     options: Mapping[str, Any]
     env: MutableMapping
+
+    @contextmanager
+    def indented(self, indent: int) -> Generator[None, None, None]:
+        self.env["indent_width"] += indent
+        try:
+            yield
+        finally:
+            self.env["indent_width"] -= indent
 
     @property
     def do_wrap(self) -> bool:
