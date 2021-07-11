@@ -126,6 +126,13 @@ deps =
 commands =
     sphinx-build -d "{toxworkdir}/docs_doctree" docs/ "{toxworkdir}/docs_out" -W -b html {posargs}
     python -c 'import pathlib; print("documentation available under file://\{0\}".format(pathlib.Path(r"{toxworkdir}") / "docs_out" / "index.html"))'
+
+[testenv:fuzz]
+description = run the fuzzer (needs "apt install clang")
+deps =
+    -r fuzzer/requirements.txt
+commands =
+    python fuzzer/fuzz.py {posargs}
 '''
 
 
@@ -167,3 +174,8 @@ disallow_untyped_defs = false
 [[tool.mypy.overrides]]
 module = "markdown_it.*"
 implicit_reexport = true
+
+[[tool.mypy.overrides]]
+# This matches `fuzzer/fuzz.py`.
+module = "fuzz"
+ignore_errors = true
