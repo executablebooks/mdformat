@@ -1,6 +1,7 @@
 import pytest
 
 import mdformat
+from mdformat._util import is_md_equal
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
 FORMATTED_MARKDOWN = "# A header\n"
@@ -39,6 +40,12 @@ def test_fmt_file__symlink(tmp_path):
 
 def test_fmt_string():
     assert mdformat.text(UNFORMATTED_MARKDOWN) == FORMATTED_MARKDOWN
+
+
+def test_vertical_tab_only():
+    input_ = "\x0b"
+    output = mdformat.text(input_)
+    assert is_md_equal(input_, output)
 
 
 def test_api_options():
