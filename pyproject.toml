@@ -174,3 +174,8 @@ disallow_untyped_defs = false
 [[tool.mypy.overrides]]
 module = "markdown_it.*"
 implicit_reexport = true
+
+[[tool.mypy.overrides]]
+# This matches `fuzzer/fuzz.py`.
+module = "fuzz"
+ignore_errors = true
