@@ -24,11 +24,6 @@ classifiers = [
 ]
 keywords = ["mdformat", "markdown", "commonmark", "formatter", "pre-commit"]
 
-packages = [
-    {include = "mdformat"},
-]
-include = ["mdformat/py.typed"]
-
 [tool.poetry.urls]
 "Changelog" = "https://mdformat.readthedocs.io/en/stable/users/changelog.html"
 "Style guide" = "https://mdformat.readthedocs.io/en/stable/users/style.html"
@@ -90,7 +85,7 @@ commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
 commands =
-    pytest --import-mode=append {posargs}
+    pytest {posargs}
 
 [testenv:pre-commit]
 description = run linters (except mypy)
