@@ -48,6 +48,20 @@ def test_vertical_tab_only():
     assert is_md_equal(input_, output)
 
 
+@pytest.mark.xfail(reason="Fix parser behaving unlike reference parser")
+def test_no_codeblock_trailing_newline():
+    input_ = "\t##"
+    output = mdformat.text(input_)
+    assert is_md_equal(input_, output)
+
+
+@pytest.mark.xfail(reason="Weird case found by fuzzer")
+def test_case_found_by_fuzzer():
+    input_ = "\x1c\n\na"
+    output = mdformat.text(input_)
+    assert is_md_equal(input_, output)
+
+
 def test_api_options():
     non_numbered = """\
 0. a
