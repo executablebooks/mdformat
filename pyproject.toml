@@ -90,7 +90,7 @@ commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
     poetry install --no-root
 commands =
-    pytest {posargs}
+    pytest --import-mode=append {posargs}
 
 [testenv:pre-commit]
 description = run linters (except mypy)
