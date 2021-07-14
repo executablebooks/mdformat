@@ -1,4 +1,5 @@
 from collections import defaultdict
+from contextlib import contextmanager
 import logging
 import re
 import sys
@@ -7,6 +8,7 @@ from types import MappingProxyType
 from typing import (
     TYPE_CHECKING,
     Any,
+    Generator,
     Iterable,
     Mapping,
     MutableMapping,
@@ -303,10 +305,7 @@ def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
     marker = "> "
-    indent_width = len(marker)
-    context.env["indent_width"] += indent_width
-
-    try:
+    with context.indented(len(marker)):
         text = make_render_children(separator="\n\n")(node, context)
         lines = text.splitlines()
         if not lines:
@@ -314,8 +313,6 @@ def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
         quoted_lines = (f"{marker}{line}" if line else ">" for line in lines)
         quoted_str = "\n".join(quoted_lines)
         return quoted_str
-    finally:
-        context.env["indent_width"] -= indent_width
 
 
 def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
@@ -460,28 +457,26 @@ def bullet_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     indent = " " * len(marker_type + first_line_indent)
     block_separator = "\n" if is_tight_list(node) else "\n\n"
 
-    context.env["indent_width"] += len(indent)
+    with context.indented(len(indent)):
+        text = ""
+        for child_idx, child in enumerate(node.children):
+            list_item = child.render(context)
+            formatted_lines = []
+            line_iterator = iter(list_item.split("\n"))
+            first_line = next(line_iterator)
+            formatted_lines.append(
+                f"{marker_type}{first_line_indent}{first_line}"
+                if first_line
+                else marker_type
+            )
+            for line in line_iterator:
+                formatted_lines.append(f"{indent}{line}" if line else "")
 
-    text = ""
-    for child_idx, child in enumerate(node.children):
-        list_item = child.render(context)
-        formatted_lines = []
-        line_iterator = iter(list_item.split("\n"))
-        first_line = next(line_iterator)
-        formatted_lines.append(
-            f"{marker_type}{first_line_indent}{first_line}"
-            if first_line
-            else marker_type
-        )
-        for line in line_iterator:
-            formatted_lines.append(f"{indent}{line}" if line else "")
+            text += "\n".join(formatted_lines)
+            if child_idx != len(node.children) - 1:
+                text += block_separator
 
-        text += "\n".join(formatted_lines)
-        if child_idx != len(node.children) - 1:
-            text += block_separator
-
-    context.env["indent_width"] -= len(indent)
-    return text
+        return text
 
 
 def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
@@ -502,64 +497,63 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
         )
     else:
         indent_width = len(f"{starting_number}{marker_type}{first_line_indent}")
-    context.env["indent_width"] += indent_width
 
     text = ""
-    for list_item_index, list_item in enumerate(node.children):
-        list_item_text = list_item.render(context)
-        formatted_lines = []
-        line_iterator = iter(list_item_text.split("\n"))
-        first_line = next(line_iterator)
-        if consecutive_numbering:
-            # Prefix first line of the list item with consecutive numbering,
-            # padded with zeros to make all markers of even length.
-            # E.g.
-            #   002. This is the first list item
-            #   003. Second item
-            #   ...
-            #   112. Last item
-            number = starting_number + list_item_index
-            pad = len(str(list_len + starting_number - 1))
-            number_str = str(number).rjust(pad, "0")
-            formatted_lines.append(
-                f"{number_str}{marker_type}{first_line_indent}{first_line}"
-                if first_line
-                else f"{number_str}{marker_type}"
-            )
-        else:
-            # Prefix first line of first item with the starting number of the
-            # list. Prefix following list items with the number one
-            # prefixed by zeros to make the list item marker of even length
-            # with the first one.
-            # E.g.
-            #   5321. This is the first list item
-            #   0001. Second item
-            #   0001. Third item
-            first_item_marker = f"{starting_number}{marker_type}"
-            other_item_marker = (
-                "0" * (len(str(starting_number)) - 1) + "1" + marker_type
-            )
-            if list_item_index == 0:
+    with context.indented(indent_width):
+        for list_item_index, list_item in enumerate(node.children):
+            list_item_text = list_item.render(context)
+            formatted_lines = []
+            line_iterator = iter(list_item_text.split("\n"))
+            first_line = next(line_iterator)
+            if consecutive_numbering:
+                # Prefix first line of the list item with consecutive numbering,
+                # padded with zeros to make all markers of even length.
+                # E.g.
+                #   002. This is the first list item
+                #   003. Second item
+                #   ...
+                #   112. Last item
+                number = starting_number + list_item_index
+                pad = len(str(list_len + starting_number - 1))
+                number_str = str(number).rjust(pad, "0")
                 formatted_lines.append(
-                    f"{first_item_marker}{first_line_indent}{first_line}"
+                    f"{number_str}{marker_type}{first_line_indent}{first_line}"
                     if first_line
-                    else first_item_marker
+                    else f"{number_str}{marker_type}"
                 )
             else:
-                formatted_lines.append(
-                    f"{other_item_marker}{first_line_indent}{first_line}"
-                    if first_line
-                    else other_item_marker
+                # Prefix first line of first item with the starting number of the
+                # list. Prefix following list items with the number one
+                # prefixed by zeros to make the list item marker of even length
+                # with the first one.
+                # E.g.
+                #   5321. This is the first list item
+                #   0001. Second item
+                #   0001. Third item
+                first_item_marker = f"{starting_number}{marker_type}"
+                other_item_marker = (
+                    "0" * (len(str(starting_number)) - 1) + "1" + marker_type
                 )
-        for line in line_iterator:
-            formatted_lines.append(" " * indent_width + line if line else "")
+                if list_item_index == 0:
+                    formatted_lines.append(
+                        f"{first_item_marker}{first_line_indent}{first_line}"
+                        if first_line
+                        else first_item_marker
+                    )
+                else:
+                    formatted_lines.append(
+                        f"{other_item_marker}{first_line_indent}{first_line}"
+                        if first_line
+                        else other_item_marker
+                    )
+            for line in line_iterator:
+                formatted_lines.append(" " * indent_width + line if line else "")
 
-        text += "\n".join(formatted_lines)
-        if list_item_index != len(node.children) - 1:
-            text += block_separator
+            text += "\n".join(formatted_lines)
+            if list_item_index != len(node.children) - 1:
+                text += block_separator
 
-    context.env["indent_width"] -= indent_width
-    return text
+        return text
 
 
 DEFAULT_RENDERERS: Mapping[str, Render] = MappingProxyType(
@@ -597,6 +591,14 @@ class RenderContext(NamedTuple):
     postprocessors: Mapping[str, Iterable[Postprocess]]
     options: Mapping[str, Any]
     env: MutableMapping
+
+    @contextmanager
+    def indented(self, width: int) -> Generator[None, None, None]:
+        self.env["indent_width"] += width
+        try:
+            yield
+        finally:
+            self.env["indent_width"] -= width
 
     @property
     def do_wrap(self) -> bool:
