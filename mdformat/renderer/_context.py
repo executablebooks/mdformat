@@ -305,7 +305,7 @@ def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
     marker = "> "
-    with context.indented(len(marker)):
+    with context.indent(len(marker)):
         text = make_render_children(separator="\n\n")(node, context)
         lines = text.splitlines()
         if not lines:
@@ -457,7 +457,7 @@ def bullet_list(node: "RenderTreeNode", context: "RenderContext") -> str:
     indent = " " * len(marker_type + first_line_indent)
     block_separator = "\n" if is_tight_list(node) else "\n\n"
 
-    with context.indented(len(indent)):
+    with context.indent(len(indent)):
         text = ""
         for child_idx, child in enumerate(node.children):
             list_item = child.render(context)
@@ -499,7 +499,7 @@ def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
         indent_width = len(f"{starting_number}{marker_type}{first_line_indent}")
 
     text = ""
-    with context.indented(indent_width):
+    with context.indent(indent_width):
         for list_item_index, list_item in enumerate(node.children):
             list_item_text = list_item.render(context)
             formatted_lines = []
@@ -593,12 +593,12 @@ class RenderContext(NamedTuple):
     env: MutableMapping
 
     @contextmanager
-    def indented(self, indent: int) -> Generator[None, None, None]:
-        self.env["indent_width"] += indent
+    def indent(self, width: int) -> Generator[None, None, None]:
+        self.env["indent_width"] += width
         try:
             yield
         finally:
-            self.env["indent_width"] -= indent
+            self.env["indent_width"] -= width
 
     @property
     def do_wrap(self) -> bool:
