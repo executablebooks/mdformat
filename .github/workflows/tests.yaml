@@ -3,8 +3,7 @@ name: Tests
 on:
   push:
     branches: [ master ]
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+*'
+    tags: [ '[0-9]+.[0-9]+.[0-9]+*' ]
   pull_request:
     branches: [ master ]
 
@@ -62,11 +61,17 @@ jobs:
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.6'
       uses: codecov/codecov-action@v1
 
-  pypi-publish:
-    # Only publish if all other jobs succeed
+  allgood:
+    runs-on: ubuntu-latest
     needs:
     - linters
     - tests
+    steps:
+      - run: echo "Great success!"
+
+  pypi-publish:
+    # Only publish if all other jobs succeed
+    needs: [ allgood ]
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:

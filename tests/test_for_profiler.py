@@ -16,7 +16,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # (a safeguard against refactorings where this file is moved).
 assert (PROJECT_ROOT / "docs").exists()
 assert (PROJECT_ROOT / "README.md").exists()
-assert (PROJECT_ROOT / "mdformat").exists()
+assert (PROJECT_ROOT / "src" / "mdformat").exists()
 
 
 def test_for_profiler():
