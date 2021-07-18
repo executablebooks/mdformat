@@ -1,12 +1,11 @@
-# TODO: move all imports except `atheris` under this contextmanager in atheris>1.0.11
-# with atheris.instrument_imports():
-import sys
-import warnings
-
 import atheris
 
-import mdformat
-from mdformat._util import is_md_equal
+with atheris.instrument_imports():
+    import sys
+    import warnings
+
+    import mdformat
+    from mdformat._util import is_md_equal
 
 # Suppress all warnings.
 warnings.simplefilter("ignore")
