@@ -126,8 +126,15 @@ commands =
 description = run the fuzzer (needs "apt install clang")
 deps =
     -r fuzzer/requirements.txt
+allowlist_externals =
+    mkdir
+    cp
 commands =
-    python fuzzer/fuzz.py {posargs}
+    # Create a folder for persistent corpus and use README.md as initial seed
+    mkdir -p {toxworkdir}/fuzzer-corpus
+    cp -n README.md {toxworkdir}/fuzzer-corpus/README.md
+    # Run fuzzer
+    python fuzzer/fuzz.py {toxworkdir}/fuzzer-corpus {posargs:-len_control=10000}
 '''
 
 
