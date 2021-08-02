@@ -19,7 +19,7 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/PyCQA/isort
-  rev: 6e4281f018ff848226d8993596765b2285e1624f  # frozen: 5.9.2
+  rev: fd5ba70665a37ec301a1f714ed09336048b3be63  # frozen: 5.9.3
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
