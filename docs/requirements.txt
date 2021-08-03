@@ -3,6 +3,6 @@
 # ever supports that.
 
 docutils == 0.17.1
-sphinx == 4.0.2
+sphinx == 4.1.2
 myst-parser == 0.15.1
-furo == 2021.6.18b36
+furo == 2021.7.31b41
