@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mdformat"
-version = "0.7.7"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
+version = "0.7.8"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 authors = ["Taneli Hukkinen <hukkin@users.noreply.github.com>"]
 description = "CommonMark compliant Markdown formatter"
 repository = "https://github.com/executablebooks/mdformat"
