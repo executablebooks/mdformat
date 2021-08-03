@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.8
+
+- Fixed
+  - Fix a case where indented Markdown nested inside indented raw HTML tags would alter AST.
+    Thank you [Jirka Borovec](https://github.com/Borda) for the issue.
+
 ## 0.7.7
 
 - Fixed
