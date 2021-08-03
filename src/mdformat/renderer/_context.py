@@ -80,7 +80,12 @@ def code_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
 
 
 def html_block(node: "RenderTreeNode", context: "RenderContext") -> str:
-    return node.content.rstrip("\n")
+    content = node.content.rstrip("\n")
+    # Need to strip leading spaces because we do so for regular Markdown too.
+    # Without the stripping the raw HTML and Markdown get unaligned and
+    # semantic may change.
+    content = content.lstrip()
+    return content
 
 
 def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:

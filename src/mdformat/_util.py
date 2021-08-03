@@ -60,6 +60,12 @@ def is_md_equal(
     mdit = build_mdit(RendererHTML, mdformat_opts=options, extensions=extensions)
     for key, text in [("md1", md1), ("md2", md2)]:
         html = mdit.render(text)
+
+        # The HTML can start with whitespace if Markdown starts with raw HTML
+        # preceded by whitespace. This whitespace should be safe to strip.
+        html = html.lstrip()
+
+        # Remove codeblocks because code formatter plugins do arbitrary changes.
         for codeclass in codeformatters:
             html = re.sub(
                 f'<code class="language-{codeclass}">.*</code>',
@@ -67,6 +73,8 @@ def is_md_equal(
                 html,
                 flags=re.DOTALL,
             )
+
+        # Reduce all whitespace to a single space
         html = re.sub(r"\s+", " ", html)
 
         # Strip insignificant paragraph leading/trailing whitespace
