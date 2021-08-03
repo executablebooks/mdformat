@@ -351,3 +351,19 @@ Don't escape hash not followed by space
 .
 #No space after hash -> no need to escape
 .
+
+
+Indented raw HTML contains Markdown
+.
+  <center>
+
+ - list item
+
+  </center>
+.
+<center>
+
+- list item
+
+</center>
+.
