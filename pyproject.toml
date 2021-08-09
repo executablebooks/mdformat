@@ -48,6 +48,9 @@ pre-commit = "*"
 mypy = "*"  # this is separate to pre-commit, since it requires an external env
 bump2version = "*"
 
+[tool.poetry.build]
+generate-setup-file = false
+
 
 [tool.isort]
 # Force imports to be sorted by module, independent of import type
