@@ -82,10 +82,12 @@ jobs:
     - name: Install build and publish tools
       run: |
         pip install build twine
-    - name: Build and publish
+    - name: Build and check
       run: |
         rm -rf dist/ && python -m build
         twine check dist/*
+    - name: Publish
+      run: |
         twine upload dist/*
       env:
         TWINE_USERNAME: __token__
