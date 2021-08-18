@@ -3,9 +3,9 @@
 This test can be useful for profiling, as most of the execution time
 will be spent parsing and rendering instead of managing pytest execution
 environment. The test simply ensures that the README and Markdown docs
-in this project are formatted. To get profiler results:
-  - `pip install pytest-profiling`
-  - `pytest -k test_for_profiler --profile-svg`
+in this project are formatted. To get and read profiler results:
+  - `tox -e profile`
+  - `firefox .tox/prof/combined.svg`
 """
 from pathlib import Path
 
