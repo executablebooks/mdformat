@@ -90,6 +90,16 @@ commands_pre =
 commands =
     pytest {posargs}
 
+[testenv:profile]
+description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
+commands_pre =
+    # TODO: Use --dev-only flag when poetry 1.2 is released
+    poetry install --no-root
+    pip install pytest-profiling
+commands =
+    pytest tests/test_for_profiler.py --profile-svg --pstats-dir "{toxworkdir}/prof"
+    python -c 'import pathlib; print("profiler svg output under file://\{0\}".format(pathlib.Path(r"{toxworkdir}") / "prof" / "combined.svg"))'
+
 [testenv:pre-commit]
 description = run linters (except mypy)
 skip_install = True
