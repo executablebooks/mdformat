@@ -245,14 +245,22 @@ def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> 
 
 
 def link(node: "RenderTreeNode", context: "RenderContext") -> str:
+    if node.info == "auto":
+        autolink_url = node.attrs["href"]
+        assert isinstance(autolink_url, str)
+        # The parser adds a "mailto:" prefix to autolink email href. We remove the
+        # prefix if it wasn't there in the source.
+        if autolink_url.startswith("mailto:") and not node.children[
+            0
+        ].content.startswith("mailto:"):
+            autolink_url = autolink_url[7:]
+        return "<" + autolink_url + ">"
+
     text = "".join(child.render(context) for child in node.children)
 
     if context.do_wrap:
         # Prevent line breaks
         text = text.replace(WRAP_POINT, " ")
-
-    if node.info == "auto":
-        return "<" + text + ">"
 
     ref_label = node.meta.get("label")
     if ref_label:

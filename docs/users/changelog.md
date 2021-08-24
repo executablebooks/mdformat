@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.9
+
+- Fixed
+  - Fix an error when an autolink contains URL encoded spaces.
+    Thank you [Chris Butler](https://github.com/butler54) for the issue.
+
 ## 0.7.8
 
 - Fixed

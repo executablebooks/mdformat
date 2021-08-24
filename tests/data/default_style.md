@@ -367,3 +367,17 @@ Indented raw HTML contains Markdown
 
 </center>
 .
+
+Autolink with percentage encoded space
+.
+<https://mytest.com/files/word%20document.docx>
+.
+<https://mytest.com/files/word%20document.docx>
+.
+
+Keep mailto: prefix in autolink
+.
+<MAILTO:FOO@BAR.BAZ>>
+.
+<mailto:FOO@BAR.BAZ>>
+.
