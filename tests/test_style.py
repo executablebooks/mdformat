@@ -21,9 +21,9 @@ def test_style(fixture_file, options, tmp_path):
     cases = read_fixture_file(Path(__file__).parent / "data" / fixture_file)
     for case in cases:
         line, title, text, expected = case
-        file_path.write_text(text)
+        file_path.write_bytes(text.encode())
         assert mdformat._cli.run([str(file_path), *options]) == 0
-        md_new = file_path.read_text()
+        md_new = file_path.read_bytes().decode()
         if md_new != expected:
             print("Formatted (unexpected) Markdown below:")
             print(md_new)
