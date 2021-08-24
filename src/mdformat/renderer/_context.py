@@ -247,6 +247,7 @@ def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> 
 def link(node: "RenderTreeNode", context: "RenderContext") -> str:
     if node.info == "auto":
         autolink_url = node.attrs["href"]
+        assert isinstance(autolink_url, str)
         # The parser adds a "mailto:" prefix to autolink email href. We remove the
         # prefix if it wasn't there in the source.
         if autolink_url.startswith("mailto:") and not node.children[
