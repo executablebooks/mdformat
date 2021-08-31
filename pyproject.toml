@@ -152,15 +152,15 @@ commands =
 
 
 [tool.coverage.run]
-omit = ["tests/*", "*/site-packages/*"]
+source = ["mdformat"]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
-    # Have to re-enable the standard pragma
-    "pragma: no cover",
+    # Re-enable the standard pragma (with extra strictness)
+    '# pragma: no cover\b',
     # Ellipsis lines after @typing.overload
-    '\.\.\.',
+    '^ +\.\.\.$',
     # Code for static type checkers
     "if TYPE_CHECKING:",
     # Scripts

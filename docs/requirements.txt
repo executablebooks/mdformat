@@ -4,5 +4,5 @@
 
 docutils == 0.17.1
 sphinx == 4.1.2
-myst-parser == 0.15.1
-furo == 2021.7.31b41
+myst-parser == 0.15.2
+furo == 2021.8.17b43
