@@ -94,7 +94,7 @@ def is_md_equal(
 
 
 def atomic_write(path: Path, text: str, newline: str) -> None:
-    """An atomic function for writing to a file.
+    """A function for atomic writes to a file.
 
     Writes a temporary file first and then replaces the original file
     with the temporary one. This is to avoid a moment where only empty
