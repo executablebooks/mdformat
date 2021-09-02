@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import argparse
-from typing import Callable, Dict, Mapping
+from collections.abc import Callable, Mapping
 
 from markdown_it import MarkdownIt
 
@@ -7,7 +9,7 @@ from mdformat._compat import Protocol, importlib_metadata
 from mdformat.renderer.typing import Postprocess, Render
 
 
-def _load_codeformatters() -> Dict[str, Callable[[str, str], str]]:
+def _load_codeformatters() -> dict[str, Callable[[str, str], str]]:
     codeformatter_entrypoints = importlib_metadata.entry_points(
         group="mdformat.codeformatter"
     )
@@ -47,7 +49,7 @@ class ParserExtensionInterface(Protocol):
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
 
 
-def _load_parser_extensions() -> Dict[str, ParserExtensionInterface]:
+def _load_parser_extensions() -> dict[str, ParserExtensionInterface]:
     parser_extension_entrypoints = importlib_metadata.entry_points(
         group="mdformat.parser_extension"
     )

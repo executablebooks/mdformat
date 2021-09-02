@@ -1,5 +1,9 @@
+from __future__ import annotations
+
+from collections.abc import Iterable, Mapping
+from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, ContextManager, Iterable, Mapping, Union
+from typing import Any
 
 from mdformat._util import EMPTY_MAP, NULL_CTX, atomic_write, build_mdit
 from mdformat.renderer import MDRenderer
@@ -11,7 +15,7 @@ def text(
     options: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
-    _first_pass_contextmanager: ContextManager = NULL_CTX,
+    _first_pass_contextmanager: AbstractContextManager = NULL_CTX,
 ) -> str:
     """Format a Markdown string."""
     with _first_pass_contextmanager:
@@ -34,7 +38,7 @@ def text(
 
 
 def file(
-    f: Union[str, Path],
+    f: str | Path,
     *,
     options: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),

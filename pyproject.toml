@@ -32,7 +32,7 @@ keywords = ["mdformat", "markdown", "commonmark", "formatter", "pre-commit"]
 mdformat = "mdformat.__main__:run"
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.7"
 markdown-it-py = ">=1.0.0b2,<2.0.0"
 importlib-metadata = { version = ">=3.6.0", python = "<3.10" }
 typing-extensions = { version = ">=3.7.4", python = "<3.8" }
@@ -74,7 +74,7 @@ xfail_strict = true
 legacy_tox_ini = '''
 [tox]
 # Only run pytest envs when no args given to tox
-envlist = py{36,37,38,39}
+envlist = py{37,38,39}
 isolated_build = True
 requires =
     poetry >= 1.1.4
@@ -82,7 +82,7 @@ requires =
 [testenv]
 allowlist_externals = poetry
 
-[testenv:py{36,37,38,39}]
+[testenv:py{37,38,39}]
 description = run tests
 commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released

@@ -1,14 +1,17 @@
+from __future__ import annotations
+
+from collections.abc import Iterable, Mapping
+from contextlib import nullcontext
 import os
 from pathlib import Path
 import re
 import tempfile
 from types import MappingProxyType
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
 
-from mdformat._compat import nullcontext
 import mdformat.plugins
 
 NULL_CTX = nullcontext()

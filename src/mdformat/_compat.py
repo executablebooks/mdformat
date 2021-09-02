@@ -1,4 +1,4 @@
-__all__ = ("importlib_metadata", "Protocol", "nullcontext")
+__all__ = ("importlib_metadata", "Protocol", "Literal")
 
 import sys
 
@@ -8,11 +8,6 @@ else:
     import importlib_metadata
 
 if sys.version_info >= (3, 8):
-    from typing import Protocol
+    from typing import Literal, Protocol
 else:
-    from typing_extensions import Protocol
-
-if sys.version_info >= (3, 7):
-    from contextlib import nullcontext
-else:
-    from contextlib import suppress as nullcontext
+    from typing_extensions import Literal, Protocol
