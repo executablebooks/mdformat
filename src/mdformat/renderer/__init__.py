@@ -58,7 +58,7 @@ class MDRenderer:
 
     def render_tree(
         self,
-        tree: "RenderTreeNode",
+        tree: RenderTreeNode,
         options: Mapping[str, Any],
         env: MutableMapping,
         *,
