@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
 import html.entities
 import re
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 from mdformat import codepoints
 
@@ -26,7 +29,7 @@ RE_CHAR_REFERENCE = re.compile(
 CONSECUTIVE_KEY = "number"
 
 
-def is_tight_list(node: "RenderTreeNode") -> bool:
+def is_tight_list(node: RenderTreeNode) -> bool:
     assert node.type in {"bullet_list", "ordered_list"}
 
     # The list has list items at level +1 so paragraphs in those list
@@ -41,7 +44,7 @@ def is_tight_list(node: "RenderTreeNode") -> bool:
     return True
 
 
-def is_tight_list_item(node: "RenderTreeNode") -> bool:
+def is_tight_list_item(node: RenderTreeNode) -> bool:
     assert node.type == "list_item"
     assert node.parent is not None
     return is_tight_list(node.parent)
@@ -63,7 +66,7 @@ def longest_consecutive_sequence(seq: str, char: str) -> int:
     return longest
 
 
-def is_text_inside_autolink(node: "RenderTreeNode") -> bool:
+def is_text_inside_autolink(node: RenderTreeNode) -> bool:
     assert node.type == "text"
     return (
         node.parent  # type: ignore[return-value]
@@ -81,7 +84,7 @@ def maybe_add_link_brackets(link: str) -> str:
     return link
 
 
-def get_list_marker_type(node: "RenderTreeNode") -> str:
+def get_list_marker_type(node: RenderTreeNode) -> str:
     if node.type == "bullet_list":
         mode = "bullet"
         primary_marker = "-"

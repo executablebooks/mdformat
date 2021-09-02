@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = (
     "MDRenderer",
     "LOGGER",
@@ -7,9 +9,10 @@ __all__ = (
     "WRAP_POINT",
 )
 
+from collections.abc import Mapping, MutableMapping, Sequence
 import logging
 from types import MappingProxyType
-from typing import Any, Dict, Mapping, MutableMapping, Sequence, Tuple
+from typing import Any
 
 from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
@@ -66,7 +69,7 @@ class MDRenderer:
         # Update RENDERER_MAP defaults with renderer functions defined
         # by plugins.
         updated_renderers = {}
-        postprocessors: Dict[str, Tuple[Postprocess, ...]] = {}
+        postprocessors: dict[str, tuple[Postprocess, ...]] = {}
         for plugin in options.get("parser_extension", []):
             for syntax_name, renderer_func in plugin.RENDERERS.items():
                 if syntax_name in updated_renderers:

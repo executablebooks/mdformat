@@ -1,23 +1,16 @@
+from __future__ import annotations
+
 from collections import defaultdict
+from collections.abc import Generator, Iterable, Mapping, MutableMapping
 from contextlib import contextmanager
 import logging
 import re
-import sys
 import textwrap
 from types import MappingProxyType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Generator,
-    Iterable,
-    Mapping,
-    MutableMapping,
-    NamedTuple,
-    Tuple,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from mdformat import codepoints
+from mdformat._compat import Literal
 from mdformat.renderer._util import (
     CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
@@ -34,11 +27,6 @@ from mdformat.renderer._util import (
 )
 from mdformat.renderer.typing import Postprocess, Render
 
-if sys.version_info < (3, 8):
-    from typing_extensions import Literal
-else:
-    from typing import Literal
-
 if TYPE_CHECKING:
     from mdformat.renderer import RenderTreeNode
 
@@ -54,20 +42,20 @@ PRESERVE_CHAR = "\x00"
 
 def make_render_children(separator: str) -> Render:
     def render_children(
-        node: "RenderTreeNode",
-        context: "RenderContext",
+        node: RenderTreeNode,
+        context: RenderContext,
     ) -> str:
         return separator.join(child.render(context) for child in node.children)
 
     return render_children
 
 
-def hr(node: "RenderTreeNode", context: "RenderContext") -> str:
+def hr(node: RenderTreeNode, context: RenderContext) -> str:
     thematic_break_width = 70
     return "_" * thematic_break_width
 
 
-def code_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
+def code_inline(node: RenderTreeNode, context: RenderContext) -> str:
     code = node.content
     all_chars_are_whitespace = not code.strip()
     longest_backtick_seq = longest_consecutive_sequence(code, "`")
@@ -79,7 +67,7 @@ def code_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
     return f"`{code}`"
 
 
-def html_block(node: "RenderTreeNode", context: "RenderContext") -> str:
+def html_block(node: RenderTreeNode, context: RenderContext) -> str:
     content = node.content.rstrip("\n")
     # Need to strip leading spaces because we do so for regular Markdown too.
     # Without the stripping the raw HTML and Markdown get unaligned and
@@ -88,11 +76,11 @@ def html_block(node: "RenderTreeNode", context: "RenderContext") -> str:
     return content
 
 
-def html_inline(node: "RenderTreeNode", context: "RenderContext") -> str:
+def html_inline(node: RenderTreeNode, context: RenderContext) -> str:
     return node.content
 
 
-def _in_block(block_name: str, node: "RenderTreeNode") -> bool:
+def _in_block(block_name: str, node: RenderTreeNode) -> bool:
     while node.parent:
         if node.parent.type == block_name:
             return True
@@ -100,19 +88,19 @@ def _in_block(block_name: str, node: "RenderTreeNode") -> bool:
     return False
 
 
-def hardbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
+def hardbreak(node: RenderTreeNode, context: RenderContext) -> str:
     if _in_block("heading", node):
         return "<br /> "
     return "\\" + "\n"
 
 
-def softbreak(node: "RenderTreeNode", context: "RenderContext") -> str:
+def softbreak(node: RenderTreeNode, context: RenderContext) -> str:
     if context.do_wrap and _in_block("paragraph", node):
         return WRAP_POINT
     return "\n"
 
 
-def text(node: "RenderTreeNode", context: "RenderContext") -> str:
+def text(node: RenderTreeNode, context: RenderContext) -> str:
     """Process a text token.
 
     Text should always be a child of an inline token. An inline token
@@ -154,7 +142,7 @@ def text(node: "RenderTreeNode", context: "RenderContext") -> str:
     return text
 
 
-def fence(node: "RenderTreeNode", context: "RenderContext") -> str:
+def fence(node: RenderTreeNode, context: RenderContext) -> str:
     info_str = node.info.strip()
     lang = info_str.split(maxsplit=1)[0] if info_str else ""
     code_block = node.content
@@ -188,11 +176,11 @@ def fence(node: "RenderTreeNode", context: "RenderContext") -> str:
     return f"{fence_str}{info_str}\n{code_block}{fence_str}"
 
 
-def code_block(node: "RenderTreeNode", context: "RenderContext") -> str:
+def code_block(node: RenderTreeNode, context: RenderContext) -> str:
     return fence(node, context)
 
 
-def image(node: "RenderTreeNode", context: "RenderContext") -> str:
+def image(node: RenderTreeNode, context: RenderContext) -> str:
     description = _render_inline_as_text(node, context)
 
     if context.do_wrap:
@@ -216,17 +204,17 @@ def image(node: "RenderTreeNode", context: "RenderContext") -> str:
     return f"![{description}]({uri})"
 
 
-def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> str:
+def _render_inline_as_text(node: RenderTreeNode, context: RenderContext) -> str:
     """Special kludge for image `alt` attributes to conform CommonMark spec.
 
     Don't try to use it! Spec requires to show `alt` content with
     stripped markup, instead of simple escaping.
     """
 
-    def text_renderer(node: "RenderTreeNode", context: "RenderContext") -> str:
+    def text_renderer(node: RenderTreeNode, context: RenderContext) -> str:
         return node.content
 
-    def image_renderer(node: "RenderTreeNode", context: "RenderContext") -> str:
+    def image_renderer(node: RenderTreeNode, context: RenderContext) -> str:
         return _render_inline_as_text(node, context)
 
     inline_renderers: Mapping[str, Render] = defaultdict(
@@ -244,7 +232,7 @@ def _render_inline_as_text(node: "RenderTreeNode", context: "RenderContext") -> 
     return make_render_children("")(node, inline_context)
 
 
-def link(node: "RenderTreeNode", context: "RenderContext") -> str:
+def link(node: RenderTreeNode, context: RenderContext) -> str:
     if node.info == "auto":
         autolink_url = node.attrs["href"]
         assert isinstance(autolink_url, str)
@@ -281,19 +269,19 @@ def link(node: "RenderTreeNode", context: "RenderContext") -> str:
     return f'[{text}]({uri} "{title}")'
 
 
-def em(node: "RenderTreeNode", context: "RenderContext") -> str:
+def em(node: RenderTreeNode, context: RenderContext) -> str:
     text = make_render_children(separator="")(node, context)
     indicator = node.markup
     return indicator + text + indicator
 
 
-def strong(node: "RenderTreeNode", context: "RenderContext") -> str:
+def strong(node: RenderTreeNode, context: RenderContext) -> str:
     text = make_render_children(separator="")(node, context)
     indicator = node.markup
     return indicator + text + indicator
 
 
-def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
+def heading(node: RenderTreeNode, context: RenderContext) -> str:
     text = make_render_children(separator="")(node, context)
 
     if node.markup == "=":
@@ -316,7 +304,7 @@ def heading(node: "RenderTreeNode", context: "RenderContext") -> str:
     return prefix + text
 
 
-def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
+def blockquote(node: RenderTreeNode, context: RenderContext) -> str:
     marker = "> "
     with context.indented(len(marker)):
         text = make_render_children(separator="\n\n")(node, context)
@@ -328,7 +316,7 @@ def blockquote(node: "RenderTreeNode", context: "RenderContext") -> str:
         return quoted_str
 
 
-def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
+def _wrap(text: str, *, width: int | Literal["no"]) -> str:
     """Wrap text at locations pointed by `WRAP_POINT`s.
 
     Converts `WRAP_POINT`s to either a space or newline character, thus
@@ -351,7 +339,7 @@ def _wrap(text: str, *, width: Union[int, Literal["no"]]) -> str:
     return " " + wrapped if text.startswith(" ") else wrapped
 
 
-def _prepare_wrap(text: str) -> Tuple[str, str]:
+def _prepare_wrap(text: str) -> tuple[str, str]:
     """Prepare text for wrap.
 
     Convert `WRAP_POINT`s to spaces. Convert whitespace to
@@ -380,7 +368,7 @@ def _recover_preserve_chars(text: str, replacements: str) -> str:
     )
 
 
-def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa: C901
+def paragraph(node: RenderTreeNode, context: RenderContext) -> str:  # noqa: C901
     inline_node = node.children[0]
     text = inline_node.render(context)
 
@@ -450,7 +438,7 @@ def paragraph(node: "RenderTreeNode", context: "RenderContext") -> str:  # noqa:
     return text
 
 
-def list_item(node: "RenderTreeNode", context: "RenderContext") -> str:
+def list_item(node: RenderTreeNode, context: RenderContext) -> str:
     """Return one list item as string.
 
     This returns just the content. List item markers and indentation are
@@ -464,7 +452,7 @@ def list_item(node: "RenderTreeNode", context: "RenderContext") -> str:
     return text
 
 
-def bullet_list(node: "RenderTreeNode", context: "RenderContext") -> str:
+def bullet_list(node: RenderTreeNode, context: RenderContext) -> str:
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     indent = " " * len(marker_type + first_line_indent)
@@ -492,7 +480,7 @@ def bullet_list(node: "RenderTreeNode", context: "RenderContext") -> str:
         return text
 
 
-def ordered_list(node: "RenderTreeNode", context: "RenderContext") -> str:
+def ordered_list(node: RenderTreeNode, context: RenderContext) -> str:
     consecutive_numbering = context.options.get("mdformat", {}).get(CONSECUTIVE_KEY)
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
@@ -618,7 +606,7 @@ class RenderContext(NamedTuple):
         wrap_mode = self.options.get("mdformat", {}).get("wrap", "keep")
         return isinstance(wrap_mode, int) or wrap_mode == "no"
 
-    def with_default_renderer_for(self, *syntax_names: str) -> "RenderContext":
+    def with_default_renderer_for(self, *syntax_names: str) -> RenderContext:
         renderers = dict(self.renderers)
         for syntax in syntax_names:
             if syntax in DEFAULT_RENDERERS:

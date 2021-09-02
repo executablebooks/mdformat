@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import argparse
+from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
 import contextlib
 import itertools
 import logging
@@ -7,18 +10,7 @@ import re
 import shutil
 import sys
 import textwrap
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Union,
-)
+from typing import Any
 
 import mdformat
 from mdformat._compat import importlib_metadata
@@ -126,7 +118,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     return 0
 
 
-def validate_wrap_arg(value: str) -> Union[str, int]:
+def validate_wrap_arg(value: str) -> str | int:
     if value in {"keep", "no"}:
         return value
     width = int(value)
@@ -185,7 +177,7 @@ class InvalidPath(Exception):
         self.path = path
 
 
-def resolve_file_paths(path_strings: Iterable[str]) -> List[Optional[Path]]:
+def resolve_file_paths(path_strings: Iterable[str]) -> list[None | Path]:
     """Resolve pathlib.Path objects from filepath strings.
 
     Convert path strings to pathlib.Path objects. Resolve symlinks.
@@ -193,7 +185,7 @@ def resolve_file_paths(path_strings: Iterable[str]) -> List[Optional[Path]]:
     raise InvalidPath. Resolve directory paths to a list of file paths
     (ending with ".md").
     """
-    file_paths: List[Optional[Path]] = []  # Path to file or None for stdin/stdout
+    file_paths: list[None | Path] = []  # Path to file or None for stdin/stdout
     for path_str in path_strings:
         if path_str == "-":
             file_paths.append(None)
@@ -269,7 +261,7 @@ def log_handler_applied(
 def get_plugin_versions(
     parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
     codeformatters: Mapping[str, Callable[[str, str], str]],
-) -> Dict[str, str]:
+) -> dict[str, str]:
     versions = {}
     for iface in itertools.chain(parser_extensions.values(), codeformatters.values()):
         # Packages and modules should have `__package__`

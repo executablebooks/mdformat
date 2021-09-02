@@ -88,7 +88,7 @@ The easiest way to get started on a plugin, is to use the <https://github.com/ex
 Mdformat parser extension plugins need to adhere to the `mdformat.plugins.ParserExtensionInterface`:
 
 ```python
-from typing import Mapping
+from collections.abc import Mapping
 from markdown_it import MarkdownIt
 from mdformat.renderer.typing import Render
 
