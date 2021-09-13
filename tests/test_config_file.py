@@ -2,7 +2,8 @@ from io import StringIO
 import sys
 from unittest import mock
 
-from mdformat._cli import read_toml_opts, run
+from mdformat._cli import run
+from mdformat._conf import read_toml_opts
 
 
 def test_cli_override(tmp_path):
