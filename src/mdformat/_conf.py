@@ -13,25 +13,28 @@ DEFAULT_OPTS = {
 }
 
 
-class InvalidConfKeyError(Exception):
-    def __init__(self, key: str, conf_path: Path) -> None:
-        self.key = key
-        self.conf_path = conf_path
+class InvalidConfError(Exception):
+    """Error raised given invalid TOML or a key that is not valid for
+    mdformat."""
 
 
 @functools.lru_cache()
-def read_toml_opts(file_path: Path | None) -> Mapping:
-    toml_opts = {}
-    if not file_path:
-        file_path = Path.cwd() / "foo.md"
-    for parent_dir in file_path.parents:
-        conf_path = parent_dir / ".mdformat.toml"
-        if conf_path.is_file():
-            with open(conf_path, "rb") as f:
-                toml_opts = tomli.load(f)
-            break
+def read_toml_opts(conf_dir: Path) -> Mapping:
+    conf_path = conf_dir / ".mdformat.toml"
+    if not conf_path.is_file():
+        parent_dir = conf_dir.parent
+        if conf_dir == parent_dir:
+            return {}
+        return read_toml_opts(parent_dir)
+
+    with open(conf_path, "rb") as f:
+        try:
+            toml_opts = tomli.load(f)
+        except tomli.TOMLDecodeError as e:
+            raise InvalidConfError(f"Invalid TOML syntax: {e}")
 
     for key in toml_opts:
         if key not in DEFAULT_OPTS:
-            raise InvalidConfKeyError(key, conf_path)
+            raise InvalidConfError(f"Invalid key {key!r} in {conf_path}")
+
     return toml_opts

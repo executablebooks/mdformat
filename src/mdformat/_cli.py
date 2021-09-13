@@ -13,7 +13,7 @@ import textwrap
 
 import mdformat
 from mdformat._compat import importlib_metadata
-from mdformat._conf import DEFAULT_OPTS, InvalidConfKeyError, read_toml_opts
+from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
 from mdformat._util import atomic_write, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
@@ -56,9 +56,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     renderer_warning_printer = RendererWarningPrinter()
     for path in file_paths:
         try:
-            toml_opts = read_toml_opts(path)
-        except InvalidConfKeyError as e:
-            print_error(f"Invalid key {e.key!r} in {e.conf_path}")
+            toml_opts = read_toml_opts(path.parent if path else Path.cwd())
+        except InvalidConfError as e:
+            print_error(str(e))
             return 1
         opts = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
 
