@@ -142,11 +142,11 @@ according to the author themselves,
 is [inferior to markdown-it](https://github.com/remarkjs/remark/issues/75#issuecomment-143532326) used by mdformat.
 `remark-parse` v9.x is advertised as CommonMark compliant
 and presumably would fix many of the issues,
-but is not used by Prettier (v2.3.1) yet.
+but is not used by Prettier (v2.4.0) yet.
 
-Prettier (v2.3.1), being able to format many languages other than Markdown,
+Prettier (v2.4.0), being able to format many languages other than Markdown,
 is a large package with 65 direct dependencies
-(mdformat only has 2 in Python 3.8+).
+(mdformat only has 2 in Python 3.10+).
 This can be a disadvantage in many environments,
 one example being size optimized Docker images.
 
