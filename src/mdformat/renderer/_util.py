@@ -25,9 +25,6 @@ RE_CHAR_REFERENCE = re.compile(
     + ");)"
 )
 
-# key to indicate consecutive numbering of ordered lists
-CONSECUTIVE_KEY = "number"
-
 
 def is_tight_list(node: RenderTreeNode) -> bool:
     assert node.type in {"bullet_list", "ordered_list"}

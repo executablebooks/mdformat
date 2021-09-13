@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 
 from mdformat import codepoints
 from mdformat._compat import Literal
+from mdformat._conf import DEFAULT_OPTS
 from mdformat.renderer._util import (
-    CONSECUTIVE_KEY,
     RE_CHAR_REFERENCE,
     decimalify_leading,
     decimalify_trailing,
@@ -481,7 +481,9 @@ def bullet_list(node: RenderTreeNode, context: RenderContext) -> str:
 
 
 def ordered_list(node: RenderTreeNode, context: RenderContext) -> str:
-    consecutive_numbering = context.options.get("mdformat", {}).get(CONSECUTIVE_KEY)
+    consecutive_numbering = context.options.get("mdformat", {}).get(
+        "number", DEFAULT_OPTS["number"]
+    )
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     block_separator = "\n" if is_tight_list(node) else "\n\n"
@@ -603,7 +605,7 @@ class RenderContext(NamedTuple):
 
     @property
     def do_wrap(self) -> bool:
-        wrap_mode = self.options.get("mdformat", {}).get("wrap", "keep")
+        wrap_mode = self.options.get("mdformat", {}).get("wrap", DEFAULT_OPTS["wrap"])
         return isinstance(wrap_mode, int) or wrap_mode == "no"
 
     def with_default_renderer_for(self, *syntax_names: str) -> RenderContext:

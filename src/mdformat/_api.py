@@ -5,6 +5,7 @@ from contextlib import AbstractContextManager
 from pathlib import Path
 from typing import Any
 
+from mdformat._conf import DEFAULT_OPTS
 from mdformat._util import EMPTY_MAP, NULL_CTX, atomic_write, build_mdit
 from mdformat.renderer import MDRenderer
 
@@ -31,7 +32,7 @@ def text(
     # Some escapes will be different depending on word wrap, so
     # rendering after 1st and 2nd pass will be different. Rendering
     # twice seems like the easiest way to achieve stable formatting.
-    if options.get("wrap", "keep") != "keep":
+    if options.get("wrap", DEFAULT_OPTS["wrap"]) != "keep":
         rendering = mdit.render(rendering)
 
     return rendering
@@ -63,5 +64,9 @@ def file(
         extensions=extensions,
         codeformatters=codeformatters,
     )
-    newline = "\r\n" if options.get("end_of_line", "lf") == "crlf" else "\n"
+    newline = (
+        "\r\n"
+        if options.get("end_of_line", DEFAULT_OPTS["end_of_line"]) == "crlf"
+        else "\n"
+    )
     atomic_write(f, formatted_md, newline)
