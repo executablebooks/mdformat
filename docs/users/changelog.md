@@ -5,6 +5,8 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 
 ## 1.0.0 (unreleased)
 
+- Added
+  - Support for configuration in a `.mdformat.toml` file
 - Removed
   - Python 3.6 support
 

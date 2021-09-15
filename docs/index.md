@@ -36,6 +36,7 @@ caption: For users
 hidden: true
 ---
 users/installation_and_usage.md
+users/configuration_file.md
 users/plugins.md
 users/style.md
 users/changelog.md

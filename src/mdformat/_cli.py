@@ -10,14 +10,13 @@ import re
 import shutil
 import sys
 import textwrap
-from typing import Any
 
 import mdformat
 from mdformat._compat import importlib_metadata
+from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
 from mdformat._util import atomic_write, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
-from mdformat.renderer._util import CONSECUTIVE_KEY
 
 # Match "\r" and "\n" characters that are not part of a "\r\n" sequence
 RE_NON_CRLF_LINE_END = re.compile(r"(?:(?:[^\r]|^)\n|\r(?:[^\n]|$))")
@@ -41,22 +40,28 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     )
 
     arg_parser = make_arg_parser(enabled_parserplugins, enabled_codeformatters)
-    args = arg_parser.parse_args(cli_args)
-    if not args.paths:
+    cli_opts = {
+        k: v for k, v in vars(arg_parser.parse_args(cli_args)).items() if v is not None
+    }
+    if not cli_opts["paths"]:
         print_paragraphs(["No files have been passed in. Doing nothing."])
         return 0
 
     try:
-        file_paths = resolve_file_paths(args.paths)
+        file_paths = resolve_file_paths(cli_opts["paths"])
     except InvalidPath as e:
         arg_parser.error(f'File "{e.path}" does not exist.')
-
-    # Convert args to a mapping
-    options: Mapping[str, Any] = vars(args)
 
     format_errors_found = False
     renderer_warning_printer = RendererWarningPrinter()
     for path in file_paths:
+        try:
+            toml_opts = read_toml_opts(path.parent if path else Path.cwd())
+        except InvalidConfError as e:
+            print_error(str(e))
+            return 1
+        opts = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
+
         if path:
             path_str = str(path)
             # Unlike `path.read_text(encoding="utf-8")`, this preserves
@@ -68,7 +73,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
 
         formatted_str = mdformat.text(
             original_str,
-            options=options,
+            options=opts,
             extensions=enabled_parserplugins,
             codeformatters=enabled_codeformatters,
             _first_pass_contextmanager=log_handler_applied(
@@ -76,12 +81,12 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             ),
         )
 
-        if args.check:
+        if opts["check"]:
             if (
                 (formatted_str != original_str)
-                or (args.end_of_line == "lf" and "\r" in original_str)
+                or (opts["end_of_line"] == "lf" and "\r" in original_str)
                 or (
-                    args.end_of_line == "crlf"
+                    opts["end_of_line"] == "crlf"
                     and RE_NON_CRLF_LINE_END.search(original_str)
                 )
             ):
@@ -91,7 +96,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             if not changes_ast and not is_md_equal(
                 original_str,
                 formatted_str,
-                options=options,
+                options=opts,
                 extensions=enabled_parserplugins,
                 codeformatters=enabled_codeformatters,
             ):
@@ -105,7 +110,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                     ],
                 )
                 return 1
-            newline = "\r\n" if args.end_of_line == "crlf" else "\n"
+            newline = "\r\n" if opts["end_of_line"] == "crlf" else "\n"
             if path:
                 atomic_write(path, formatted_str, newline)
             else:
@@ -147,20 +152,19 @@ def make_arg_parser(
         version_str += f" ({plugin_versions_str})"
     parser.add_argument("--version", action="version", version=version_str)
     parser.add_argument(
-        f"--{CONSECUTIVE_KEY}",
-        action="store_true",
+        "--number",
+        action="store_const",
+        const=True,
         help="apply consecutive numbering to ordered lists",
     )
     parser.add_argument(
         "--wrap",
-        default="keep",
         type=validate_wrap_arg,
         metavar="{keep,no,INTEGER}",
         help="paragraph word wrap mode (default: keep)",
     )
     parser.add_argument(
         "--end-of-line",
-        default="lf",
         choices=("lf", "crlf"),
         help="output file line ending mode (default: lf)",
     )
