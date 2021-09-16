@@ -2,6 +2,8 @@ from io import StringIO
 import sys
 from unittest import mock
 
+import pytest
+
 from mdformat._cli import run
 from mdformat._conf import read_toml_opts
 
@@ -43,6 +45,26 @@ def test_invalid_conf_key(tmp_path, capsys):
     assert run((str(file_path),)) == 1
     captured = capsys.readouterr()
     assert "Invalid key 'numberr'" in captured.err
+
+
+@pytest.mark.parametrize(
+    "conf_key, bad_conf",
+    [
+        ("wrap", "wrap = -3"),
+        ("end_of_line", "end_of_line = 'lol'"),
+        ("number", "number = 0"),
+    ],
+)
+def test_invalid_conf_value(bad_conf, conf_key, tmp_path, capsys):
+    config_path = tmp_path / ".mdformat.toml"
+    config_path.write_text(bad_conf)
+
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text("# Test Markdown")
+
+    assert run((str(file_path),)) == 1
+    captured = capsys.readouterr()
+    assert f"Invalid '{conf_key}' value" in captured.err
 
 
 def test_conf_with_stdin(tmp_path, capfd, monkeypatch):
