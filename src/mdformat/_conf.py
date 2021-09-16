@@ -35,6 +35,9 @@ def read_toml_opts(conf_dir: Path) -> Mapping:
 
     for key in toml_opts:
         if key not in DEFAULT_OPTS:
-            raise InvalidConfError(f"Invalid key {key!r} in {conf_path}")
+            raise InvalidConfError(
+                f"Invalid key {key!r} in {conf_path}."
+                f" Keys must be one of {set(DEFAULT_OPTS)}."
+            )
 
     return toml_opts
