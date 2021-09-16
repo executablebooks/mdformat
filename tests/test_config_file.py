@@ -45,6 +45,18 @@ def test_invalid_conf_key(tmp_path, capsys):
     assert "Invalid key 'numberr'" in captured.err
 
 
+def test_invalid_conf_value(tmp_path, capsys):
+    config_path = tmp_path / ".mdformat.toml"
+    config_path.write_text("wrap = -3")
+
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text("# Test Markdown")
+
+    assert run((str(file_path),)) == 1
+    captured = capsys.readouterr()
+    assert "Invalid 'wrap' value" in captured.err
+
+
 def test_conf_with_stdin(tmp_path, capfd, monkeypatch):
     read_toml_opts.cache_clear()
 
