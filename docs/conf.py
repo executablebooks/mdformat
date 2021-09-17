@@ -23,7 +23,7 @@ copyright = '2021, Taneli Hukkinen'  # noqa: A001
 author = 'Taneli Hukkinen'
 
 # The full version, including alpha/beta/rc tags
-release = '0.7.9'  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
+release = '0.7.10'  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 
 
 # -- General configuration ---------------------------------------------------
