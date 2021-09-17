@@ -3,7 +3,7 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
-## 1.0.0 (unreleased)
+## 0.7.10
 
 - Added
   - Support for configuration in a `.mdformat.toml` file
