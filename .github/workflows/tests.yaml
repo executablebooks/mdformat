@@ -20,7 +20,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.8"
+        pip install "poetry==1.1.11"
         poetry config virtualenvs.create false
         poetry install --no-interaction --no-ansi
 
@@ -50,7 +50,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.8"
+        pip install "poetry==1.1.11"
         poetry config virtualenvs.create false
         poetry install --no-interaction --no-ansi
 
