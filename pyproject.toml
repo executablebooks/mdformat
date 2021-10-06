@@ -75,7 +75,7 @@ xfail_strict = true
 legacy_tox_ini = '''
 [tox]
 # Only run pytest envs when no args given to tox
-envlist = py{37,38,39}
+envlist = py{37,38,39,310}
 isolated_build = True
 requires =
     poetry >= 1.1.4
@@ -83,7 +83,7 @@ requires =
 [testenv]
 allowlist_externals = poetry
 
-[testenv:py{37,38,39}]
+[testenv:py{37,38,39,310}]
 description = run tests
 commands_pre =
     # TODO: Use --dev-only flag when poetry 1.2 is released
