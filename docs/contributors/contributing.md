@@ -31,7 +31,7 @@ and for further information also see the
 1. After making changes and having written tests, make sure tests pass:
 
    ```bash
-   pytest
+   poetry run pytest
    ```
 
    Alternatively you can run the tests *via* `tox`,
