@@ -35,10 +35,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11-dev']
         os: [ubuntu-latest, macos-latest, windows-latest]
-    # TODO: uncomment when '3.11-dev' is available and added to matrix
-    #continue-on-error: ${{ matrix.python-version == '3.11-dev' }}
+    continue-on-error: ${{ matrix.python-version == '3.11-dev' }}
 
     steps:
     - uses: actions/checkout@v2
