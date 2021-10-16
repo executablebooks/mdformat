@@ -59,7 +59,7 @@ jobs:
 
     - name: Report coverage
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2
 
   allgood:
     runs-on: ubuntu-latest
