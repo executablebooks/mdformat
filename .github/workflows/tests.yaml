@@ -85,7 +85,7 @@ jobs:
     - name: Build and check
       run: |
         rm -rf dist/ && python -m build
-        twine check dist/*
+        twine check --strict dist/*
     - name: Publish
       run: |
         twine upload dist/*
