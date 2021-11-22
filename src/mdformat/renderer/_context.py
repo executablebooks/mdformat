@@ -147,12 +147,9 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
     lang = info_str.split(maxsplit=1)[0] if info_str else ""
     code_block = node.content
 
-    # Info strings of backtick code fences can not contain backticks or tildes.
+    # Info strings of backtick code fences cannot contain backticks.
     # If that is the case, we make a tilde code fence instead.
-    if "`" in info_str or "~" in info_str:
-        fence_char = "~"
-    else:
-        fence_char = "`"
+    fence_char = "~" if "`" in info_str else "`"
 
     # Format the code block using enabled codeformatter funcs
     if lang in context.options.get("codeformatters", {}):
@@ -172,6 +169,10 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
     # as the fence string itself
     fence_len = max(3, longest_consecutive_sequence(code_block, fence_char) + 1)
     fence_str = fence_char * fence_len
+
+    # If a tilde info string starts with a tilde then it needs to be escaped.
+    if info_str.startswith(fence_char):
+        info_str = "\\" + info_str
 
     return f"{fence_str}{info_str}\n{code_block}{fence_str}"
 

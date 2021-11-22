@@ -381,3 +381,25 @@ Keep mailto: prefix in autolink
 .
 <mailto:FOO@BAR.BAZ>>
 .
+
+Tilde in info string
+.
+```~/.gitconfig
+[user]
+```
+.
+```~/.gitconfig
+[user]
+```
+.
+
+Info string starts with tilde and contains backtick
+.
+~~~\~`
+123
+~~~
+.
+~~~\~`
+123
+~~~
+.
