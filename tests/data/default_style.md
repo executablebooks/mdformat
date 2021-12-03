@@ -379,7 +379,7 @@ Keep mailto: prefix in autolink
 .
 <MAILTO:FOO@BAR.BAZ>>
 .
-<mailto:FOO@BAR.BAZ>>
+<MAILTO:FOO@BAR.BAZ>>
 .
 
 Tilde in info string

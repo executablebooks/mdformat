@@ -48,7 +48,6 @@ def test_vertical_tab_only():
     assert is_md_equal(input_, output)
 
 
-@pytest.mark.xfail(reason="Fix parser behaving unlike reference parser")
 def test_no_codeblock_trailing_newline():
     input_ = "\t##"
     output = mdformat.text(input_)
