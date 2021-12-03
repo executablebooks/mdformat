@@ -3,8 +3,10 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
-## **unreleased**
+## 0.7.11
 
+- Added
+  - Support for `markdown-it-py` v2
 - Fixed
   - Fix an error when a code fence info string starts with a tilde or a backtick.
     Thank you [Jonathan Newnham](https://github.com/jnnnnn) for the issue.
