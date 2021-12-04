@@ -34,7 +34,7 @@ mdformat = "mdformat.__main__:run"
 [tool.poetry.dependencies]
 python = "^3.7"
 tomli = ">=1.1.0"
-markdown-it-py = ">=1.0.0b2,<2.0.0"
+markdown-it-py = ">=1.0.0b2,<3.0.0"
 importlib-metadata = { version = ">=3.6.0", python = "<3.10" }
 typing-extensions = { version = ">=3.7.4", python = "<3.8" }
 
@@ -186,10 +186,6 @@ no_implicit_optional = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
-
-[[tool.mypy.overrides]]
-module = "markdown_it.*"
-implicit_reexport = true
 
 [[tool.mypy.overrides]]
 # This matches `fuzzer/fuzz.py`.

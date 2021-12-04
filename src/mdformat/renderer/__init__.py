@@ -14,7 +14,6 @@ import logging
 from types import MappingProxyType
 from typing import Any
 
-from markdown_it.common.normalize_url import unescape_string
 from markdown_it.token import Token
 
 from mdformat.renderer._context import DEFAULT_RENDERERS, WRAP_POINT, RenderContext
@@ -105,7 +104,6 @@ class MDRenderer:
         for label in sorted(env["used_refs"]):
             ref = env["references"][label]
             destination = ref["href"] if ref["href"] else "<>"
-            destination = unescape_string(destination)
             item = f"[{label.lower()}]: {destination}"
             title = ref["title"]
             if title:
