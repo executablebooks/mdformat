@@ -1,3 +1,3 @@
 # sudo apt-get install clang
 wheel
-atheris==2.0.6
+atheris==2.0.7

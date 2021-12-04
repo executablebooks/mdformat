@@ -1,6 +1,7 @@
 import atheris
 
 with atheris.instrument_imports():
+    import hashlib
     import sys
     import warnings
 
@@ -19,17 +20,27 @@ def test_one_input(input_bytes: bytes) -> None:
     try:
         formatted_data = mdformat.text(data)
     except BaseException:
-        print_err(data)
+        handle_err(data)
         raise
 
     if not is_md_equal(data, formatted_data):
-        print_err(data)
+        handle_err(data)
         raise Exception("Formatted Markdown not equal!")
 
 
-def print_err(data):
+def handle_err(data):
     codepoints = [hex(ord(x)) for x in data]
     sys.stderr.write(f"Input was {type(data)}:\n{data}\nCodepoints:\n{codepoints}\n")
+
+    # Atheris already writes crash data to a file, but it seems it is not UTF-8 encoded.
+    # I'm not sure what the encoding is exactly. Anyway, let's write another file here
+    # that is guaranteed to be valid UTF-8.
+    data_bytes = data.encode()
+    filename = "crash-utf8-" + hashlib.sha256(data_bytes).hexdigest()
+    with open(filename, "wb") as f:
+        f.write(data_bytes)
+    sys.stderr.write(f"Wrote UTF-8 encoded data to {filename}\n")
+
     sys.stderr.flush()
 
 

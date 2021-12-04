@@ -54,9 +54,16 @@ def test_no_codeblock_trailing_newline():
     assert is_md_equal(input_, output)
 
 
-@pytest.mark.xfail(reason="Weird case found by fuzzer")
-def test_case_found_by_fuzzer():
-    input_ = "\x1c\n\na"
+@pytest.mark.parametrize(
+    "input_",
+    [
+        pytest.param(
+            "\x1c\n\na", marks=pytest.mark.xfail(reason="Weird case found by fuzzer")
+        ),
+        pytest.param("<!K"),
+    ],
+)
+def test_cases_found_by_fuzzer(input_):
     output = mdformat.text(input_)
     assert is_md_equal(input_, output)
 

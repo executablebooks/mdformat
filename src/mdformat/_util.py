@@ -65,8 +65,11 @@ def is_md_equal(
         html = mdit.render(text)
 
         # The HTML can start with whitespace if Markdown starts with raw HTML
-        # preceded by whitespace. This whitespace should be safe to strip.
-        html = html.lstrip()
+        # preceded by whitespace. This whitespace should be safe to lstrip.
+        # Also, the trailing newline we add at the end of a document that ends
+        # in a raw html block not followed by a newline, seems to propagate to
+        # an HTML rendering. This newline should be safe to rstrip.
+        html = html.strip()
 
         # Remove codeblocks because code formatter plugins do arbitrary changes.
         for codeclass in codeformatters:
