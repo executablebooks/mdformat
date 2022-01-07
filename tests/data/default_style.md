@@ -403,3 +403,19 @@ Info string starts with tilde and contains backtick
 123
 ~~~
 .
+
+Keep inline HTML as inline, and block HTML as block
+.
+A
+    <div>
+
+A
+   <div>
+.
+A
+    <div>
+
+A
+
+<div>
+.
