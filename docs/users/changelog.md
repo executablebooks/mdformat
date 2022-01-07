@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.12
+
+- Fixed
+  - Fix unstable formatting when a paragraph line starts with inline HTML.
+    Thank you [Gabriel Nützi](https://github.com/gabyx) for the issue.
+
 ## 0.7.11
 
 - Added

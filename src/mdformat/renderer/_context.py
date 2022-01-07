@@ -9,6 +9,8 @@ import textwrap
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, NamedTuple
 
+from markdown_it.rules_block.html_block import HTML_SEQUENCES
+
 from mdformat import codepoints
 from mdformat._compat import Literal
 from mdformat._conf import DEFAULT_OPTS
@@ -433,6 +435,13 @@ def paragraph(node: RenderTreeNode, context: RenderContext) -> str:  # noqa: C90
             lines[i] = lines[i].replace("-", "\\-", 1)
         elif all(c == "=" for c in stripped):
             lines[i] = lines[i].replace("=", "\\=", 1)
+
+        # Check if the line could be interpreted as an HTML block.
+        # If yes, prefix it with 4 spaces to prevent this.
+        for html_seq in HTML_SEQUENCES:
+            if html_seq[0].search(lines[i]):
+                lines[i] = f"    {lines[i]}"
+                break
 
     text = "\n".join(lines)
 
