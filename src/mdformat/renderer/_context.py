@@ -438,8 +438,10 @@ def paragraph(node: RenderTreeNode, context: RenderContext) -> str:  # noqa: C90
 
         # Check if the line could be interpreted as an HTML block.
         # If yes, prefix it with 4 spaces to prevent this.
-        for html_seq in HTML_SEQUENCES:
-            if html_seq[0].search(lines[i]):
+        for html_seq_tuple in HTML_SEQUENCES:
+            can_break_paragraph = html_seq_tuple[2]
+            opening_re = html_seq_tuple[0]
+            if can_break_paragraph and opening_re.search(lines[i]):
                 lines[i] = f"    {lines[i]}"
                 break
 
