@@ -3,6 +3,12 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.13
+
+- Fixed
+  - Don't indent inline HTML that looks like type 7 block HTML.
+    Thank you [Philip May](https://github.com/PhilipMay) for the issue.
+
 ## 0.7.12
 
 - Fixed

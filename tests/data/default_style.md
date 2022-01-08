@@ -419,3 +419,14 @@ A
 
 <div>
 .
+
+Keep HTML blocks of type 7 unindented (they do not interrupt a paragraph)
+.
+text
+<br/>
+text
+.
+text
+<br/>
+text
+.
