@@ -162,10 +162,14 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
             # Swallow exceptions so that formatter errors (e.g. due to
             # invalid code) do not crash mdformat.
             assert node.map is not None, "A fence token must have `map` attribute set"
-            LOGGER.warning(
+            filename = context.options.get("mdformat", {}).get("filename", "")
+            warn_msg = (
                 f"Failed formatting content of a {lang} code block "
                 f"(line {node.map[0] + 1} before formatting)"
             )
+            if filename:
+                warn_msg += f". Filename: {filename}"
+            LOGGER.warning(warn_msg)
 
     # The code block must not include as long or longer sequence of `fence_char`s
     # as the fence string itself

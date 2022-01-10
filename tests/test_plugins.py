@@ -203,7 +203,7 @@ def test_code_format_warnings(monkeypatch, tmp_path, capsys):
     captured = capsys.readouterr()
     assert (
         captured.err
-        == "Warning: Failed formatting content of a json code block (line 1 before formatting)\n"  # noqa: E501
+        == f"Warning: Failed formatting content of a json code block (line 1 before formatting). Filename: {file_path}\n"  # noqa: E501
     )
 
 
