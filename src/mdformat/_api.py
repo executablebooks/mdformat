@@ -17,12 +17,13 @@ def text(
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
     _first_pass_contextmanager: AbstractContextManager = NULL_CTX,
+    _filename: str = "",
 ) -> str:
     """Format a Markdown string."""
     with _first_pass_contextmanager:
         mdit = build_mdit(
             MDRenderer,
-            mdformat_opts=options,
+            mdformat_opts={**options, **{"filename": _filename}},
             extensions=extensions,
             codeformatters=codeformatters,
         )
@@ -63,6 +64,7 @@ def file(
         options=options,
         extensions=extensions,
         codeformatters=codeformatters,
+        _filename=str(f),
     )
     newline = (
         "\r\n"

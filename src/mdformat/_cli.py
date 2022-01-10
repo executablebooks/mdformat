@@ -19,7 +19,7 @@ import mdformat.plugins
 import mdformat.renderer
 
 # Match "\r" and "\n" characters that are not part of a "\r\n" sequence
-RE_NON_CRLF_LINE_END = re.compile(r"(?:(?:[^\r]|^)\n|\r(?:[^\n]|$))")
+RE_NON_CRLF_LINE_END = re.compile(r"(?:[^\r]|^)\n|\r(?:[^\n]|$)")
 
 
 class RendererWarningPrinter(logging.Handler):
@@ -79,6 +79,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             _first_pass_contextmanager=log_handler_applied(
                 mdformat.renderer.LOGGER, renderer_warning_printer
             ),
+            _filename=path_str,
         )
 
         if opts["check"]:
