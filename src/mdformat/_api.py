@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from contextlib import AbstractContextManager
+from os import PathLike
 from pathlib import Path
 from typing import Any
 
@@ -40,15 +41,14 @@ def text(
 
 
 def file(
-    f: str | Path,
+    f: str | PathLike[str],
     *,
     options: Mapping[str, Any] = EMPTY_MAP,
     extensions: Iterable[str] = (),
     codeformatters: Iterable[str] = (),
 ) -> None:
     """Format a Markdown file in place."""
-    if isinstance(f, str):
-        f = Path(f)
+    f = Path(f)
     try:
         is_file = f.is_file()
     except OSError:  # Catch "OSError: [WinError 123]" on Windows
