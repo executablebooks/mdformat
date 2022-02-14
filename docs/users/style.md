@@ -9,6 +9,8 @@ sometimes at the cost of some readability.
 Mdformat makes sure to only change style, not content.
 Once converted to HTML and rendered on screen,
 formatted Markdown should yield a result that is visually identical to the unformatted document.
+Mdformat CLI includes a safety check that will error and refuse to apply changes to a file
+if Markdown AST is not equal before and after formatting.
 
 ## Headings
 
