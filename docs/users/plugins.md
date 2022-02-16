@@ -114,6 +114,11 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td>Adds the capability to auto-generate a table of contents</td>
   </tr>
   <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-footnote">mdformat-footnote</a></td>
+    <td><code>footnote</code></td>
+    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#footnotes">Pandoc-style</a> footnotes</td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/butler54/mdformat-frontmatter">mdformat-frontmatter</a></td>
     <td><code>frontmatter</code></td>
     <td>Adds support for front matter, and formats YAML front matter</td>
