@@ -214,7 +214,7 @@ def _resolve_path(path: Path) -> Path:
     try:
         path = path.resolve()  # resolve symlinks
         path_exists = path.exists()
-    except OSError:  # Catch "OSError: [WinError 123]" on Windows
+    except OSError:  # Catch "OSError: [WinError 123]" on Windows  # pragma: no cover
         path_exists = False
     if not path_exists:
         raise InvalidPath(path)
@@ -263,18 +263,23 @@ def log_handler_applied(
         logger.removeHandler(handler)
 
 
+def get_package_name(obj: object) -> str:
+    # Packages and modules should have `__package__`
+    if hasattr(obj, "__package__"):
+        package_name = obj.__package__  # type: ignore[attr-defined]
+    else:  # class or function
+        module_name = obj.__module__
+        package_name = module_name.split(".", maxsplit=1)[0]
+    return package_name
+
+
 def get_plugin_versions(
     parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
     codeformatters: Mapping[str, Callable[[str, str], str]],
 ) -> dict[str, str]:
     versions = {}
     for iface in itertools.chain(parser_extensions.values(), codeformatters.values()):
-        # Packages and modules should have `__package__`
-        if hasattr(iface, "__package__"):
-            package_name = iface.__package__  # type: ignore[attr-defined]
-        else:  # class or function
-            module_name = iface.__module__
-            package_name = module_name.split(".", maxsplit=1)[0]
+        package_name = get_package_name(iface)
         try:
             package_version = importlib_metadata.version(package_name)
         except importlib_metadata.PackageNotFoundError:

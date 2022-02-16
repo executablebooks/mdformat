@@ -154,6 +154,7 @@ commands =
 
 [tool.coverage.run]
 source = ["mdformat"]
+omit = ["*/__main__.py"]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration

@@ -47,6 +47,18 @@ def test_invalid_conf_key(tmp_path, capsys):
     assert "Invalid key 'numberr'" in captured.err
 
 
+def test_invalid_toml(tmp_path, capsys):
+    config_path = tmp_path / ".mdformat.toml"
+    config_path.write_text("]invalid TOML[")
+
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text("some markdown\n")
+
+    assert run((str(file_path),)) == 1
+    captured = capsys.readouterr()
+    assert "Invalid TOML syntax" in captured.err
+
+
 @pytest.mark.parametrize(
     "conf_key, bad_conf",
     [
