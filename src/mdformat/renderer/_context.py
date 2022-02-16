@@ -21,7 +21,6 @@ from mdformat.renderer._util import (
     escape_asterisk_emphasis,
     escape_underscore_emphasis,
     get_list_marker_type,
-    is_text_inside_autolink,
     is_tight_list,
     is_tight_list_item,
     longest_consecutive_sequence,
@@ -109,8 +108,6 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
     should always be enclosed by a heading or a paragraph.
     """
     text = node.content
-    if is_text_inside_autolink(node):
-        return text
 
     # Escape backslash to prevent it from making unintended escapes.
     # This escape has to be first, else we start multiplying backslashes.
@@ -175,10 +172,6 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
     # as the fence string itself
     fence_len = max(3, longest_consecutive_sequence(code_block, fence_char) + 1)
     fence_str = fence_char * fence_len
-
-    # If a tilde info string starts with a tilde then it needs to be escaped.
-    if info_str.startswith(fence_char):
-        info_str = "\\" + info_str
 
     return f"{fence_str}{info_str}\n{code_block}{fence_str}"
 
@@ -426,11 +419,11 @@ def paragraph(node: RenderTreeNode, context: RenderContext) -> str:  # noqa: C90
         space_removed = lines[i].replace(" ", "").replace("\t", "")
         if len(space_removed) >= 3:
             if all(c == "*" for c in space_removed):
-                lines[i] = lines[i].replace("*", "\\*", 1)
+                lines[i] = lines[i].replace("*", "\\*", 1)  # pragma: no cover
             elif all(c == "-" for c in space_removed):
                 lines[i] = lines[i].replace("-", "\\-", 1)
             elif all(c == "_" for c in space_removed):
-                lines[i] = lines[i].replace("_", "\\_", 1)
+                lines[i] = lines[i].replace("_", "\\_", 1)  # pragma: no cover
 
         # A stripped line where all characters are "=" or "-" will be
         # interpreted as a setext heading. Escape.

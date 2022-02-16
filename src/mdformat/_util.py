@@ -111,6 +111,6 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
         with open(fd, "w", encoding="utf-8", newline=newline) as f:
             f.write(text)
         os.replace(tmp_path, path)
-    except BaseException:
+    except BaseException:  # pragma: no cover
         os.remove(tmp_path)
         raise

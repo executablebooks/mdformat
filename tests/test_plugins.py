@@ -207,6 +207,23 @@ def test_code_format_warnings(monkeypatch, tmp_path, capsys):
     )
 
 
+def test_plugin_conflict(monkeypatch, tmp_path, capsys):
+    """Test a warning when plugins try to render same syntax."""
+    plugin_name_1 = "plug1"
+    plugin_name_2 = "plug2"
+    monkeypatch.setitem(PARSER_EXTENSIONS, plugin_name_1, TextEditorPlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, plugin_name_2, ExampleASTChangingPlugin)
+
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text("some markdown here")
+    assert run([str(file_path)]) == 0
+    captured = capsys.readouterr()
+    assert (
+        captured.err
+        == 'Warning: Plugin conflict. More than one plugin defined a renderer for "text" syntax.\n'  # noqa: E501
+    )
+
+
 def test_plugin_versions_in_cli_help(monkeypatch, capsys):
     monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExampleTablePlugin)
     with pytest.raises(SystemExit) as exc_info:

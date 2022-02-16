@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 import mdformat
-from mdformat._cli import run, wrap_paragraphs
+from mdformat._cli import get_package_name, run, wrap_paragraphs
 from mdformat.plugins import CODEFORMATTERS
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
@@ -210,6 +210,14 @@ def test_consecutive_wrap_width_lines(tmp_path):
     assert file_path.read_text() == text
 
 
+def test_bad_wrap_width(capsys):
+    with pytest.raises(SystemExit) as exc_info:
+        run(["some-path.md", "--wrap=-1"])
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert "error: argument --wrap" in captured.err
+
+
 def test_eol__lf(tmp_path):
     file_path = tmp_path / "test.md"
     file_path.write_bytes(b"Oi\r\n")
@@ -241,3 +249,10 @@ def test_eol__check_crlf(tmp_path):
     file_path = tmp_path / "test.md"
     file_path.write_bytes(b"lol\n")
     assert run((str(file_path), "--check", "--end-of-line=crlf")) == 1
+
+
+def test_get_package_name():
+    # Test a function/class
+    assert get_package_name(patch) == "unittest"
+    # Test a package/module
+    assert get_package_name(mdformat) == "mdformat"

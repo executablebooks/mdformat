@@ -63,15 +63,6 @@ def longest_consecutive_sequence(seq: str, char: str) -> int:
     return longest
 
 
-def is_text_inside_autolink(node: RenderTreeNode) -> bool:
-    assert node.type == "text"
-    return (
-        node.parent  # type: ignore[return-value]
-        and node.parent.type == "link"
-        and node.parent.info == "auto"
-    )
-
-
 def maybe_add_link_brackets(link: str) -> str:
     """Surround URI with brackets if required by spec."""
     if not link or (

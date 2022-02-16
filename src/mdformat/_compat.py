@@ -2,12 +2,12 @@ __all__ = ("importlib_metadata", "Protocol", "Literal")
 
 import sys
 
-if sys.version_info >= (3, 10):
+if sys.version_info >= (3, 10):  # pragma: no cover
     from importlib import metadata as importlib_metadata
-else:
+else:  # pragma: no cover
     import importlib_metadata
 
-if sys.version_info >= (3, 8):
+if sys.version_info >= (3, 8):  # pragma: no cover
     from typing import Literal, Protocol
-else:
+else:  # pragma: no cover
     from typing_extensions import Literal, Protocol

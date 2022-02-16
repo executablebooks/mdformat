@@ -51,7 +51,7 @@ def file(
     f = Path(f)
     try:
         is_file = f.is_file()
-    except OSError:  # Catch "OSError: [WinError 123]" on Windows
+    except OSError:  # Catch "OSError: [WinError 123]" on Windows  # pragma: no cover
         is_file = False
     if not is_file:
         raise ValueError(f'Can not format "{f}". It is not a file.')
