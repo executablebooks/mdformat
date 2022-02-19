@@ -54,9 +54,9 @@ def file(
     except OSError:  # Catch "OSError: [WinError 123]" on Windows  # pragma: no cover
         is_file = False
     if not is_file:
-        raise ValueError(f'Can not format "{f}". It is not a file.')
+        raise ValueError(f'Cannot format "{f}". It is not a file.')
     if f.is_symlink():
-        raise ValueError(f'Can not format "{f}". It is a symlink.')
+        raise ValueError(f'Cannot format "{f}". It is a symlink.')
 
     original_md = f.read_text(encoding="utf-8")
     formatted_md = text(

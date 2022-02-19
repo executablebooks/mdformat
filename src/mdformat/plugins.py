@@ -20,7 +20,7 @@ CODEFORMATTERS: Mapping[str, Callable[[str, str], str]] = _load_codeformatters()
 
 
 class ParserExtensionInterface(Protocol):
-    """A interface for parser extension plugins."""
+    """An interface for parser extension plugins."""
 
     # Does the plugin's formatting change Markdown AST or not?
     # (optional, default: False)
