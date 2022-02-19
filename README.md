@@ -31,13 +31,20 @@ Install with [CommonMark](https://spec.commonmark.org/current/) support:
 pip install mdformat
 ```
 
-Alternatively install with [GitHub Flavored Markdown (GFM)](https://github.github.com/gfm/) support:
+Install with [GitHub Flavored Markdown (GFM)](https://github.github.com/gfm/) support:
 
 ```bash
 pip install mdformat-gfm
 ```
 
-Or with [Markedly Structured Text (MyST)](https://myst-parser.readthedocs.io/en/latest/using/syntax.html) support:
+Note that GitHub's Markdown renderer supports syntax extensions not included in the GFM specification.
+For full GitHub support do:
+
+```bash
+pip install mdformat-gfm mdformat-frontmatter mdformat-footnote
+```
+
+Install with [Markedly Structured Text (MyST)](https://myst-parser.readthedocs.io/en/latest/using/syntax.html) support:
 
 ```bash
 pip install mdformat-myst
