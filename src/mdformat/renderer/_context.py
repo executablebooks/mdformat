@@ -122,7 +122,7 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
 
     # Escape "&" if it starts a sequence that can be interpreted as
     # a character reference.
-    text = RE_CHAR_REFERENCE.sub(r"\\\1", text)
+    text = RE_CHAR_REFERENCE.sub(r"\\\g<0>", text)
 
     # The parser can give us consecutive newlines which can break
     # the markdown structure. Replace two or more consecutive newlines
