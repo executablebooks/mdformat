@@ -153,7 +153,7 @@ but is not used by Prettier (v2.4.0) yet.
 
 Prettier (v2.4.0), being able to format many languages other than Markdown,
 is a large package with 65 direct dependencies
-(mdformat only has 2 in Python 3.10+).
+(mdformat only has one in Python 3.11+).
 This can be a disadvantage in many environments,
 one example being size optimized Docker images.
 
