@@ -4,7 +4,7 @@ import functools
 from pathlib import Path
 from typing import Mapping
 
-import tomli
+from mdformat._compat import tomllib
 
 DEFAULT_OPTS = {
     "wrap": "keep",
@@ -34,8 +34,8 @@ def read_toml_opts(conf_dir: Path) -> Mapping:
 
     with open(conf_path, "rb") as f:
         try:
-            toml_opts = tomli.load(f)
-        except tomli.TOMLDecodeError as e:
+            toml_opts = tomllib.load(f)
+        except tomllib.TOMLDecodeError as e:
             raise InvalidConfError(f"Invalid TOML syntax: {e}")
 
     _validate_keys(toml_opts, conf_path)
