@@ -11,6 +11,7 @@ import mdformat._cli
     "fixture_file,options",
     [
         ("default_style.md", []),
+        ("numeric_references.md", []),
         ("consecutive_numbering.md", ["--number"]),
         ("wrap_width_50.md", ["--wrap=50"]),
     ],
