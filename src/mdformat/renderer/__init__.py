@@ -101,7 +101,10 @@ class MDRenderer:
     @staticmethod
     def _write_references(env: MutableMapping) -> str:
         ref_list = []
-        for label in sorted(env["used_refs"]):
+        for label in sorted(
+            env["used_refs"],
+            key=lambda x: (not x.isnumeric(), int(x) if x.isnumeric() else x),
+        ):
             ref = env["references"][label]
             destination = ref["href"] if ref["href"] else "<>"
             item = f"[{label.lower()}]: {destination}"
