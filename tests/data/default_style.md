@@ -431,19 +431,27 @@ text
 text
 .
 
-sort references numerically
+sort digit references numerically
 .
-(References)[1] (should)[2] (sort)[10] (numerically)[word], if they are numeric.
+(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[⁵].
 
-[2]: b
-[1]: a
-[10]: c
-[word]: d
+[🤪]: .
+[2]: .
+[word]: .
+[10]: .
+[⅕]: .
+[1]: .
+[𐩂]: .
+[⁵]: .
 .
-(References)[1] (should)[2] (sort)[10] (numerically)[word], if they are numeric.
+(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[⁵].
 
-[1]: a
-[2]: b
-[10]: c
-[word]: d
+[1]: .
+[2]: .
+[10]: .
+[word]: .
+[⁵]: .
+[⅕]: .
+[𐩂]: .
+[🤪]: .
 .
