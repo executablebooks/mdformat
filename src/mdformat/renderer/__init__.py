@@ -11,7 +11,7 @@ __all__ = (
 
 from collections.abc import Mapping, MutableMapping, Sequence
 import logging
-from string import digits
+import string
 from types import MappingProxyType
 from typing import Any
 
@@ -102,9 +102,8 @@ class MDRenderer:
     @staticmethod
     def _write_references(env: MutableMapping) -> str:
         def label_sort_key(label: str) -> str:
-            if not label:
-                raise AssertionError("link label cannot be empty string")
-            if all(c in digits for c in label):
+            assert label, "link label cannot be empty string"
+            if all(c in string.digits for c in label):
                 label_max_len = 999  # This is from CommonMark v0.30
                 return label.rjust(label_max_len, "0")
             return label
