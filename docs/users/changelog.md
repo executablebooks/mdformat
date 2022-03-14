@@ -3,6 +3,17 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.14
+
+- Added
+  - Accept `os.PathLike[str]` as `mdformat.file` input.
+- Improved
+  - Add filepath to warning message on code formatter plugin error.
+  - Use `tomllib` in Python 3.11+.
+- Changed
+  - Style: Sort numeric link references numerically.
+    Thank you [Ryan Delaney](https://github.com/rpdelaney) for the PR.
+
 ## 0.7.13
 
 - Fixed
