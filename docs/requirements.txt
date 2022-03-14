@@ -5,4 +5,4 @@
 docutils == 0.17.1
 sphinx == 4.4.0
 myst-parser == 0.17.0
-furo == 2022.2.14.1
+furo == 2022.3.4
