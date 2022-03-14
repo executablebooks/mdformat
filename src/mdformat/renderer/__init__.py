@@ -11,6 +11,7 @@ __all__ = (
 
 from collections.abc import Mapping, MutableMapping, Sequence
 import logging
+import string
 from types import MappingProxyType
 from typing import Any
 
@@ -100,8 +101,15 @@ class MDRenderer:
 
     @staticmethod
     def _write_references(env: MutableMapping) -> str:
+        def label_sort_key(label: str) -> str:
+            assert label, "link label cannot be empty string"
+            if all(c in string.digits for c in label):
+                label_max_len = 999  # This is from CommonMark v0.30
+                return label.rjust(label_max_len, "0")
+            return label
+
         ref_list = []
-        for label in sorted(env["used_refs"]):
+        for label in sorted(env["used_refs"], key=label_sort_key):
             ref = env["references"][label]
             destination = ref["href"] if ref["href"] else "<>"
             item = f"[{label.lower()}]: {destination}"

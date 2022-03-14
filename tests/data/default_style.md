@@ -430,3 +430,28 @@ text
 <br/>
 text
 .
+
+sort digit references numerically
+.
+(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[!].
+
+[🤪]: .
+[2]: .
+[word]: .
+[10]: .
+[⅕]: .
+[1]: .
+[𐩂]: .
+[!]: .
+.
+(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[!].
+
+[!]: .
+[1]: .
+[2]: .
+[10]: .
+[word]: .
+[⅕]: .
+[𐩂]: .
+[🤪]: .
+.
