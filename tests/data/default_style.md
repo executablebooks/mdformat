@@ -433,7 +433,7 @@ text
 
 sort digit references numerically
 .
-(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[⁵].
+(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[!].
 
 [🤪]: .
 [2]: .
@@ -442,15 +442,15 @@ sort digit references numerically
 [⅕]: .
 [1]: .
 [𐩂]: .
-[⁵]: .
+[!]: .
 .
-(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[⁵].
+(References)[1] (should)[2] (sort)[10] (numerically)[word], if[🤪] they[⅕] are[𐩂] digits[!].
 
+[!]: .
 [1]: .
 [2]: .
 [10]: .
 [word]: .
-[⁵]: .
 [⅕]: .
 [𐩂]: .
 [🤪]: .
