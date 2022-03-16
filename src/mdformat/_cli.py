@@ -133,6 +133,13 @@ def validate_wrap_arg(value: str) -> str | int:
     return width
 
 
+def validate_indent_arg(value: str) -> int:
+    indent = int(value)
+    if indent < 3:
+        raise ValueError("indent must be a greater than 3")
+    return indent
+
+
 def make_arg_parser(
     parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
     codeformatters: Mapping[str, Callable[[str, str], str]],
@@ -168,6 +175,12 @@ def make_arg_parser(
         "--end-of-line",
         choices=("lf", "crlf"),
         help="output file line ending mode (default: lf)",
+    )
+    parser.add_argument(
+        "--indent",
+        type=validate_indent_arg,
+        metavar="INTEGER",
+        help="minimum indentation width (default: 3)",
     )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
