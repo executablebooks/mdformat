@@ -512,7 +512,9 @@ def ordered_list(node: RenderTreeNode, context: RenderContext) -> str:
     assert isinstance(starting_number, int)
 
     if consecutive_numbering:
-        indent_width = len(f"{list_len + starting_number - 1}{marker_type}{first_line_indent}")
+        indent_width = len(
+            f"{list_len + starting_number - 1}{marker_type}{first_line_indent}"
+        )
     else:
         indent_width = len(f"{starting_number}{marker_type}{first_line_indent}")
 
