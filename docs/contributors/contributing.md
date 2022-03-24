@@ -15,13 +15,6 @@ and for further information also see the
 
 1. Fork and clone the repository.
 
-1. Install dependencies.
-
-   ```bash
-   pip install poetry
-   poetry install
-   ```
-
 1. Install pre-commit hooks
 
    ```bash
@@ -31,11 +24,8 @@ and for further information also see the
 1. After making changes and having written tests, make sure tests pass:
 
    ```bash
-   poetry run pytest
+   tox
    ```
-
-   Alternatively you can run the tests *via* `tox`,
-   which will automate the poetry install into a virtual environment, before calling pytest.
 
 1. Test the pre-commit hook against the README.md file
 

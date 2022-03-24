@@ -1,19 +1,27 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
 
 
-[tool.poetry]
+[project]
 name = "mdformat"
 version = "0.7.14"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
-authors = ["Taneli Hukkinen <hukkin@users.noreply.github.com>"]
 description = "CommonMark compliant Markdown formatter"
-repository = "https://github.com/executablebooks/mdformat"
-documentation = "https://mdformat.readthedocs.io"
+authors = [
+    { name = "Taneli Hukkinen", email = "hukkin@users.noreply.github.com" },
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+dependencies = [
+    'tomli >=1.1.0; python_version < "3.11"',
+    'markdown-it-py >=1.0.0,<3.0.0',
+    'importlib-metadata >=3.6.0; python_version < "3.10"',
+    'typing-extensions >=3.7.4; python_version < "3.8"',
+]
 readme = "README.md"
-license = "MIT"
 classifiers = [
     "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
@@ -24,33 +32,14 @@ classifiers = [
 ]
 keywords = ["mdformat", "markdown", "commonmark", "formatter", "pre-commit"]
 
-[tool.poetry.urls]
-"Changelog" = "https://mdformat.readthedocs.io/en/stable/users/changelog.html"
+[project.urls]
+"Homepage" = "https://github.com/executablebooks/mdformat"
+"Documentation" = "https://mdformat.readthedocs.io"
 "Style guide" = "https://mdformat.readthedocs.io/en/stable/users/style.html"
+"Changelog" = "https://mdformat.readthedocs.io/en/stable/users/changelog.html"
 
-[tool.poetry.scripts]
+[project.scripts]
 mdformat = "mdformat.__main__:run"
-
-[tool.poetry.dependencies]
-python = "^3.7"
-tomli = { version = ">=1.1.0", python = "<3.11" }
-markdown-it-py = ">=1.0.0b2,<3.0.0"
-importlib-metadata = { version = ">=3.6.0", python = "<3.10" }
-typing-extensions = { version = ">=3.7.4", python = "<3.8" }
-
-[tool.poetry.dev-dependencies]
-# Tests
-pytest = "*"
-pytest-randomly = "*"
-pytest-cov = "*"
-
-# Tools
-pre-commit = "*"
-mypy = "*"  # this is separate to pre-commit, since it requires an external env
-bump2version = "*"
-
-[tool.poetry.build]
-generate-setup-file = false
 
 
 [tool.isort]
@@ -77,26 +66,19 @@ legacy_tox_ini = '''
 # Only run pytest envs when no args given to tox
 envlist = py{37,38,39,310}
 isolated_build = True
-requires =
-    poetry >= 1.1.4
-
-[testenv]
-allowlist_externals = poetry
 
 [testenv:py{37,38,39,310}]
 description = run tests
-commands_pre =
-    # TODO: Use --dev-only flag when poetry 1.2 is released
-    poetry install --no-root
+deps =
+    -r tests/requirements.txt
 commands =
     pytest {posargs}
 
 [testenv:profile]
 description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
-commands_pre =
-    # TODO: Use --dev-only flag when poetry 1.2 is released
-    poetry install --no-root
-    pip install pytest-profiling
+deps =
+    -r tests/requirements.txt
+    pytest-profiling
 commands =
     pytest tests/test_for_profiler.py --profile-svg --pstats-dir "{toxworkdir}/prof"
     python -c 'import pathlib; print("profiler svg output under file://\{0\}".format(pathlib.Path(r"{toxworkdir}") / "prof" / "combined.svg"))'
@@ -110,11 +92,11 @@ commands = pre-commit run {posargs:--all}
 [testenv:mypy]
 description = run mypy
 basepython = python3.8
-commands_pre =
-    # TODO: Use --dev-only flag when poetry 1.2 is released
-    poetry install --no-root
+deps =
+    -r tests/requirements.txt
+    mypy==0.910
 commands =
-    mypy {posargs:.}
+    mypy {posargs:src/ tests/}
 
 [testenv:hook]
 description = test mdformat's own pre-commit hook against the README file

@@ -20,14 +20,12 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.13"
-        poetry config virtualenvs.create false
-        poetry install --no-interaction --no-ansi
+        pip install . pre-commit mypy==0.910 -r tests/requirements.txt
 
     - name: run linters
       run: |
         mdformat --check docs/ README.md
-        mypy .
+        mypy src/ tests/
         pre-commit run -a
         pre-commit try-repo . mdformat --files README.md
 
@@ -49,9 +47,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install "poetry==1.1.13"
-        poetry config virtualenvs.create false
-        poetry install --no-interaction --no-ansi
+        pip install . -r tests/requirements.txt
 
     - name: Test with pytest
       run: |
