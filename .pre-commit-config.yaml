@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 8fe62d14e0b4d7d845a7022c5c2c3ae41bdd3f26  # frozen: v4.1.0
+  rev: db7346d375eda68a0174f2c057dd97f2fbffe030  # frozen: v4.2.0
   hooks:
   - id: check-yaml
   - id: check-toml
@@ -23,7 +23,7 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: f1d4e742c91dd5179d742b0db9293c4472b765f8  # frozen: 21.12b0
+  rev: ae2c0758c9e61a385df9700dc9c231bf54887041  # frozen: 22.3.0
   hooks:
   - id: black
 - repo: https://github.com/myint/docformatter
