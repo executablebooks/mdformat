@@ -19,7 +19,7 @@ from markdown_it.token import Token
 
 from mdformat.renderer._context import DEFAULT_RENDERERS, WRAP_POINT, RenderContext
 from mdformat.renderer._tree import RenderTreeNode
-from mdformat.renderer.typing import Postprocess
+from mdformat.renderer.typing import Postprocess, Render
 
 LOGGER = logging.getLogger(__name__)
 
