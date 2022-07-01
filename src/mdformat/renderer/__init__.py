@@ -62,6 +62,7 @@ class MDRenderer:
         options: Mapping[str, Any],
         env: MutableMapping,
         *,
+        renderers: Mapping[str, Render] = DEFAULT_RENDERERS,
         finalize: bool = True,
     ) -> str:
         self._prepare_env(env)
@@ -84,7 +85,7 @@ class MDRenderer:
                     postprocessors[syntax_name] = (pp,)
                 else:
                     postprocessors[syntax_name] += (pp,)
-        renderer_map = MappingProxyType({**DEFAULT_RENDERERS, **updated_renderers})
+        renderer_map = MappingProxyType({**renderers, **updated_renderers})
         postprocessor_map = MappingProxyType(postprocessors)
 
         render_context = RenderContext(renderer_map, postprocessor_map, options, env)
