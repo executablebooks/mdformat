@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: db7346d375eda68a0174f2c057dd97f2fbffe030  # frozen: v4.2.0
+  rev: 3298ddab3c13dd77d6ce1fc0baf97691430d84b0  # frozen: v4.3.0
   hooks:
   - id: check-yaml
   - id: check-toml
@@ -11,7 +11,7 @@ repos:
   - id: python-check-blanket-noqa
   - id: python-check-blanket-type-ignore
 - repo: https://github.com/asottile/yesqa
-  rev: 35cf7dc24fa922927caded7a21b2a8cb04bf8e10  # frozen: v1.3.0
+  rev: 265e9ff7c83add4949f81bb5fe14f4a743ffb04c  # frozen: v1.4.0
   hooks:
   - id: yesqa
     additional_dependencies:
@@ -27,15 +27,15 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: ae2c0758c9e61a385df9700dc9c231bf54887041  # frozen: 22.3.0
+  rev: f6c139c5215ce04fd3e73a900f1372942d58eca0  # frozen: 22.6.0
   hooks:
   - id: black
 - repo: https://github.com/myint/docformatter
-  rev: 67919ee01837761f2d954d7fbb08c12cdd38ec5a  # frozen: v1.4
+  rev: e0c24db9430c0df94a077c07af2e1de536689c5f  # frozen: v1.5.0-rc1
   hooks:
   - id: docformatter
 - repo: https://github.com/PyCQA/flake8
-  rev: cbeb4c9c4137cff1568659fcc48e8b85cddd0c8d  # frozen: 4.0.1
+  rev: f8e1b317742036ff11ff86356fd2b68147e169f7  # frozen: 5.0.4
   hooks:
   - id: flake8
     additional_dependencies:
