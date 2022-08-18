@@ -1,8 +1,6 @@
 # List dependencies in a format that readthedocs.org understands.
-# Move these to pyproject.toml and use the Poetry lockfile if readthedocs.org
-# ever supports that.
 
-docutils == 0.17.1
-sphinx == 4.5.0
-myst-parser == 0.17.2
-furo == 2022.4.7
+docutils == 0.18.1
+sphinx == 5.1.1
+myst-parser == 0.18.0
+furo == 2022.6.21
