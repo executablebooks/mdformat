@@ -210,6 +210,25 @@ def test_consecutive_wrap_width_lines(tmp_path):
     assert file_path.read_text() == text
 
 
+@pytest.mark.xfail(reason="https://github.com/executablebooks/mdformat/issues/326")
+def test_wrap__hard_break(tmp_path):
+    file_path = tmp_path / "test_markdown.md"
+    file_path.write_text(
+        "This\n"
+        "text\n"
+        "should\n"
+        "be wrapped again\\\n"
+        "so that wrap width is whatever is defined below. "
+        "Also     whitespace            should\t\tbe             collapsed."
+    )
+    assert run([str(file_path), "--wrap=60"]) == 0
+    assert (
+        file_path.read_text() == "This text should be wrapped again\\\n"
+        "so that wrap width is whatever is defined below. Also\n"
+        "whitespace should be collapsed.\n"
+    )
+
+
 def test_bad_wrap_width(capsys):
     with pytest.raises(SystemExit) as exc_info:
         run(["some-path.md", "--wrap=-1"])
