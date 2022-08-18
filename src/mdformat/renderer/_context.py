@@ -136,7 +136,7 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
         text = text[:-1] + "\\!"
 
     if context.do_wrap and _in_block("paragraph", node):
-        text = re.sub(r"\s+", WRAP_POINT, text)
+        text = re.sub(r"[ \t\n]+", WRAP_POINT, text)
 
     return text
 
