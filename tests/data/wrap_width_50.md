@@ -124,3 +124,13 @@ a
       > do wrap aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
       > a
 .
+
+
+Only use space, tab and line feed as wrap points
+.
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&#160;&#5760;&#8192;No-wrap-points-until-now:&#32;Unicode whitespace shouldnt act as wrap point, the normal space should
+.
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   No-wrap-points-until-now:
+Unicode whitespace shouldnt act as wrap point, the
+normal space should
+.
