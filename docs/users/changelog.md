@@ -3,6 +3,14 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.15
+
+- Fixed
+  - `--wrap` converts Unicode whitespace to regular spaces and line feeds.
+    Thank you, [Nico Schlömer](https://github.com/nschloe), for the issue.
+- Packaging
+  - Use `setuptools` as build backend
+
 ## 0.7.14
 
 - Added
