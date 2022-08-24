@@ -3,6 +3,18 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.16
+
+- Added
+  - Option to keep line ending sequence from source file (`--end-of-line=keep`).
+    Thank you, [Mark Tsuchida](https://github.com/marktsuchida), for the issue and
+    [Jan Wille](https://github.com/Cube707) for the PR.
+- Fixed
+  - `--check` not working with `--end-of-line=crlf`.
+    Thank you, [Jan Wille](https://github.com/Cube707), for the issue.
+  - Insignificant Unicode whitespace causing unstable formatting.
+    Thank you, [Yamada_Ika](https://github.com/Yamada-Ika), for the issue.
+
 ## 0.7.15
 
 - Fixed
