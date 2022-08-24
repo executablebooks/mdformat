@@ -19,7 +19,7 @@ import mdformat.plugins
 import mdformat.renderer
 
 # Match "\r" and "\n" characters that are not part of a "\r\n" sequence
-RE_NON_CRLF_LINE_END = re.compile(r"(?:[^\r]|^)\n|\r(?:[^\n]|$)")
+RE_NON_CRLF_LINE_END = re.compile(r"(?:[^\r]|^)\n|\r(?:[^\n]|\Z)")
 
 
 class RendererWarningPrinter(logging.Handler):
@@ -83,8 +83,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         )
 
         if opts["check"]:
+            original_str_lf_eol = original_str.replace("\r\n", "\n").replace("\r", "\n")
             if (
-                (formatted_str != original_str)
+                (formatted_str != original_str_lf_eol)
                 or (opts["end_of_line"] == "lf" and "\r" in original_str)
                 or (
                     opts["end_of_line"] == "crlf"

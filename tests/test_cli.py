@@ -260,14 +260,22 @@ def test_eol__crlf_stdin(capfd, monkeypatch):
 
 def test_eol__check_lf(tmp_path):
     file_path = tmp_path / "test.md"
+
     file_path.write_bytes(b"lol\r\n")
     assert run((str(file_path), "--check")) == 1
+
+    file_path.write_bytes(b"lol\n")
+    assert run((str(file_path), "--check")) == 0
 
 
 def test_eol__check_crlf(tmp_path):
     file_path = tmp_path / "test.md"
+
     file_path.write_bytes(b"lol\n")
     assert run((str(file_path), "--check", "--end-of-line=crlf")) == 1
+
+    file_path.write_bytes(b"lol\r\n")
+    assert run((str(file_path), "--check", "--end-of-line=crlf")) == 0
 
 
 def test_get_package_name():
