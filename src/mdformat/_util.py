@@ -12,10 +12,12 @@ from typing import Any
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
 
+from mdformat._compat import Literal
 import mdformat.plugins
 
 NULL_CTX = nullcontext()
 EMPTY_MAP: MappingProxyType = MappingProxyType({})
+RE_NEWLINES = re.compile(r"\r\n|\r|\n")
 
 
 def build_mdit(
@@ -114,3 +116,18 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
     except BaseException:  # pragma: no cover
         os.remove(tmp_path)
         raise
+
+
+def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:
+    """Returns the newline-character to be used for output.
+
+    If `eol_setting == "keep"`, the newline character used in the passed
+    markdown is detected and returned. Otherwise the character matching
+    the passed setting is returned.
+    """
+    if eol_setting == "keep":
+        first_eol = RE_NEWLINES.search(md)
+        return "\r\n" if first_eol and first_eol.group() == "\r\n" else "\n"
+    if eol_setting == "crlf":
+        return "\r\n"
+    return "\n"

@@ -7,7 +7,13 @@ from pathlib import Path
 from typing import Any
 
 from mdformat._conf import DEFAULT_OPTS
-from mdformat._util import EMPTY_MAP, NULL_CTX, atomic_write, build_mdit
+from mdformat._util import (
+    EMPTY_MAP,
+    NULL_CTX,
+    atomic_write,
+    build_mdit,
+    detect_newline_type,
+)
 from mdformat.renderer import MDRenderer
 
 
@@ -58,7 +64,7 @@ def file(
     if f.is_symlink():
         raise ValueError(f'Cannot format "{f}". It is a symlink.')
 
-    original_md = f.read_text(encoding="utf-8")
+    original_md = f.read_bytes().decode()
     formatted_md = text(
         original_md,
         options=options,
@@ -66,9 +72,7 @@ def file(
         codeformatters=codeformatters,
         _filename=str(f),
     )
-    newline = (
-        "\r\n"
-        if options.get("end_of_line", DEFAULT_OPTS["end_of_line"]) == "crlf"
-        else "\n"
+    newline = detect_newline_type(
+        original_md, options.get("end_of_line", DEFAULT_OPTS["end_of_line"])
     )
     atomic_write(f, formatted_md, newline)

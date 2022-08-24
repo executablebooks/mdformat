@@ -14,7 +14,7 @@ import textwrap
 import mdformat
 from mdformat._compat import importlib_metadata
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
-from mdformat._util import atomic_write, is_md_equal
+from mdformat._util import atomic_write, detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 
@@ -60,7 +60,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         except InvalidConfError as e:
             print_error(str(e))
             return 1
-        opts = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
+        opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
 
         if path:
             path_str = str(path)
@@ -81,16 +81,14 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             ),
             _filename=path_str,
         )
+        newline = detect_newline_type(original_str, opts["end_of_line"])
 
         if opts["check"]:
             original_str_lf_eol = original_str.replace("\r\n", "\n").replace("\r", "\n")
             if (
                 (formatted_str != original_str_lf_eol)
-                or (opts["end_of_line"] == "lf" and "\r" in original_str)
-                or (
-                    opts["end_of_line"] == "crlf"
-                    and RE_NON_CRLF_LINE_END.search(original_str)
-                )
+                or (newline == "\n" and "\r" in original_str)
+                or (newline == "\r\n" and RE_NON_CRLF_LINE_END.search(original_str))
             ):
                 format_errors_found = True
                 print_error(f'File "{path_str}" is not formatted.')
@@ -112,7 +110,6 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                     ],
                 )
                 return 1
-            newline = "\r\n" if opts["end_of_line"] == "crlf" else "\n"
             if path:
                 atomic_write(path, formatted_str, newline)
             else:
@@ -167,7 +164,7 @@ def make_arg_parser(
     )
     parser.add_argument(
         "--end-of-line",
-        choices=("lf", "crlf"),
+        choices=("lf", "crlf", "keep"),
         help="output file line ending mode (default: lf)",
     )
     for plugin in parser_extensions.values():

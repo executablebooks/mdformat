@@ -53,7 +53,7 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:
         ):
             raise InvalidConfError(f"Invalid 'wrap' value in {conf_path}")
     if "end_of_line" in opts:
-        if opts["end_of_line"] not in {"crlf", "lf"}:
+        if opts["end_of_line"] not in {"crlf", "lf", "keep"}:
             raise InvalidConfError(f"Invalid 'end_of_line' value in {conf_path}")
     if "number" in opts:
         if not isinstance(opts["number"], bool):
