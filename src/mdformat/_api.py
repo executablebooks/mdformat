@@ -21,9 +21,6 @@ def text(
     _filename: str = "",
 ) -> str:
     """Format a Markdown string."""
-    # Preprocess: Remove vertical tabs (0x0b) until the parser can handle them properly.
-    md = md.replace("\x0b", "")
-
     with _first_pass_contextmanager:
         mdit = build_mdit(
             MDRenderer,
