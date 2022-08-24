@@ -127,10 +127,7 @@ def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:
     """
     if eol_setting == "keep":
         first_eol = RE_NEWLINES.search(md)
-        if first_eol is None:
-            return "\n"
-        char = first_eol.group()
-        return "\n" if char == "\r" else char
+        return "\r\n" if first_eol and first_eol.group() == "\r\n" else "\n"
     if eol_setting == "crlf":
         return "\r\n"
     return "\n"

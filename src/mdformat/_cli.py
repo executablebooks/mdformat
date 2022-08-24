@@ -60,7 +60,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         except InvalidConfError as e:
             print_error(str(e))
             return 1
-        opts = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
+        opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
 
         if path:
             path_str = str(path)
