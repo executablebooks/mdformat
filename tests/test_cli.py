@@ -251,6 +251,20 @@ def test_eol__crlf(tmp_path):
     assert file_path.read_bytes() == b"Oi\r\n"
 
 
+def test_eol__keep_lf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\n")
+    assert run([str(file_path), "--end-of-line=keep"]) == 0
+    assert file_path.read_bytes() == b"Oi\n"
+
+
+def test_eol__keep_crlf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\r\n")
+    assert run([str(file_path), "--end-of-line=keep"]) == 0
+    assert file_path.read_bytes() == b"Oi\r\n"
+
+
 def test_eol__crlf_stdin(capfd, monkeypatch):
     monkeypatch.setattr(sys, "stdin", StringIO("Oi\n"))
     assert run(["-", "--end-of-line=crlf"]) == 0
@@ -276,6 +290,18 @@ def test_eol__check_crlf(tmp_path):
 
     file_path.write_bytes(b"lol\r\n")
     assert run((str(file_path), "--check", "--end-of-line=crlf")) == 0
+
+
+def test_eol__check_keep_lf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"lol\n")
+    assert run((str(file_path), "--check", "--end-of-line=keep")) == 0
+
+
+def test_eol__check_keep_crlf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"lol\r\n")
+    assert run((str(file_path), "--check", "--end-of-line=keep")) == 0
 
 
 def test_get_package_name():

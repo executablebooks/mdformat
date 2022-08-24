@@ -14,7 +14,7 @@ import textwrap
 import mdformat
 from mdformat._compat import importlib_metadata
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
-from mdformat._util import atomic_write, is_md_equal
+from mdformat._util import atomic_write, detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 
@@ -112,7 +112,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                     ],
                 )
                 return 1
-            newline = "\r\n" if opts["end_of_line"] == "crlf" else "\n"
+            newline = detect_newline_type(original_str, opts["end_of_line"])
             if path:
                 atomic_write(path, formatted_str, newline)
             else:
@@ -167,7 +167,7 @@ def make_arg_parser(
     )
     parser.add_argument(
         "--end-of-line",
-        choices=("lf", "crlf"),
+        choices=("lf", "crlf", "keep"),
         help="output file line ending mode (default: lf)",
     )
     for plugin in parser_extensions.values():

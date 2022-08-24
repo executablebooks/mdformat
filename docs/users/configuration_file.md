@@ -19,5 +19,5 @@ Command line interface arguments take precedence over the configuration file.
 #
 wrap = "keep"       # possible values: {"keep", "no", INTEGER}
 number = false      # possible values: {false, true}
-end_of_line = "lf"  # possible values: {"lf", "crlf"}
+end_of_line = "lf"  # possible values: {"lf", "crlf", "keep"}
 ```

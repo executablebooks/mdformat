@@ -93,3 +93,17 @@ def test_eol__crlf(tmp_path):
     file_path.write_bytes(b"Oi\n")
     mdformat.file(str(file_path), options={"end_of_line": "crlf"})
     assert file_path.read_bytes() == b"Oi\r\n"
+
+
+def test_eol__keep_lf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\n")
+    mdformat.file(str(file_path), options={"end_of_line": "keep"})
+    assert file_path.read_bytes() == b"Oi\n"
+
+
+def test_eol__keep_crlf(tmp_path):
+    file_path = tmp_path / "test.md"
+    file_path.write_bytes(b"Oi\r\n")
+    mdformat.file(str(file_path), options={"end_of_line": "keep"})
+    assert file_path.read_bytes() == b"Oi\r\n"

@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 import tempfile
 from types import MappingProxyType
-from typing import Any
+from typing import Any, Literal
 
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
@@ -16,6 +16,7 @@ import mdformat.plugins
 
 NULL_CTX = nullcontext()
 EMPTY_MAP: MappingProxyType = MappingProxyType({})
+RE_NEWLINES = re.compile(r"\r\n|\r|\n")
 
 
 def build_mdit(
@@ -114,3 +115,21 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
     except BaseException:  # pragma: no cover
         os.remove(tmp_path)
         raise
+
+
+def detect_newline_type(md: str, eol_setting) -> Literal["\n", "\r\n"]:
+    """Retruns the newline-character to be used for output.
+
+    If `eol_setting`=="keep", the newline character used in the passed
+    markdown is detected and returned. Otherwise the character matching
+    the passed setting is returned.
+    """
+    if eol_setting == "keep":
+        first_eol = RE_NEWLINES.search(md)
+        if first_eol is None:
+            return "\n"
+        char = first_eol.group()
+        return "\n" if char == "\r" else char
+    if eol_setting == "crlf":
+        return "\r\n"
+    return "\n"
