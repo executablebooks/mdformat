@@ -118,7 +118,7 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
 
 
 def detect_newline_type(md: str, eol_setting) -> Literal["\n", "\r\n"]:
-    """Retruns the newline-character to be used for output.
+    """Returns the newline-character to be used for output.
 
     If `eol_setting`=="keep", the newline character used in the passed
     markdown is detected and returned. Otherwise the character matching
