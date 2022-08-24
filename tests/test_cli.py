@@ -294,14 +294,22 @@ def test_eol__check_crlf(tmp_path):
 
 def test_eol__check_keep_lf(tmp_path):
     file_path = tmp_path / "test.md"
+
     file_path.write_bytes(b"lol\n")
     assert run((str(file_path), "--check", "--end-of-line=keep")) == 0
+
+    file_path.write_bytes(b"mixed\nEOLs\r")
+    assert run((str(file_path), "--check", "--end-of-line=keep")) == 1
 
 
 def test_eol__check_keep_crlf(tmp_path):
     file_path = tmp_path / "test.md"
+
     file_path.write_bytes(b"lol\r\n")
     assert run((str(file_path), "--check", "--end-of-line=keep")) == 0
+
+    file_path.write_bytes(b"mixed\r\nEOLs\n")
+    assert run((str(file_path), "--check", "--end-of-line=keep")) == 1
 
 
 def test_get_package_name():
