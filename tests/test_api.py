@@ -57,9 +57,7 @@ def test_no_codeblock_trailing_newline():
 @pytest.mark.parametrize(
     "input_",
     [
-        pytest.param(
-            "\x1c\n\na", marks=pytest.mark.xfail(reason="Weird case found by fuzzer")
-        ),
+        pytest.param("\x1c\n\na"),
         pytest.param("<!K"),
     ],
 )

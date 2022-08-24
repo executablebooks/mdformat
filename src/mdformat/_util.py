@@ -89,7 +89,7 @@ def is_md_equal(
 
         # empty p elements should be ignored by user agents
         # (https://www.w3.org/TR/REC-html40/struct/text.html#edef-P)
-        html = html.replace("<p></p>", "")
+        html = re.sub(r" ?<p></p> ?", "", html)
 
         # If it's nothing but whitespace, it's equal
         html = re.sub(r"^\s+$", "", html)

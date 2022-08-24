@@ -455,3 +455,12 @@ sort digit references numerically
 [𐩂]: .
 [🤪]: .
 .
+
+Unicode space (U+3000) after heading
+.
+# hoge
+　
+
+.
+# hoge
+.

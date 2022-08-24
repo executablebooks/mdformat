@@ -46,7 +46,8 @@ def make_render_children(separator: str) -> Render:
         node: RenderTreeNode,
         context: RenderContext,
     ) -> str:
-        return separator.join(child.render(context) for child in node.children)
+        render_outputs = (child.render(context) for child in node.children)
+        return separator.join(out for out in render_outputs if out)
 
     return render_children
 
