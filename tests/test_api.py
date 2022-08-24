@@ -58,6 +58,7 @@ def test_no_codeblock_trailing_newline():
     "input_",
     [
         pytest.param("\x1c\n\na"),
+        pytest.param(">\x0b"),
         pytest.param("<!K"),
     ],
 )
