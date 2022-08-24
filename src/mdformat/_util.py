@@ -117,7 +117,7 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
         raise
 
 
-def detect_newline_type(md: str, eol_setting) -> Literal["\n", "\r\n"]:
+def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:
     """Returns the newline-character to be used for output.
 
     If `eol_setting == "keep"`, the newline character used in the passed
