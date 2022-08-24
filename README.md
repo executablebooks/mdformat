@@ -90,21 +90,21 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ```console
 foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}] [--end-of-line {lf,crlf}] [paths [paths ...]]
+usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}] [--end-of-line {lf,crlf,keep}] [paths ...]
 
 CommonMark compliant Markdown formatter
 
 positional arguments:
   paths                 files to format
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --check               do not apply changes to files
   --version             show program's version number and exit
   --number              apply consecutive numbering to ordered lists
   --wrap {keep,no,INTEGER}
                         paragraph word wrap mode (default: keep)
-  --end-of-line {lf,crlf}
+  --end-of-line {lf,crlf,keep}
                         output file line ending mode (default: lf)
 ```
 
