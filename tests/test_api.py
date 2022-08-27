@@ -42,14 +42,16 @@ def test_fmt_string():
     assert mdformat.text(UNFORMATTED_MARKDOWN) == FORMATTED_MARKDOWN
 
 
-def test_vertical_tab_only():
-    input_ = "\x0b"
-    output = mdformat.text(input_)
-    assert is_md_equal(input_, output)
-
-
-def test_no_codeblock_trailing_newline():
-    input_ = "\t##"
+@pytest.mark.parametrize(
+    "input_",
+    [
+        pytest.param("\x0b"),  # vertical tab only
+        pytest.param("\t##"),  # no trailing newline in codeblock
+        pytest.param("a\n\n\xa0\n\nb"),  # lone NBSP between two paragraphs
+        pytest.param("\xa0\n\n# heading"),  # lone NBSP followed by a heading
+    ],
+)
+def test_output_is_equal(input_):
     output = mdformat.text(input_)
     assert is_md_equal(input_, output)
 

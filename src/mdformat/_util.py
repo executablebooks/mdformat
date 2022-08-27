@@ -89,9 +89,14 @@ def is_md_equal(
         html = html.replace("<p> ", "<p>")
         html = html.replace(" </p>", "</p>")
 
+        # Also strip whitespace leading/trailing the <p> elements so that we can
+        # safely remove empty paragraphs below without introducing extra whitespace.
+        html = html.replace(" <p>", "<p>")
+        html = html.replace("</p> ", "</p>")
+
         # empty p elements should be ignored by user agents
         # (https://www.w3.org/TR/REC-html40/struct/text.html#edef-P)
-        html = re.sub(r" ?<p></p> ?", "", html)
+        html = html.replace("<p></p>", "")
 
         # If it's nothing but whitespace, it's equal
         html = re.sub(r"^\s+$", "", html)
