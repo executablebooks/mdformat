@@ -49,6 +49,9 @@ def test_fmt_string():
         pytest.param("\t##"),  # no trailing newline in codeblock
         pytest.param("a\n\n\xa0\n\nb"),  # lone NBSP between two paragraphs
         pytest.param("\xa0\n\n# heading"),  # lone NBSP followed by a heading
+        pytest.param(
+            "```\na\n```\n\u2003\n# A\n", marks=pytest.mark.xfail()
+        ),  # em space surrounded by code and header
     ],
 )
 def test_output_is_equal(input_):
