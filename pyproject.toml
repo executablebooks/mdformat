@@ -32,6 +32,11 @@ classifiers = [
 ]
 keywords = ["mdformat", "markdown", "commonmark", "formatter", "pre-commit"]
 
+[project.optional-dependencies]
+completion = [
+    "shtab",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/executablebooks/mdformat"
 "Documentation" = "https://mdformat.readthedocs.io"

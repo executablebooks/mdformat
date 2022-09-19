@@ -18,6 +18,27 @@ from mdformat._util import atomic_write, detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 
+try:
+    import shtab
+except ImportError:
+    from mdformat import _shtab as shtab
+
+# https://github.com/iterative/shtab/blob/5358dda86e8ea98bf801a43a24ad73cd9f820c63/examples/customcomplete.py#L11-L22
+MD_FILE = {
+    "bash": "_shtab_greeter_compgen_md_files",
+    "zsh": "_files -g '*.md'",
+    "tcsh": "f:*.md",
+}
+PREAMBLE = {
+    "bash": """
+# $1=COMP_WORDS[1]
+_shtab_greeter_compgen_md_files() {
+  compgen -d -- $1  # recurse into subdirs
+  compgen -f -X '!*?.md' -- $1
+}
+"""
+}
+
 # Match "\r" and "\n" characters that are not part of a "\r\n" sequence
 RE_NON_CRLF_LINE_END = re.compile(r"(?:[^\r]|^)\n|\r(?:[^\n]|\Z)")
 
@@ -137,12 +158,14 @@ def make_arg_parser(
 ) -> argparse.ArgumentParser:
     plugin_versions_str = get_plugin_versions_str(parser_extensions, codeformatters)
     parser = argparse.ArgumentParser(
+        "mdformat",
         description="CommonMark compliant Markdown formatter",
         epilog=f"Installed plugins: {plugin_versions_str}"
         if plugin_versions_str
         else None,
     )
-    parser.add_argument("paths", nargs="*", help="files to format")
+    shtab.add_argument_to(parser, preamble=PREAMBLE)
+    parser.add_argument("paths", nargs="*", help="files to format").complete = MD_FILE
     parser.add_argument(
         "--check", action="store_true", help="do not apply changes to files"
     )
