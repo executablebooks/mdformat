@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from contextlib import nullcontext
+from html.parser import HTMLParser
 import os
 from pathlib import Path
 import re
@@ -104,6 +105,77 @@ def is_md_equal(
         html_texts[key] = html
 
     return html_texts["md1"] == html_texts["md2"]
+
+
+# TODO: remove empty p tags, remove formatted code
+def normalize_html_ast(ast: list[dict]) -> list[dict]:
+    pass
+
+
+class HTML2AST(HTMLParser):
+    """Parse HTML to a list/dict structure that can be used in comparisons.
+
+    HTML2AST.parse() is the only method considered public.
+    """
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.tree: list[dict] = []
+        self.current: dict | None = None
+
+    def parse(self, text: str, strip_classes: Iterable[str] = ()) -> list[dict]:
+        self.feed(text)
+        self.close()
+        self.strip_classes(self.tree, set(strip_classes))
+        return self.tree
+
+    # TODO: remove?
+    def strip_classes(self, tree: list[dict], classes: set[str]) -> list[dict]:
+        """Strip content from tags with certain classes."""
+        items = []
+        for item in tree:
+            if set(item["attrs"].get("class", "").split()).intersection(classes):
+                items.append({"tag": item["tag"], "attrs": item["attrs"]})
+                continue
+            items.append(item)
+            item["children"] = self.strip_classes(item.get("children", []), classes)
+            if not item["children"]:
+                item.pop("children")
+
+        return items
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str]]) -> None:
+        tag_item = {"tag": tag, "attrs": dict(attrs), "parent": self.current}
+        if self.current is None:
+            self.tree.append(tag_item)
+        else:
+            children = self.current.setdefault("children", [])
+            children.append(tag_item)
+        self.current = tag_item
+
+    def handle_endtag(self, tag: str) -> None:
+        # walk up the tree to the tag's parent
+        while self.current is not None:
+            if self.current["tag"] == tag:
+                self.current = self.current.pop("parent")
+                break
+            self.current = self.current.pop("parent")
+
+    def handle_data(self, data: str) -> None:
+        # ignore data outside tags
+        if self.current is None:
+            return
+        assert (
+            "data" not in self.current
+        ), "Oh no, the tag had data in more than one place."
+
+        if self.current["tag"] == "p":
+            # Strip insignificant paragraph leading/trailing whitespace
+            data = data.strip()
+            # Reduce all collapsable whitespace to a single space
+            data = re.sub(r"[\n\t ]+", " ", data)
+
+        self.current["data"] = data
 
 
 def atomic_write(path: Path, text: str, newline: str) -> None:
