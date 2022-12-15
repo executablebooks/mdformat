@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from contextlib import nullcontext
+import filecmp
 from html.parser import HTMLParser
 import os
 from pathlib import Path
@@ -189,7 +190,10 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
     try:
         with open(fd, "w", encoding="utf-8", newline=newline) as f:
             f.write(text)
-        os.replace(tmp_path, path)
+        if filecmp.cmp(tmp_path, path, shallow=False):
+            os.remove(tmp_path)
+        else:
+            os.replace(tmp_path, path)
     except BaseException:  # pragma: no cover
         os.remove(tmp_path)
         raise

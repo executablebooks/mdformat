@@ -1,4 +1,5 @@
 from io import StringIO
+import os
 import sys
 from unittest.mock import patch
 
@@ -317,3 +318,16 @@ def test_get_package_name():
     assert get_package_name(patch) == "unittest"
     # Test a package/module
     assert get_package_name(mdformat) == "mdformat"
+
+
+def test_no_timestamp_modify(tmp_path):
+    file_path = tmp_path / "test.md"
+
+    file_path.write_bytes(b"lol\n")
+    initial_access_time = 0
+    initial_mod_time = 0
+    os.utime(file_path, (initial_access_time, initial_mod_time))
+
+    # Assert that modification time does not change when no changes are applied
+    assert run([str(file_path)]) == 0
+    assert os.path.getmtime(file_path) == initial_mod_time
