@@ -130,7 +130,7 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
   </tr>
   <tr>
     <td><a href="https://github.com/KyleKing/mdformat-admon">mdformat-admon</a></td>
-    <td><code>admonitions</code></td>
+    <td><code>admonition</code></td>
     <td>Adds support for <a href="https://python-markdown.github.io/extensions/admonition/">python-markdown</a> admonitions</td>
   </tr>
 </table>
