@@ -128,4 +128,9 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><code>deflist</code></td>
     <td>Adds support for <a href="https://pandoc.org/MANUAL.html#definition-lists">Pandoc-style</a> definition lists</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-admon">mdformat-admon</a></td>
+    <td><code>admonition</code></td>
+    <td>Adds support for <a href="https://python-markdown.github.io/extensions/admonition/">python-markdown</a> admonitions</td>
+  </tr>
 </table>
