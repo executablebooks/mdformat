@@ -99,6 +99,11 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
   </tr>
   <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-mkdocs">mdformat-mkdocs</a></td>
+    <td><code>mkdocs</code></td>
+    <td>Changes target specification to MKDocs to use 4-spaces instead of 2 for indents</td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/executablebooks/mdformat-myst">mdformat-myst</a></td>
     <td><code>myst</code></td>
     <td>Changes target specification to <a href="https://myst-parser.readthedocs.io/en/latest/using/syntax.html">MyST</a></td>
