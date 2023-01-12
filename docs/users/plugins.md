@@ -121,7 +121,7 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
   <tr>
     <td><a href="https://github.com/KyleKing/mdformat-mkdocs">mdformat-mkdocs</a></td>
     <td><code>mkdocs</code></td>
-    <td>Changes target specification to MKDocs to use 4-spaces instead of 2 for indents</td>
+    <td>Changes target specification to MKDocs. Indents lists with 4-spaces instead of 2</td>
   </tr>
   <tr>
     <td><a href="https://github.com/executablebooks/mdformat-myst">mdformat-myst</a></td>
