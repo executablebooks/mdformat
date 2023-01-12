@@ -94,6 +94,26 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <th>Description</th>
   </tr>
   <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-admon">mdformat-admon</a></td>
+    <td><code>admonition</code></td>
+    <td>Adds support for <a href="https://python-markdown.github.io/extensions/admonition/">python-markdown</a> admonitions</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-deflist">mdformat-deflist</a></td>
+    <td><code>deflist</code></td>
+    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#definition-lists">Pandoc-style</a> definition lists</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-footnote">mdformat-footnote</a></td>
+    <td><code>footnote</code></td>
+    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#footnotes">Pandoc-style</a> footnotes</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/butler54/mdformat-frontmatter">mdformat-frontmatter</a></td>
+    <td><code>frontmatter</code></td>
+    <td>Adds support for front matter, and formats YAML front matter</td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/hukkin/mdformat-gfm">mdformat-gfm</a></td>
     <td><code>gfm</code></td>
     <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
@@ -117,25 +137,5 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><a href="https://github.com/hukkin/mdformat-toc">mdformat-toc</a></td>
     <td><code>toc</code></td>
     <td>Adds the capability to auto-generate a table of contents</td>
-  </tr>
-  <tr>
-    <td><a href="https://github.com/executablebooks/mdformat-footnote">mdformat-footnote</a></td>
-    <td><code>footnote</code></td>
-    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#footnotes">Pandoc-style</a> footnotes</td>
-  </tr>
-  <tr>
-    <td><a href="https://github.com/butler54/mdformat-frontmatter">mdformat-frontmatter</a></td>
-    <td><code>frontmatter</code></td>
-    <td>Adds support for front matter, and formats YAML front matter</td>
-  </tr>
-  <tr>
-    <td><a href="https://github.com/executablebooks/mdformat-deflist">mdformat-deflist</a></td>
-    <td><code>deflist</code></td>
-    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#definition-lists">Pandoc-style</a> definition lists</td>
-  </tr>
-  <tr>
-    <td><a href="https://github.com/KyleKing/mdformat-admon">mdformat-admon</a></td>
-    <td><code>admonition</code></td>
-    <td>Adds support for <a href="https://python-markdown.github.io/extensions/admonition/">python-markdown</a> admonitions</td>
   </tr>
 </table>
