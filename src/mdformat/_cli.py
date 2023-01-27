@@ -15,10 +15,10 @@ import textwrap
 import mdformat
 from mdformat._compat import importlib_metadata
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
+from mdformat._output import diff
 from mdformat._util import atomic_write, detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
-from src.mdformat._output import diff
 
 # Match "\r" and "\n" characters that are not part of a "\r\n" sequence
 RE_NON_CRLF_LINE_END = re.compile(r"(?:[^\r]|^)\n|\r(?:[^\n]|\Z)")
