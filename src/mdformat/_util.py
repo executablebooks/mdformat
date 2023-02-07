@@ -114,17 +114,27 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
     with the temporary one. This is to avoid a moment where only empty
     or partial content exists on disk.
     """
-    fd, tmp_path = tempfile.mkstemp(dir=path.parent)
-    try:
-        with open(fd, "w", encoding="utf-8", newline=newline) as f:
-            f.write(text)
-        if filecmp.cmp(tmp_path, path, shallow=False):
+    # Try our local dir first to avoid potentially moving files
+    # across file systems. If the local dir is not writeable,
+    # try the default temp dir from the tempfile module.
+    tmp_dirs = [path.parent, tempfile.gettempdir()]
+    for tmp_dir in tmp_dirs:
+        fd, tmp_path = tempfile.mkstemp(dir=tmp_dir)
+        try:
+            with open(fd, "w", encoding="utf-8", newline=newline) as f:
+                f.write(text)
+            if filecmp.cmp(tmp_path, path, shallow=False):
+                os.remove(tmp_path)
+            else:
+                os.replace(tmp_path, path)
+        except PermissionError:
+            # Raise if we've exhausted our options
+            if tmp_dir == tmp_dirs[-1]:
+                raise
+            continue
+        except BaseException:  # pragma: no cover
             os.remove(tmp_path)
-        else:
-            os.replace(tmp_path, path)
-    except BaseException:  # pragma: no cover
-        os.remove(tmp_path)
-        raise
+            raise
 
 
 def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:
