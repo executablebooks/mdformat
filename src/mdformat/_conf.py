@@ -10,6 +10,7 @@ DEFAULT_OPTS = {
     "wrap": "keep",
     "number": False,
     "end_of_line": "lf",
+    "exclude": [],
 }
 
 
@@ -58,6 +59,9 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:
     if "number" in opts:
         if not isinstance(opts["number"], bool):
             raise InvalidConfError(f"Invalid 'number' value in {conf_path}")
+    if "exclude" in opts:
+        if not isinstance(opts["exclude"], list):
+            raise InvalidConfError(f"Invalid 'exclude' value in {conf_path}")
 
 
 def _validate_keys(opts: Mapping, conf_path: Path) -> None:

@@ -23,7 +23,7 @@ repos:
   hooks:
   - id: absolufy-imports
 - repo: https://github.com/PyCQA/isort
-  rev: c5e8fa75dda5f764d20f66a215d71c21cfa198e1  # frozen: 5.10.1
+  rev: e44834b7b294701f596c9118d6c370f86671a50d  # frozen: 5.12.0
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
