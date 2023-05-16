@@ -116,6 +116,10 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
     """
     fd, tmp_path = tempfile.mkstemp(dir=path.parent)
     try:
+        # Set the same permission as the original file.
+        stat = os.stat(path)
+        os.chmod(tmp_path, stat.st_mode)
+
         with open(fd, "w", encoding="utf-8", newline=newline) as f:
             f.write(text)
         if filecmp.cmp(tmp_path, path, shallow=False):
