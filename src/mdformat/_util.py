@@ -114,7 +114,7 @@ def atomic_write(path: Path, text: str, newline: str) -> None:
     with the temporary one. This is to avoid a moment where only empty
     or partial content exists on disk.
     """
-    fd, tmp_path = tempfile.mkstemp(dir=path.parent)
+    fd, tmp_path = tempfile.mkstemp()
     try:
         with open(fd, "w", encoding="utf-8", newline=newline) as f:
             f.write(text)
