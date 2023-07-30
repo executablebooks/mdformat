@@ -8,12 +8,11 @@ from pathlib import Path
 import re
 import tempfile
 from types import MappingProxyType
-from typing import Any
+from typing import Any, Literal
 
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
 
-from mdformat._compat import Literal
 import mdformat.plugins
 
 NULL_CTX = nullcontext()
