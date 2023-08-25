@@ -3,6 +3,21 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.17
+
+- Added
+  - Do not update mtime if formatting result is identical to the file.
+    Thank you, [Pierre Augier](https://github.com/paugier), for the issue and the PR.
+- Fixed
+  - An error on empty paragraph (Unicode space only).
+    Thank you, [Nico Schlömer](https://github.com/nschloe), for the issue.
+  - File write fails if no permissions to write to the directory.
+    Thank you, [Guy Kisel](https://github.com/guykisel), for the issue.
+  - File permissions change on rewrite.
+    Thank you, [Keiichi Watanabe](https://github.com/keiichiw), for the issue.
+- Removed
+  - Python 3.7 support
+
 ## 0.7.16
 
 - Added
