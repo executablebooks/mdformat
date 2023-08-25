@@ -12,6 +12,7 @@ Note that there is currently no guarantee for a stable Markdown formatting style
   - An error on empty paragraph (Unicode space only).
     Thank you, [Nico Schlömer](https://github.com/nschloe), for the issue.
   - File write fails if no permissions to write to the directory.
+    Fixed by removing atomic writes.
     Thank you, [Guy Kisel](https://github.com/guykisel), for the issue.
   - File permissions change on rewrite.
     Thank you, [Keiichi Watanabe](https://github.com/keiichiw), for the issue.
