@@ -27,14 +27,19 @@ class InvalidConfError(Exception):
 def read_toml_opts(conf_dir: Path) -> Mapping:
     conf_path = conf_dir / ".mdformat.toml"
     if not conf_path.is_file():
-        parent_dir = conf_dir.parent
-        if conf_dir == parent_dir:
-            return {}
-        return read_toml_opts(parent_dir)
+        conf_path = conf_dir / "pyproject.toml"
+        if not conf_path.is_file():
+            parent_dir = conf_dir.parent
+            if conf_dir == parent_dir or (conf_dir / ".git").is_dir():
+                return {}
+            return read_toml_opts(parent_dir)
 
     with open(conf_path, "rb") as f:
         try:
             toml_opts = tomllib.load(f)
+            if conf_path.name == "pyproject.toml":
+                toml_opts = toml_opts.get("tool", {}).get("mdformat", {})
+                conf_path = f"{conf_path}:[tool.mdformat]"
         except tomllib.TOMLDecodeError as e:
             raise InvalidConfError(f"Invalid TOML syntax: {e}")
 
