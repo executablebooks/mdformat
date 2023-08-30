@@ -462,12 +462,17 @@ def list_item(node: RenderTreeNode, context: RenderContext) -> str:
 
 
 def bullet_list(node: RenderTreeNode, context: RenderContext) -> str:
+    min_indentation_width = context.options.get("mdformat", {}).get(
+        "indent", DEFAULT_OPTS["indent"]
+    )
+
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
-    indent = " " * len(marker_type + first_line_indent)
+    indent_width = max(len(marker_type + first_line_indent), min_indentation_width)
+    indent = " " * indent_width
     block_separator = "\n" if is_tight_list(node) else "\n\n"
 
-    with context.indented(len(indent)):
+    with context.indented(indent_width):
         text = ""
         for child_idx, child in enumerate(node.children):
             list_item = child.render(context)
@@ -493,6 +498,9 @@ def ordered_list(node: RenderTreeNode, context: RenderContext) -> str:
     consecutive_numbering = context.options.get("mdformat", {}).get(
         "number", DEFAULT_OPTS["number"]
     )
+    min_indentation_width = context.options.get("mdformat", {}).get(
+        "indent", DEFAULT_OPTS["indent"]
+    )
     marker_type = get_list_marker_type(node)
     first_line_indent = " "
     block_separator = "\n" if is_tight_list(node) else "\n\n"
@@ -511,6 +519,8 @@ def ordered_list(node: RenderTreeNode, context: RenderContext) -> str:
         indent_width = len(f"{starting_number}{marker_type}{first_line_indent}")
 
     text = ""
+    indent_width = max(indent_width, min_indentation_width)
+    indent = " " * indent_width
     with context.indented(indent_width):
         for list_item_index, list_item in enumerate(node.children):
             list_item_text = list_item.render(context)
@@ -559,7 +569,7 @@ def ordered_list(node: RenderTreeNode, context: RenderContext) -> str:
                         else other_item_marker
                     )
             for line in line_iterator:
-                formatted_lines.append(" " * indent_width + line if line else "")
+                formatted_lines.append(indent + line if line else "")
 
             text += "\n".join(formatted_lines)
             if list_item_index != len(node.children) - 1:

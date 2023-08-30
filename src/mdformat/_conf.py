@@ -10,6 +10,7 @@ DEFAULT_OPTS = {
     "wrap": "keep",
     "number": False,
     "end_of_line": "lf",
+    "indent": 3,
 }
 
 
@@ -58,6 +59,10 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:
     if "number" in opts:
         if not isinstance(opts["number"], bool):
             raise InvalidConfError(f"Invalid 'number' value in {conf_path}")
+    if "indent" in opts:
+        indent = opts["indent"]
+        if not isinstance(indent, int) or indent < 3:
+            raise InvalidConfError(f"Invalid 'indent' value in {conf_path}")
 
 
 def _validate_keys(opts: Mapping, conf_path: Path) -> None:
