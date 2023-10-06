@@ -7,13 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from mdformat._conf import DEFAULT_OPTS
-from mdformat._util import (
-    EMPTY_MAP,
-    NULL_CTX,
-    atomic_write,
-    build_mdit,
-    detect_newline_type,
-)
+from mdformat._util import EMPTY_MAP, NULL_CTX, build_mdit, detect_newline_type
 from mdformat.renderer import MDRenderer
 
 
@@ -75,4 +69,6 @@ def file(
     newline = detect_newline_type(
         original_md, options.get("end_of_line", DEFAULT_OPTS["end_of_line"])
     )
-    atomic_write(f, formatted_md, newline)
+    formatted_md = formatted_md.replace("\n", newline)
+    if formatted_md != original_md:
+        f.write_bytes(formatted_md.encode())

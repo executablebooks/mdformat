@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Callable, Mapping
+from typing import Protocol
 
 from markdown_it import MarkdownIt
 
-from mdformat._compat import Protocol, importlib_metadata
+from mdformat._compat import importlib_metadata
 from mdformat.renderer.typing import Postprocess, Render
 
 

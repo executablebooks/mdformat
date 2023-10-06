@@ -2,18 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from contextlib import nullcontext
-import filecmp
-import os
-from pathlib import Path
 import re
-import tempfile
 from types import MappingProxyType
-from typing import Any
+from typing import Any, Literal
 
 from markdown_it import MarkdownIt
 from markdown_it.renderer import RendererHTML
 
-from mdformat._compat import Literal
 import mdformat.plugins
 
 NULL_CTX = nullcontext()
@@ -105,26 +100,6 @@ def is_md_equal(
         html_texts[key] = html
 
     return html_texts["md1"] == html_texts["md2"]
-
-
-def atomic_write(path: Path, text: str, newline: str) -> None:
-    """A function for atomic writes to a file.
-
-    Writes a temporary file first and then replaces the original file
-    with the temporary one. This is to avoid a moment where only empty
-    or partial content exists on disk.
-    """
-    fd, tmp_path = tempfile.mkstemp(dir=path.parent)
-    try:
-        with open(fd, "w", encoding="utf-8", newline=newline) as f:
-            f.write(text)
-        if filecmp.cmp(tmp_path, path, shallow=False):
-            os.remove(tmp_path)
-        else:
-            os.replace(tmp_path, path)
-    except BaseException:  # pragma: no cover
-        os.remove(tmp_path)
-        raise
 
 
 def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:

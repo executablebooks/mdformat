@@ -7,7 +7,6 @@ from datetime import datetime
 import itertools
 import logging
 from pathlib import Path
-import re
 import shutil
 import sys
 import textwrap
@@ -16,12 +15,9 @@ import mdformat
 from mdformat._compat import importlib_metadata
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
 from mdformat._output import diff
-from mdformat._util import atomic_write, detect_newline_type, is_md_equal
+from mdformat._util import detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
-
-# Match "\r" and "\n" characters that are not part of a "\r\n" sequence
-RE_NON_CRLF_LINE_END = re.compile(r"(?:[^\r]|^)\n|\r(?:[^\n]|\Z)")
 
 
 class RendererWarningPrinter(logging.Handler):
@@ -84,14 +80,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             _filename=path_str,
         )
         newline = detect_newline_type(original_str, opts["end_of_line"])
+        formatted_str = formatted_str.replace("\n", newline)
 
         if opts["check"]:
-            original_str_lf_eol = original_str.replace("\r\n", "\n").replace("\r", "\n")
-            if (
-                (formatted_str != original_str_lf_eol)
-                or (newline == "\n" and "\r" in original_str)
-                or (newline == "\r\n" and RE_NON_CRLF_LINE_END.search(original_str))
-            ):
+            if formatted_str != original_str:
                 format_errors_found = True
                 print_error(f'File "{path_str}" is not formatted.')
 
@@ -124,12 +116,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 )
                 return 1
             if path:
-                atomic_write(path, formatted_str, newline)
+                if formatted_str != original_str:
+                    path.write_bytes(formatted_str.encode())
             else:
-                with open(
-                    sys.stdout.fileno(), "w", closefd=False, newline=newline
-                ) as stdout:
-                    stdout.write(formatted_str)
+                sys.stdout.buffer.write(formatted_str.encode())
     if format_errors_found:
         return 1
     return 0

@@ -7,12 +7,11 @@ import logging
 import re
 import textwrap
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, NamedTuple
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
 from markdown_it.rules_block.html_block import HTML_SEQUENCES
 
 from mdformat import codepoints
-from mdformat._compat import Literal
 from mdformat._conf import DEFAULT_OPTS
 from mdformat.renderer._util import (
     RE_CHAR_REFERENCE,
