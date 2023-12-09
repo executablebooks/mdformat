@@ -1,7 +1,7 @@
 # Plugins
 
-Mdformat offers an extensible plugin system for both code fence content formatting and Markdown parser extensions (like GFM tables).
-This document explains how to use plugins.
+Mdformat offers an extensible plugin system for code fence content formatting, Markdown parser extensions (like GFM tables),
+and modifying/adding other functionality. This document explains how to use plugins.
 If you want to create a new plugin, refer to the [contributing](../contributors/contributing.md) docs.
 
 ## Code formatter plugins
@@ -137,5 +137,26 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><a href="https://github.com/hukkin/mdformat-toc">mdformat-toc</a></td>
     <td><code>toc</code></td>
     <td>Adds the capability to auto-generate a table of contents</td>
+  </tr>
+</table>
+
+## Other misc plugins
+
+Other plugins that don't fit the above categories.
+
+### Existing plugins
+
+<table>
+  <tr>
+    <th>Plugin</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/csala/mdformat-pyproject">mdformat-pyproject</a></td>
+    <td>Adds support for loading options from a <code>[tool.mdformat]</code> section inside the <code>pyproject.toml</code> file, if it exists</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/csala/mdformat-simple-breaks">mdformat-simple-breaks</a></td>
+    <td>Render <a href="https://mdformat.readthedocs.io/en/stable/users/style.html#thematic-breaks">thematic breaks</a> using three dashes instead of 70 underscores</td>
   </tr>
 </table>
