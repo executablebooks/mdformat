@@ -138,4 +138,9 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><code>toc</code></td>
     <td>Adds the capability to auto-generate a table of contents</td>
   </tr>
+    <tr>
+    <td><a href="https://github.com/tmr232/mdformat-wikilink">mdformat-wikilink</a></td>
+    <td><code>wikilink</code></td>
+    <td>Adds the capability to format wikilink style</td>
+  </tr>
 </table>
