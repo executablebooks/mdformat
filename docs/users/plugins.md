@@ -42,6 +42,11 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
     <td></td>
   </tr>
   <tr>
+    <td><a href="https://github.com/Freed-Wu/mdformat-ruff">mdformat-ruff</a></td>
+    <td><code>python</code></td>
+    <td></td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/hukkin/mdformat-config">mdformat-config</a></td>
     <td><code>json</code>, <code>toml</code>, <code>yaml</code></td>
     <td></td>
