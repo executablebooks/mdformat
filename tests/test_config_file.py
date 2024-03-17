@@ -65,6 +65,7 @@ def test_invalid_toml(tmp_path, capsys):
         ("wrap", "wrap = -3"),
         ("end_of_line", "end_of_line = 'lol'"),
         ("number", "number = 0"),
+        ("exclude", "exclude = 'lol'"),
     ],
 )
 def test_invalid_conf_value(bad_conf, conf_key, tmp_path, capsys):

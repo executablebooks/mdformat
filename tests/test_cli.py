@@ -70,6 +70,36 @@ def test_invalid_file(capsys):
     assert "does not exist" in captured.err
 
 
+def test_exclude(tmp_path):
+    file_path_1 = tmp_path / "test_markdown1.md"
+    file_path_2 = tmp_path / "test_markdown2.md"
+    file_path_3 = tmp_path / "test_markdown3.md"
+    subdir_path = tmp_path / "subdir"
+    subdir_path.mkdir()
+    file_path_4 = subdir_path / "test_markdown4.md"
+    file_path_1.write_text(UNFORMATTED_MARKDOWN)
+    file_path_2.write_text(UNFORMATTED_MARKDOWN)
+    file_path_3.write_text(UNFORMATTED_MARKDOWN)
+    file_path_4.write_text(UNFORMATTED_MARKDOWN)
+    assert (
+        run(
+            [
+                str(tmp_path),
+                "--exclude",
+                "test_markdown3.md",
+                "*2.md",
+                "subdir/*",
+                "abc.md",
+            ]
+        )
+        == 0
+    )
+    assert file_path_1.read_text() == FORMATTED_MARKDOWN
+    assert file_path_2.read_text() == UNFORMATTED_MARKDOWN
+    assert file_path_3.read_text() == UNFORMATTED_MARKDOWN
+    assert file_path_4.read_text() == UNFORMATTED_MARKDOWN
+
+
 def test_check(tmp_path):
     file_path = tmp_path / "test_markdown.md"
     file_path.write_bytes(FORMATTED_MARKDOWN.encode())

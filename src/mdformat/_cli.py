@@ -58,6 +58,9 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             return 1
         opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
 
+        if _is_excluded(path, opts["exclude"]):
+            continue
+
         if path:
             path_str = str(path)
             # Unlike `path.read_text(encoding="utf-8")`, this preserves
@@ -133,6 +136,7 @@ def make_arg_parser(
         else None,
     )
     parser.add_argument("paths", nargs="*", help="files to format")
+    parser.add_argument("--exclude", nargs="*", help="files to ignore")
     parser.add_argument(
         "--check", action="store_true", help="do not apply changes to files"
     )
@@ -207,6 +211,10 @@ def _resolve_path(path: Path) -> Path:
     if not path_exists:
         raise InvalidPath(path)
     return path
+
+
+def _is_excluded(file_path: Path, exclude_strings: Iterable[str]) -> bool:
+    return any(file_path.match(exclude_string) for exclude_string in exclude_strings)
 
 
 def print_paragraphs(paragraphs: Iterable[str]) -> None:
