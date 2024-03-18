@@ -128,9 +128,9 @@ def make_arg_parser(
     plugin_versions_str = get_plugin_versions_str(parser_extensions, codeformatters)
     parser = argparse.ArgumentParser(
         description="CommonMark compliant Markdown formatter",
-        epilog=f"Installed plugins: {plugin_versions_str}"
-        if plugin_versions_str
-        else None,
+        epilog=(
+            f"Installed plugins: {plugin_versions_str}" if plugin_versions_str else None
+        ),
     )
     parser.add_argument("paths", nargs="*", help="files to format")
     parser.add_argument(

@@ -2,6 +2,7 @@
 
 Run this module to generate and print an up-to-date set of characters.
 """
+
 UNICODE_WHITESPACE = frozenset(
     (
         "\t",
