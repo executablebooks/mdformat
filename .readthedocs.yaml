@@ -5,12 +5,28 @@
 # Required
 version: 2
 
+# Set the OS, Python version and other tools you might need
+build:
+  os: ubuntu-lts-latest
+  tools:
+    python: "3.12"
+
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
-   fail_on_warning: true
+  configuration: docs/conf.py
+  # You can configure Sphinx to use a different builder, for instance use the dirhtml builder for simpler URLs
+  # builder: "dirhtml"
+  # Fail on all warnings to avoid broken references
+  fail_on_warning: true
 
-# Optionally set the version of Python and requirements required to build your docs
+# Optionally build your docs in additional formats such as PDF and ePub
+# formats:
+#   - pdf
+#   - epub
+
+# Optional but recommended, declare the Python requirements required
+# to build your documentation
+# See https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
 python:
-   version: '3.8'
-   install:
-   - requirements: docs/requirements.txt
+  install:
+    - requirements: docs/requirements.txt
