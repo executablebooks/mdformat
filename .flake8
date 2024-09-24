@@ -4,3 +4,5 @@ max-complexity = 10
 # These checks violate PEP8 so let's ignore them
 extend-ignore = E203
 extend-exclude = */site-packages/*
+per-file-ignores =
+    src/mdformat/renderer/typing.py:A005
