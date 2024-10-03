@@ -141,6 +141,10 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
     return text
 
 
+def text_special(node: RenderTreeNode, context: RenderContext) -> str:
+    return node.content
+
+
 def fence(node: RenderTreeNode, context: RenderContext) -> str:
     info_str = node.info.strip()
     lang = info_str.split(maxsplit=1)[0] if info_str else ""
@@ -181,7 +185,8 @@ def code_block(node: RenderTreeNode, context: RenderContext) -> str:
 
 
 def image(node: RenderTreeNode, context: RenderContext) -> str:
-    description = _render_inline_as_text(node, context)
+    #description = _render_inline_as_text(node, context)
+    description = "".join(child.render(context) for child in node.children)
 
     if context.do_wrap:
         # Prevent line breaks
@@ -579,6 +584,7 @@ DEFAULT_RENDERERS: Mapping[str, Render] = MappingProxyType(
         "hardbreak": hardbreak,
         "softbreak": softbreak,
         "text": text,
+        "text_special": text_special,
         "fence": fence,
         "code_block": code_block,
         "link": link,
