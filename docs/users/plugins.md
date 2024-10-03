@@ -124,6 +124,11 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
   </tr>
   <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-gfm-alerts">mdformat-gfm-alerts</a></td>
+    <td><code>gfm_alerts</code></td>
+    <td>Extends GitHub Flavored Markdown (GFM) with "Alerts"</td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/KyleKing/mdformat-mkdocs">mdformat-mkdocs</a></td>
     <td><code>mkdocs</code></td>
     <td>Changes target specification to MKDocs. Indents lists with 4-spaces instead of 2</td>
