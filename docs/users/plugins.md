@@ -52,6 +52,11 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
     <td>Requires <a href="https://golang.org/doc/install">Go</a> installation</td>
   </tr>
   <tr>
+    <td><a href="https://github.com/Freed-Wu/mdformat-ruff">mdformat-ruff</a></td>
+    <td><code>python</code></td>
+    <td></td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/hukkin/mdformat-rustfmt">mdformat-rustfmt</a></td>
     <td><code>rust</code></td>
     <td>Requires <a href="https://github.com/rust-lang/rustfmt#quick-start">rustfmt</a> installation</td>
