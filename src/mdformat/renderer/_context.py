@@ -185,7 +185,7 @@ def code_block(node: RenderTreeNode, context: RenderContext) -> str:
 
 
 def image(node: RenderTreeNode, context: RenderContext) -> str:
-    #description = _render_inline_as_text(node, context)
+    # description = _render_inline_as_text(node, context)
     description = "".join(child.render(context) for child in node.children)
 
     if context.do_wrap:
