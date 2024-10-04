@@ -41,7 +41,7 @@ Note that GitHub's Markdown renderer supports syntax extensions not included in 
 For full GitHub support do:
 
 ```bash
-pip install mdformat-gfm mdformat-frontmatter mdformat-footnote
+pip install mdformat-gfm mdformat-frontmatter mdformat-footnote mdformat-gfm-alerts
 ```
 
 Install with [Markedly Structured Text (MyST)](https://myst-parser.readthedocs.io/en/latest/using/syntax.html) support:
