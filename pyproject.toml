@@ -93,7 +93,7 @@ description = run mypy
 basepython = python3.8
 deps =
     -r tests/requirements.txt
-    mypy==0.910
+    mypy==1.11.2
 commands =
     mypy {posargs:src/ tests/}
 
@@ -168,8 +168,3 @@ no_implicit_optional = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
-
-[[tool.mypy.overrides]]
-# This matches `fuzzer/fuzz.py`.
-module = "fuzz"
-ignore_errors = true
