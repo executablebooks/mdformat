@@ -11,7 +11,7 @@ authors = [
     { name = "Taneli Hukkinen", email = "hukkin@users.noreply.github.com" },
 ]
 license = { file = "LICENSE" }
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     'markdown-it-py >=1.0.0,<4.0.0',
     'tomli >=1.1.0; python_version < "3.11"',
@@ -63,10 +63,10 @@ xfail_strict = true
 legacy_tox_ini = '''
 [tox]
 # Only run pytest envs when no args given to tox
-envlist = py{38,39,310,311}
+envlist = py{39,310,311,312,313}
 isolated_build = True
 
-[testenv:py{38,39,310,311}]
+[testenv:py{39,310,311,312,313}]
 description = run tests
 deps =
     -r tests/requirements.txt
@@ -90,7 +90,7 @@ commands = pre-commit run {posargs:--all}
 
 [testenv:mypy]
 description = run mypy
-basepython = python3.8
+basepython = python3.11
 deps =
     -r tests/requirements.txt
     mypy==1.11.2
