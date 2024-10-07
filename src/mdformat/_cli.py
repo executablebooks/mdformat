@@ -254,7 +254,7 @@ def log_handler_applied(
 def get_package_name(obj: object) -> str:
     # Packages and modules should have `__package__`
     if hasattr(obj, "__package__"):
-        package_name = obj.__package__  # type: ignore[attr-defined]
+        package_name = obj.__package__
     else:  # class or function
         module_name = obj.__module__
         package_name = module_name.split(".", maxsplit=1)[0]

@@ -20,7 +20,7 @@ jobs:
 
     - name: Installation (deps and package)
       run: |
-        pip install . pre-commit mypy==0.910 -r tests/requirements.txt
+        pip install . pre-commit mypy==1.11.2 -r tests/requirements.txt
 
     - name: run linters
       run: |
