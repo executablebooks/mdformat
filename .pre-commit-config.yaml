@@ -30,10 +30,11 @@ repos:
   rev: b965c2a5026f8ba399283ba3e01898b012853c79  # frozen: 24.8.0
   hooks:
   - id: black
-- repo: https://github.com/PyCQA/docformatter
-  rev: dfefe062799848234b4cd60b04aa633c0608025e  # frozen: v1.7.5
-  hooks:
-  - id: docformatter
+# Disable docformatter until https://github.com/PyCQA/docformatter/pull/287 is merged
+#- repo: https://github.com/PyCQA/docformatter
+#  rev: dfefe062799848234b4cd60b04aa633c0608025e  # frozen: v1.7.5
+#  hooks:
+#  - id: docformatter
 - repo: https://github.com/PyCQA/flake8
   rev: e43806be3607110919eff72939fda031776e885a  # frozen: 7.1.1
   hooks:
