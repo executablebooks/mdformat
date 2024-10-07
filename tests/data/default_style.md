@@ -464,3 +464,18 @@ Unicode space (U+3000) after heading
 .
 # hoge
 .
+
+Keep code span in image description
+.
+![example](/url)
+
+![*example*](/url)
+
+![`example`](/url)
+.
+![example](/url)
+
+![*example*](/url)
+
+![`example`](/url)
+.
