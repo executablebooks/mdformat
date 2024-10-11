@@ -60,11 +60,11 @@ setuptools.setup(
 )
 ```
 
-If using Poetry for packaging, the entry point configuration in `pyproject.toml` would need to be like:
+If using a PEP 621 compliant build backend (e.g. Flit) for packaging, the entry point configuration in `pyproject.toml` would need to be like:
 
 ```toml
 # other config here...
-[tool.poetry.plugins."mdformat.codeformatter"]
+[project.entry-points."mdformat.codeformatter"]
 "python" = "my_package.some_module:format_python"
 ```
 
@@ -112,10 +112,17 @@ setuptools.setup(
 If using Poetry or Flit for packaging, the entry point configuration in `pyproject.toml` would need to be like:
 
 ```toml
-# other config here...
+# Poetry specific:
 [tool.poetry.plugins."mdformat.parser_extension"]
 "myextension" = "my_package:ext_module_or_class"
-# or
-[tool.flit.plugins."mdformat.parser_extension"]
+```
+
+```toml
+# or PEP 621 compliant (works with Flit):
+[project.entry-points."mdformat.parser_extension"]
 "myextension" = "my_package:ext_module_or_class"
 ```
+
+## Making your plugin discoverable
+
+In case you host your plugin on GitHub, make sure to add it under the "mdformat" topic so it shows up on https://github.com/topics/mdformat.

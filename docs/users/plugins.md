@@ -23,7 +23,7 @@ formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
 
-### Existing plugins
+### Existing plugins (see https://github.com/topics/mdformat for more!)
 
 <table>
   <tr>
@@ -90,7 +90,7 @@ unformatted = "content...\n"
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
-### Existing plugins
+### Existing plugins (see https://github.com/topics/mdformat for more!)
 
 <table>
   <tr>
