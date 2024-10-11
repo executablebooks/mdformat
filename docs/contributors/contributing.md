@@ -116,6 +116,7 @@ If using Poetry or Flit for packaging, the entry point configuration in `pyproje
 [tool.poetry.plugins."mdformat.parser_extension"]
 "myextension" = "my_package:ext_module_or_class"
 ```
+
 ```toml
 # or PEP 621 compliant (works with Flit):
 [project.entry-points."mdformat.parser_extension"]
@@ -123,4 +124,5 @@ If using Poetry or Flit for packaging, the entry point configuration in `pyproje
 ```
 
 ## Making your plugin discoverable
+
 In case you host your plugin on GitHub, make sure to add it under the "mdformat" topic so it shows up on https://github.com/topics/mdformat.
