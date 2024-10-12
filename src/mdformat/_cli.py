@@ -59,10 +59,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             return 1
         opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
 
-        if sys.version_info >= (3, 13):
+        if sys.version_info >= (3, 13):  # pragma: no cover
             if is_excluded(path, opts["exclude"], toml_path, "exclude" in cli_opts):
                 continue
-        else:
+        else:  # pragma: no cover
             if "exclude" in toml_opts:
                 print_error(
                     "'exclude' patterns are only available on Python 3.13+.",
@@ -172,7 +172,7 @@ def make_arg_parser(
         choices=("lf", "crlf", "keep"),
         help="output file line ending mode (default: lf)",
     )
-    if sys.version_info >= (3, 13):
+    if sys.version_info >= (3, 13):  # pragma: no cover
         parser.add_argument(
             "--exclude",
             action="append",
@@ -237,7 +237,10 @@ def is_excluded(
     except ValueError:
         return False
 
-    return any(relative_path.full_match(pattern) for pattern in patterns)
+    return any(
+        relative_path.full_match(pattern)  # type: ignore[attr-defined]
+        for pattern in patterns
+    )
 
 
 def _normalize_path(path: Path) -> Path:
