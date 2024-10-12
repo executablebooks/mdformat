@@ -219,7 +219,10 @@ def resolve_file_paths(path_strings: Iterable[str]) -> list[None | Path]:
 
 
 def is_excluded(
-    path: Path | None, patterns: list[str], toml_path: Path | None, excludes_from_cli: bool
+    path: Path | None,
+    patterns: list[str],
+    toml_path: Path | None,
+    excludes_from_cli: bool,
 ) -> bool:
     if not path:
         return False
