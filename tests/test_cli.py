@@ -90,6 +90,7 @@ def test_invalid_file(capsys):
     assert "does not exist" in captured.err
 
 
+@pytest.mark.skipif(os.name == "nt", reason="No os.mkfifo on windows")
 def test_fifo(tmp_path, capsys):
     fifo_path = tmp_path / "fifo1"
     os.mkfifo(fifo_path)

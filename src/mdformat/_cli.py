@@ -211,9 +211,9 @@ def resolve_file_paths(path_strings: Iterable[str]) -> list[None | Path]:
                 if p.is_file():
                     p = _normalize_path(p)
                     file_paths.append(p)
-        elif path_obj.is_file():
+        elif path_obj.is_file():  # pragma: nt no cover
             file_paths.append(path_obj)
-        else:
+        else:  # pragma: nt no cover
             raise InvalidPath(path_obj)
     return file_paths
 
