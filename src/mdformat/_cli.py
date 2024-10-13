@@ -21,7 +21,7 @@ import mdformat.renderer
 
 class RendererWarningPrinter(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
-        if record.levelno >= logging.WARNING:
+        if record.levelno >= logging.WARNING:  # pragma: no branch
             sys.stderr.write(f"Warning: {record.msg}\n")
 
 
@@ -59,10 +59,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             return 1
         opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
 
-        if sys.version_info >= (3, 13):  # pragma: no cover
+        if sys.version_info >= (3, 13):  # pragma: >=3.13 cover
             if is_excluded(path, opts["exclude"], toml_path, "exclude" in cli_opts):
                 continue
-        else:  # pragma: no cover
+        else:  # pragma: <3.13 cover
             if "exclude" in toml_opts:
                 print_error(
                     "'exclude' patterns are only available on Python 3.13+.",
@@ -172,7 +172,7 @@ def make_arg_parser(
         choices=("lf", "crlf", "keep"),
         help="output file line ending mode (default: lf)",
     )
-    if sys.version_info >= (3, 13):  # pragma: no cover
+    if sys.version_info >= (3, 13):  # pragma: >=3.13 cover
         parser.add_argument(
             "--exclude",
             action="append",
@@ -218,7 +218,7 @@ def resolve_file_paths(path_strings: Iterable[str]) -> list[None | Path]:
     return file_paths
 
 
-def is_excluded(
+def is_excluded(  # pragma: >=3.13 cover
     path: Path | None,
     patterns: list[str],
     toml_path: Path | None,

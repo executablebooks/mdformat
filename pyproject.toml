@@ -71,7 +71,7 @@ description = run tests
 deps =
     -r tests/requirements.txt
 commands =
-    pytest {posargs}
+    pytest {posargs:--cov}
 
 [testenv:profile]
 description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
@@ -135,20 +135,7 @@ commands =
 
 [tool.coverage.run]
 source = ["mdformat"]
-omit = ["*/__main__.py"]
-
-[tool.coverage.report]
-# Regexes for lines to exclude from consideration
-exclude_lines = [
-    # Re-enable the standard pragma (with extra strictness)
-    '# pragma: no cover\b',
-    # Ellipsis lines after @typing.overload
-    '^ +\.\.\.$',
-    # Code for static type checkers
-    "if TYPE_CHECKING:",
-    # Scripts
-    'if __name__ == .__main__.:',
-]
+plugins = ["covdefaults"]
 
 
 [tool.mypy]

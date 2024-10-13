@@ -59,7 +59,7 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:  # noqa: C901
     if "number" in opts:
         if not isinstance(opts["number"], bool):
             raise InvalidConfError(f"Invalid 'number' value in {conf_path}")
-    if "exclude" in opts:
+    if "exclude" in opts:  # pragma: >=3.13 cover
         if not isinstance(opts["exclude"], list):
             raise InvalidConfError(f"Invalid 'exclude' value in {conf_path}")
         for pattern in opts["exclude"]:

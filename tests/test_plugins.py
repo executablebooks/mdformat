@@ -103,7 +103,7 @@ def test_table(monkeypatch):
     other text
     """
         ),
-        extensions=["table"],
+        extensions=["table", "table"],
     )
     assert text == dedent(
         """\
@@ -195,7 +195,7 @@ class JSONFormatterPlugin:
         return json.dumps(parsed, indent=2) + "\n"
 
 
-def test_code_format_warnings(monkeypatch, tmp_path, capsys):
+def test_code_format_warnings__cli(monkeypatch, tmp_path, capsys):
     monkeypatch.setitem(CODEFORMATTERS, "json", JSONFormatterPlugin.format_json)
     file_path = tmp_path / "test_markdown.md"
     file_path.write_text("```json\nthis is invalid json\n```\n")
@@ -204,6 +204,18 @@ def test_code_format_warnings(monkeypatch, tmp_path, capsys):
     assert (
         captured.err
         == f"Warning: Failed formatting content of a json code block (line 1 before formatting). Filename: {file_path}\n"  # noqa: E501
+    )
+
+
+def test_code_format_warnings__api(monkeypatch, caplog):
+    monkeypatch.setitem(CODEFORMATTERS, "json", JSONFormatterPlugin.format_json)
+    assert (
+        mdformat.text("```json\nthis is invalid json\n```\n", codeformatters=("json",))
+        == "```json\nthis is invalid json\n```\n"
+    )
+    assert (
+        caplog.messages[0]
+        == "Failed formatting content of a json code block (line 1 before formatting)"
     )
 
 
