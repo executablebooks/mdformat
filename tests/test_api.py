@@ -134,7 +134,7 @@ def test_no_timestamp_modify(tmp_path):
 def test_mdrenderer_no_finalize(tmp_path):
     mdit = MarkdownIt()
     mdit.options["store_labels"] = True
-    env = {}
+    env: dict = {}
     tokens = mdit.parse(
         "[gl ref]: https://gitlab.com\n\nHere's a link to [GitLab][gl ref]", env
     )
