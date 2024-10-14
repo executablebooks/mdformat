@@ -23,7 +23,7 @@ formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
 
-### Existing plugins
+### Existing plugins (see https://github.com/topics/mdformat for more!)
 
 <table>
   <tr>
@@ -50,6 +50,11 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
     <td><a href="https://github.com/hukkin/mdformat-gofmt">mdformat-gofmt</a></td>
     <td><code>go</code></td>
     <td>Requires <a href="https://golang.org/doc/install">Go</a> installation</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Freed-Wu/mdformat-ruff">mdformat-ruff</a></td>
+    <td><code>python</code></td>
+    <td></td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkin/mdformat-rustfmt">mdformat-rustfmt</a></td>
@@ -85,7 +90,7 @@ unformatted = "content...\n"
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
-### Existing plugins
+### Existing plugins (see https://github.com/topics/mdformat for more!)
 
 <table>
   <tr>
@@ -117,6 +122,11 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><a href="https://github.com/hukkin/mdformat-gfm">mdformat-gfm</a></td>
     <td><code>gfm</code></td>
     <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-gfm-alerts">mdformat-gfm-alerts</a></td>
+    <td><code>gfm_alerts</code></td>
+    <td>Extends GitHub Flavored Markdown (GFM) with "Alerts"</td>
   </tr>
   <tr>
     <td><a href="https://github.com/KyleKing/mdformat-mkdocs">mdformat-mkdocs</a></td>

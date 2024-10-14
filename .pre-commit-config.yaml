@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: f71fa2c1f9cf5cb705f73dffe4b21f7c61470ba9  # frozen: v4.4.0
+  rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # frozen: v5.0.0
   hooks:
   - id: check-yaml
   - id: check-toml
@@ -23,22 +23,26 @@ repos:
   hooks:
   - id: absolufy-imports
 - repo: https://github.com/PyCQA/isort
-  rev: dbf82f2dd09ae41d9355bcd7ab69187a19e6bf2f  # frozen: 5.12.0
+  rev: c235f5e450b4b84e58d114ed4c589cbf454175a3  # frozen: 5.13.2
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: 193ee766ca496871f93621d6b58d57a6564ff81b  # frozen: 23.7.0
+  rev: 1b2427a2b785cc4aac97c19bb4b9a0de063f9547  # frozen: 24.10.0
   hooks:
   - id: black
-- repo: https://github.com/myint/docformatter
-  rev: dfefe062799848234b4cd60b04aa633c0608025e  # frozen: v1.7.5
+- repo: https://github.com/hukkin/docformatter
+  rev: ab802050e6e96aaaf7f917fcbc333bb74e2e57f7  # frozen: v1.4.2
   hooks:
   - id: docformatter
 - repo: https://github.com/PyCQA/flake8
-  rev: 10f4af6dbcf93456ba7df762278ae61ba3120dc6  # frozen: 6.1.0
+  rev: e43806be3607110919eff72939fda031776e885a  # frozen: 7.1.1
   hooks:
   - id: flake8
     additional_dependencies:
     - flake8-bugbear
     - flake8-builtins
     - flake8-comprehensions
+- repo: https://github.com/pre-commit/pre-commit
+  rev: cc4a52241565440ce200666799eef70626457488  # frozen: v4.0.1
+  hooks:
+  - id: validate_manifest
