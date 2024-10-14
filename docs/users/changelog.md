@@ -3,6 +3,16 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.18
+
+- Added
+  - Option to exclude file paths using Unix-style glob patterns
+    (`--exclude` on the CLI and `exclude` key in TOML).
+    This feature is Python 3.13+ only.
+    Thank you, [J. Sebastian Paez](https://github.com/jspaezp), for the issue.
+- Removed
+  - Python 3.8 support
+
 ## 0.7.17
 
 - Added
