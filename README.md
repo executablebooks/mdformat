@@ -90,7 +90,9 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ```console
 foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}] [--end-of-line {lf,crlf,keep}] [paths ...]
+usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}]
+                [--end-of-line {lf,crlf,keep}] [--exclude PATTERN]
+                [paths ...]
 
 CommonMark compliant Markdown formatter
 
@@ -106,6 +108,7 @@ options:
                         paragraph word wrap mode (default: keep)
   --end-of-line {lf,crlf,keep}
                         output file line ending mode (default: lf)
+  --exclude PATTERN     exclude files that match the Unix-style glob pattern (multiple allowed)
 ```
 
 <!-- end cli-usage -->

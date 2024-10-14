@@ -176,7 +176,9 @@ def make_arg_parser(
         parser.add_argument(
             "--exclude",
             action="append",
-            help="exclude files that match the pattern (multiple allowed)",
+            metavar="PATTERN",
+            help="exclude files that match the Unix-style glob pattern "
+            "(multiple allowed)",
         )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
@@ -194,10 +196,9 @@ class InvalidPath(Exception):
 def resolve_file_paths(path_strings: Iterable[str]) -> list[None | Path]:
     """Resolve pathlib.Path objects from filepath strings.
 
-    Convert path strings to pathlib.Path objects.
-    Check that all paths are either files, directories or stdin. If not,
-    raise InvalidPath. Resolve directory paths to a list of file paths
-    (ending with ".md").
+    Convert path strings to pathlib.Path objects. Check that all paths
+    are either files, directories or stdin. If not, raise InvalidPath.
+    Resolve directory paths to a list of file paths (ending with ".md").
     """
     file_paths: list[None | Path] = []  # Path to file or None for stdin/stdout
     for path_str in path_strings:
@@ -246,10 +247,9 @@ def is_excluded(  # pragma: >=3.13 cover
 def _normalize_path(path: Path) -> Path:
     """Normalize path.
 
-    Make the path absolute, resolve any ".." sequences.
-    Do not resolve symlinks, as it would interfere with
-    'exclude' patterns.
-    Raise `InvalidPath` if the path does not exist.
+    Make the path absolute, resolve any ".." sequences. Do not resolve
+    symlinks, as it would interfere with 'exclude' patterns. Raise
+    `InvalidPath` if the path does not exist.
     """
     path = Path(os.path.abspath(path))
     try:
