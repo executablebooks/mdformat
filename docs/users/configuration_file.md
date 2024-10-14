@@ -40,6 +40,7 @@ Files that match an exclusion pattern are _always_ excluded,
 even in the case that they are directly referenced in a command line invocation.
 
 ### Example patterns
+
 ```toml
 # .mdformat.toml
 exclude = [
