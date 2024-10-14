@@ -111,6 +111,8 @@ options:
   --exclude PATTERN     exclude files that match the Unix-style glob pattern (multiple allowed)
 ```
 
+The `--exclude` option is only available on Python 3.13+.
+
 <!-- end cli-usage -->
 
 ## Documentation
