@@ -5,6 +5,7 @@ from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
 import contextlib
 import itertools
 import logging
+import os.path
 from pathlib import Path
 import shutil
 import sys
@@ -20,7 +21,7 @@ import mdformat.renderer
 
 class RendererWarningPrinter(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
-        if record.levelno >= logging.WARNING:
+        if record.levelno >= logging.WARNING:  # pragma: no branch
             sys.stderr.write(f"Warning: {record.msg}\n")
 
 
@@ -52,11 +53,25 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     renderer_warning_printer = RendererWarningPrinter()
     for path in file_paths:
         try:
-            toml_opts = read_toml_opts(path.parent if path else Path.cwd())
+            toml_opts, toml_path = read_toml_opts(path.parent if path else Path.cwd())
         except InvalidConfError as e:
             print_error(str(e))
             return 1
         opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
+
+        if sys.version_info >= (3, 13):  # pragma: >=3.13 cover
+            if is_excluded(path, opts["exclude"], toml_path, "exclude" in cli_opts):
+                continue
+        else:  # pragma: <3.13 cover
+            if "exclude" in toml_opts:
+                print_error(
+                    "'exclude' patterns are only available on Python 3.13+.",
+                    paragraphs=[
+                        "Please remove the 'exclude' list from your .mdformat.toml"
+                        " or upgrade Python version."
+                    ],
+                )
+                return 1
 
         if path:
             path_str = str(path)
@@ -157,6 +172,14 @@ def make_arg_parser(
         choices=("lf", "crlf", "keep"),
         help="output file line ending mode (default: lf)",
     )
+    if sys.version_info >= (3, 13):  # pragma: >=3.13 cover
+        parser.add_argument(
+            "--exclude",
+            action="append",
+            metavar="PATTERN",
+            help="exclude files that match the Unix-style glob pattern "
+            "(multiple allowed)",
+        )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
             plugin.add_cli_options(parser)
@@ -173,10 +196,9 @@ class InvalidPath(Exception):
 def resolve_file_paths(path_strings: Iterable[str]) -> list[None | Path]:
     """Resolve pathlib.Path objects from filepath strings.
 
-    Convert path strings to pathlib.Path objects. Resolve symlinks.
-    Check that all paths are either files, directories or stdin. If not,
-    raise InvalidPath. Resolve directory paths to a list of file paths
-    (ending with ".md").
+    Convert path strings to pathlib.Path objects. Check that all paths
+    are either files, directories or stdin. If not, raise InvalidPath.
+    Resolve directory paths to a list of file paths (ending with ".md").
     """
     file_paths: list[None | Path] = []  # Path to file or None for stdin/stdout
     for path_str in path_strings:
@@ -184,23 +206,53 @@ def resolve_file_paths(path_strings: Iterable[str]) -> list[None | Path]:
             file_paths.append(None)
             continue
         path_obj = Path(path_str)
-        path_obj = _resolve_path(path_obj)
+        path_obj = _normalize_path(path_obj)
         if path_obj.is_dir():
             for p in path_obj.glob("**/*.md"):
-                p = _resolve_path(p)
-                file_paths.append(p)
-        else:
+                if p.is_file():
+                    p = _normalize_path(p)
+                    file_paths.append(p)
+        elif path_obj.is_file():  # pragma: nt no cover
             file_paths.append(path_obj)
+        else:  # pragma: nt no cover
+            raise InvalidPath(path_obj)
     return file_paths
 
 
-def _resolve_path(path: Path) -> Path:
-    """Resolve path.
+def is_excluded(  # pragma: >=3.13 cover
+    path: Path | None,
+    patterns: list[str],
+    toml_path: Path | None,
+    excludes_from_cli: bool,
+) -> bool:
+    if not path:
+        return False
 
-    Resolve symlinks. Raise `InvalidPath` if the path does not exist.
-    """
+    if not excludes_from_cli and toml_path:
+        exclude_root = toml_path.parent
+    else:
+        exclude_root = Path.cwd()
+
     try:
-        path = path.resolve()  # resolve symlinks
+        relative_path = path.relative_to(exclude_root)
+    except ValueError:
+        return False
+
+    return any(
+        relative_path.full_match(pattern)  # type: ignore[attr-defined]
+        for pattern in patterns
+    )
+
+
+def _normalize_path(path: Path) -> Path:
+    """Normalize path.
+
+    Make the path absolute, resolve any ".." sequences. Do not resolve
+    symlinks, as it would interfere with 'exclude' patterns. Raise
+    `InvalidPath` if the path does not exist.
+    """
+    path = Path(os.path.abspath(path))
+    try:
         path_exists = path.exists()
     except OSError:  # Catch "OSError: [WinError 123]" on Windows  # pragma: no cover
         path_exists = False

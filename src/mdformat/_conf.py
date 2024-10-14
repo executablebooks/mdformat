@@ -10,6 +10,7 @@ DEFAULT_OPTS = {
     "wrap": "keep",
     "number": False,
     "end_of_line": "lf",
+    "exclude": [],
 }
 
 
@@ -24,12 +25,12 @@ class InvalidConfError(Exception):
 
 
 @functools.lru_cache()
-def read_toml_opts(conf_dir: Path) -> Mapping:
+def read_toml_opts(conf_dir: Path) -> tuple[Mapping, Path | None]:
     conf_path = conf_dir / ".mdformat.toml"
     if not conf_path.is_file():
         parent_dir = conf_dir.parent
         if conf_dir == parent_dir:
-            return {}
+            return {}, None
         return read_toml_opts(parent_dir)
 
     with open(conf_path, "rb") as f:
@@ -41,10 +42,10 @@ def read_toml_opts(conf_dir: Path) -> Mapping:
     _validate_keys(toml_opts, conf_path)
     _validate_values(toml_opts, conf_path)
 
-    return toml_opts
+    return toml_opts, conf_path
 
 
-def _validate_values(opts: Mapping, conf_path: Path) -> None:
+def _validate_values(opts: Mapping, conf_path: Path) -> None:  # noqa: C901
     if "wrap" in opts:
         wrap_value = opts["wrap"]
         if not (
@@ -58,6 +59,12 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:
     if "number" in opts:
         if not isinstance(opts["number"], bool):
             raise InvalidConfError(f"Invalid 'number' value in {conf_path}")
+    if "exclude" in opts:  # pragma: >=3.13 cover
+        if not isinstance(opts["exclude"], list):
+            raise InvalidConfError(f"Invalid 'exclude' value in {conf_path}")
+        for pattern in opts["exclude"]:
+            if not isinstance(pattern, str):
+                raise InvalidConfError(f"Invalid 'exclude' value in {conf_path}")
 
 
 def _validate_keys(opts: Mapping, conf_path: Path) -> None:

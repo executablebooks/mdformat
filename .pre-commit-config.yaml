@@ -27,14 +27,13 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: b965c2a5026f8ba399283ba3e01898b012853c79  # frozen: 24.8.0
+  rev: 1b2427a2b785cc4aac97c19bb4b9a0de063f9547  # frozen: 24.10.0
   hooks:
   - id: black
-# Disable docformatter until https://github.com/PyCQA/docformatter/pull/287 is merged
-#- repo: https://github.com/PyCQA/docformatter
-#  rev: dfefe062799848234b4cd60b04aa633c0608025e  # frozen: v1.7.5
-#  hooks:
-#  - id: docformatter
+- repo: https://github.com/hukkin/docformatter
+  rev: ab802050e6e96aaaf7f917fcbc333bb74e2e57f7  # frozen: v1.4.2
+  hooks:
+  - id: docformatter
 - repo: https://github.com/PyCQA/flake8
   rev: e43806be3607110919eff72939fda031776e885a  # frozen: 7.1.1
   hooks:
@@ -44,6 +43,6 @@ repos:
     - flake8-builtins
     - flake8-comprehensions
 - repo: https://github.com/pre-commit/pre-commit
-  rev: dbccd57db0e9cf993ea909e929eea97f6e4389ea  # frozen: v4.0.0
+  rev: cc4a52241565440ce200666799eef70626457488  # frozen: v4.0.1
   hooks:
   - id: validate_manifest

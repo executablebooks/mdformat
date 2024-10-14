@@ -37,6 +37,13 @@ def test_format__folder(tmp_path):
     assert file_path_3.read_text() == UNFORMATTED_MARKDOWN
 
 
+def test_format__folder_leads_to_invalid(tmp_path):
+    file_path_1 = tmp_path / "test_markdown1.md"
+    file_path_1.mkdir()
+    assert run((str(tmp_path),)) == 0
+    assert file_path_1.is_dir()
+
+
 def test_format__symlinks(tmp_path):
     # Create two MD files
     file_path_1 = tmp_path / "test_markdown1.md"
@@ -62,12 +69,35 @@ def test_format__symlinks(tmp_path):
     assert symlink_2.is_symlink()
 
 
+def test_broken_symlink(tmp_path, capsys):
+    # Create a broken symlink
+    file_path = tmp_path / "test_markdown1.md"
+    symlink_path = tmp_path / "symlink"
+    symlink_path.symlink_to(file_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        run([str(symlink_path)])
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert "does not exist" in captured.err
+
+
 def test_invalid_file(capsys):
     with pytest.raises(SystemExit) as exc_info:
         run(("this is not a valid filepath?`=|><@{[]\\/,.%¤#'",))
     assert exc_info.value.code == 2
     captured = capsys.readouterr()
     assert "does not exist" in captured.err
+
+
+@pytest.mark.skipif(os.name == "nt", reason="No os.mkfifo on windows")
+def test_fifo(tmp_path, capsys):
+    fifo_path = tmp_path / "fifo1"
+    os.mkfifo(fifo_path)
+    with pytest.raises(SystemExit) as exc_info:
+        run((str(fifo_path),))
+    assert exc_info.value.code == 2
+    assert "does not exist" in capsys.readouterr().err
 
 
 def test_check(tmp_path):
@@ -331,3 +361,39 @@ def test_no_timestamp_modify(tmp_path):
     # Assert that modification time does not change when no changes are applied
     assert run([str(file_path)]) == 0
     assert os.path.getmtime(file_path) == initial_mod_time
+
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 13), reason="'exclude' only possible on 3.13+"
+)
+def test_exclude(tmp_path):
+    subdir_path_1 = tmp_path / "folder1"
+    subdir_path_2 = subdir_path_1 / "folder2"
+    file_path_1 = subdir_path_2 / "file1.md"
+    subdir_path_1.mkdir()
+    subdir_path_2.mkdir()
+    file_path_1.write_text(UNFORMATTED_MARKDOWN)
+    cwd = tmp_path
+
+    with patch("mdformat._cli.Path.cwd", return_value=cwd):
+        for good_pattern in [
+            "folder1/folder2/file1.md",
+            "**",
+            "**/*.md",
+            "**/file1.md",
+            "folder1/**",
+        ]:
+            assert run([str(file_path_1), "--exclude", good_pattern]) == 0
+            assert file_path_1.read_text() == UNFORMATTED_MARKDOWN
+
+        for bad_pattern in [
+            "**file1.md",
+            "file1.md",
+            "folder1",
+            "*.md",
+            "*",
+            "folder1/*",
+        ]:
+            file_path_1.write_text(UNFORMATTED_MARKDOWN)
+            assert run([str(file_path_1), "--exclude", bad_pattern]) == 0
+            assert file_path_1.read_text() == FORMATTED_MARKDOWN
