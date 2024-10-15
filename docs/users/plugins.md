@@ -1,7 +1,7 @@
 # Plugins
 
-Mdformat offers an extensible plugin system for both code fence content formatting and Markdown parser extensions (like GFM tables).
-This document explains how to use plugins.
+Mdformat offers an extensible plugin system for code fence content formatting, Markdown parser extensions (like GFM tables),
+and modifying/adding other functionality. This document explains how to use plugins.
 If you want to create a new plugin, refer to the [contributing](../contributors/contributing.md) docs.
 
 ## Code formatter plugins
@@ -23,7 +23,7 @@ formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
 
-### Existing plugins
+### Existing plugins (see https://github.com/topics/mdformat for more!)
 
 <table>
   <tr>
@@ -50,6 +50,11 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
     <td><a href="https://github.com/hukkin/mdformat-gofmt">mdformat-gofmt</a></td>
     <td><code>go</code></td>
     <td>Requires <a href="https://golang.org/doc/install">Go</a> installation</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Freed-Wu/mdformat-ruff">mdformat-ruff</a></td>
+    <td><code>python</code></td>
+    <td></td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkin/mdformat-rustfmt">mdformat-rustfmt</a></td>
@@ -85,7 +90,7 @@ unformatted = "content...\n"
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
-### Existing plugins
+### Existing plugins (see https://github.com/topics/mdformat for more!)
 
 <table>
   <tr>
@@ -119,6 +124,11 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
   </tr>
   <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-gfm-alerts">mdformat-gfm-alerts</a></td>
+    <td><code>gfm_alerts</code></td>
+    <td>Extends GitHub Flavored Markdown (GFM) with "Alerts"</td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/KyleKing/mdformat-mkdocs">mdformat-mkdocs</a></td>
     <td><code>mkdocs</code></td>
     <td>Changes target specification to MKDocs. Indents lists with 4-spaces instead of 2</td>
@@ -137,5 +147,26 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><a href="https://github.com/hukkin/mdformat-toc">mdformat-toc</a></td>
     <td><code>toc</code></td>
     <td>Adds the capability to auto-generate a table of contents</td>
+  </tr>
+</table>
+
+## Other misc plugins
+
+Other plugins that don't fit the above categories.
+
+### Existing plugins
+
+<table>
+  <tr>
+    <th>Plugin</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/csala/mdformat-pyproject">mdformat-pyproject</a></td>
+    <td>Adds support for loading options from a <code>[tool.mdformat]</code> section inside the <code>pyproject.toml</code> file, if it exists</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/csala/mdformat-simple-breaks">mdformat-simple-breaks</a></td>
+    <td>Render <a href="https://mdformat.readthedocs.io/en/stable/users/style.html#thematic-breaks">thematic breaks</a> using three dashes instead of 70 underscores</td>
   </tr>
 </table>

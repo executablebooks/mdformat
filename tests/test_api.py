@@ -1,9 +1,11 @@
 import os
 
+from markdown_it import MarkdownIt
 import pytest
 
 import mdformat
 from mdformat._util import is_md_equal
+from mdformat.renderer import MDRenderer
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
 FORMATTED_MARKDOWN = "# A header\n"
@@ -127,3 +129,15 @@ def test_no_timestamp_modify(tmp_path):
     # Assert that modification time does not change when no changes are applied
     mdformat.file(file_path)
     assert os.path.getmtime(file_path) == initial_mod_time
+
+
+def test_mdrenderer_no_finalize(tmp_path):
+    mdit = MarkdownIt()
+    mdit.options["store_labels"] = True
+    env: dict = {}
+    tokens = mdit.parse(
+        "[gl ref]: https://gitlab.com\n\nHere's a link to [GitLab][gl ref]", env
+    )
+    unfinalized = MDRenderer().render(tokens, {}, env, finalize=False)
+    finalized = MDRenderer().render(tokens, {}, env)
+    assert finalized == unfinalized + "\n\n[gl ref]: https://gitlab.com\n"

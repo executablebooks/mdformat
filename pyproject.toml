@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mdformat"
-version = "0.7.17"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
+version = "0.7.18"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 description = "CommonMark compliant Markdown formatter"
 authors = [
     { name = "Taneli Hukkinen", email = "hukkin@users.noreply.github.com" },
 ]
 license = { file = "LICENSE" }
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     'markdown-it-py >=1.0.0,<4.0.0',
     'tomli >=1.1.0; python_version < "3.11"',
@@ -63,15 +63,15 @@ xfail_strict = true
 legacy_tox_ini = '''
 [tox]
 # Only run pytest envs when no args given to tox
-envlist = py{38,39,310,311}
+envlist = py{39,310,311,312,313}
 isolated_build = True
 
-[testenv:py{38,39,310,311}]
+[testenv:py{39,310,311,312,313}]
 description = run tests
 deps =
     -r tests/requirements.txt
 commands =
-    pytest {posargs}
+    pytest {posargs:--cov}
 
 [testenv:profile]
 description = run profiler (use e.g. `firefox .tox/prof/combined.svg` to open)
@@ -90,10 +90,10 @@ commands = pre-commit run {posargs:--all}
 
 [testenv:mypy]
 description = run mypy
-basepython = python3.8
+basepython = python3.11
 deps =
     -r tests/requirements.txt
-    mypy==0.910
+    mypy==1.11.2
 commands =
     mypy {posargs:src/ tests/}
 
@@ -135,20 +135,7 @@ commands =
 
 [tool.coverage.run]
 source = ["mdformat"]
-omit = ["*/__main__.py"]
-
-[tool.coverage.report]
-# Regexes for lines to exclude from consideration
-exclude_lines = [
-    # Re-enable the standard pragma (with extra strictness)
-    '# pragma: no cover\b',
-    # Ellipsis lines after @typing.overload
-    '^ +\.\.\.$',
-    # Code for static type checkers
-    "if TYPE_CHECKING:",
-    # Scripts
-    'if __name__ == .__main__.:',
-]
+plugins = ["covdefaults"]
 
 
 [tool.mypy]
@@ -168,8 +155,3 @@ no_implicit_optional = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
-
-[[tool.mypy.overrides]]
-# This matches `fuzzer/fuzz.py`.
-module = "fuzz"
-ignore_errors = true
