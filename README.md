@@ -153,7 +153,7 @@ For many Markdown engines you'll find support by searching
 [the plugin docs](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
 or [mdformat GitHub topic](https://github.com/topics/mdformat).
 
-You may also want to consider choosing a documentation engine that adheres to CommonMark as its base syntax e.g. [mdBook](https://rust-lang.github.io/mdBook/) or [Sphinx with Markdown](https://www.sphinx-doc.org/en/master/usage/markdown.html).
+You may also want to consider a documentation engine that adheres to CommonMark as its base syntax e.g. [mdBook](https://rust-lang.github.io/mdBook/) or [Sphinx with Markdown](https://www.sphinx-doc.org/en/master/usage/markdown.html).
 
 ### Why not use [Prettier](https://github.com/prettier/prettier) instead?
 
