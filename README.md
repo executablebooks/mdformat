@@ -28,26 +28,29 @@ Find out more in the [docs](https://mdformat.readthedocs.io).
 Install with [CommonMark](https://spec.commonmark.org/current/) support:
 
 ```bash
-pip install mdformat
+pipx install mdformat
 ```
 
 Install with [GitHub Flavored Markdown (GFM)](https://github.github.com/gfm/) support:
 
 ```bash
-pip install mdformat-gfm
+pipx install mdformat
+pipx inject mdformat mdformat-gfm
 ```
 
 Note that GitHub's Markdown renderer supports syntax extensions not included in the GFM specification.
 For full GitHub support do:
 
 ```bash
-pip install mdformat-gfm mdformat-frontmatter mdformat-footnote mdformat-gfm-alerts
+pipx install mdformat
+pipx inject mdformat mdformat-gfm mdformat-frontmatter mdformat-footnote mdformat-gfm-alerts
 ```
 
 Install with [Markedly Structured Text (MyST)](https://myst-parser.readthedocs.io/en/latest/using/syntax.html) support:
 
 ```bash
-pip install mdformat-myst
+pipx install mdformat
+pipx inject mdformat mdformat-myst
 ```
 
 <!-- end installing -->
