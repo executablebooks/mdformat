@@ -23,7 +23,7 @@ formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
 
-### Existing plugins (see https://github.com/topics/mdformat for more!)
+### Existing plugins (more on [GitHub](https://github.com/topics/mdformat))
 
 <table>
   <tr>
@@ -90,7 +90,7 @@ unformatted = "content...\n"
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
-### Existing plugins (see https://github.com/topics/mdformat for more!)
+### Existing plugins (more on [GitHub](https://github.com/topics/mdformat))
 
 <table>
   <tr>
@@ -154,7 +154,7 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
 
 Other plugins that don't fit the above categories.
 
-### Existing plugins
+### Existing plugins (more on [GitHub](https://github.com/topics/mdformat))
 
 <table>
   <tr>

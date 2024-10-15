@@ -125,4 +125,4 @@ If using Poetry or Flit for packaging, the entry point configuration in `pyproje
 
 ## Making your plugin discoverable
 
-In case you host your plugin on GitHub, make sure to add it under the "mdformat" topic so it shows up on https://github.com/topics/mdformat.
+In case you host your plugin on GitHub, make sure to add it under the "mdformat" topic so it shows up on <https://github.com/topics/mdformat>.
