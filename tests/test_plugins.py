@@ -12,12 +12,11 @@ from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
 from mdformat.renderer import MDRenderer, RenderContext, RenderTreeNode
 
 
-def example_formatter(code, info):
-    return "dummy\n"
-
-
 def test_code_formatter(monkeypatch):
-    monkeypatch.setitem(CODEFORMATTERS, "lang", example_formatter)
+    def fmt_func(code, info):
+        return "dummy\n"
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
     text = mdformat.text(
         dedent(
             """\
@@ -32,6 +31,82 @@ def test_code_formatter(monkeypatch):
         """\
     ```lang
     dummy
+    ```
+    """
+    )
+
+
+def test_code_formatter__empty_str(monkeypatch):
+    def fmt_func(code, info):
+        return ""
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
+    text = mdformat.text(
+        dedent(
+            """\
+    ~~~lang
+    aag
+    gw
+    ~~~
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang
+    ```
+    """
+    )
+
+
+def test_code_formatter__no_end_newline(monkeypatch):
+    def fmt_func(code, info):
+        return "dummy\ndum"
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
+    text = mdformat.text(
+        dedent(
+            """\
+    ```lang
+    ```
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang
+    dummy
+    dum
+    ```
+    """
+    )
+
+
+def test_code_formatter__interface(monkeypatch):
+    def fmt_func(code, info):
+        return info + code * 2
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
+    text = mdformat.text(
+        dedent(
+            """\
+    ```    lang  long
+    multi
+    mul
+    ```
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang  long
+    lang  longmulti
+    mul
+    multi
+    mul
     ```
     """
     )

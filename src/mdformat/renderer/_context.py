@@ -151,8 +151,8 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
     fence_char = "~" if "`" in info_str else "`"
 
     # Format the code block using enabled codeformatter funcs
-    if lang in context.options.get("codeformatters", {}):
-        fmt_func = context.options["codeformatters"][lang]
+    fmt_func = context.options.get("codeformatters", {}).get(lang)
+    if fmt_func:
         try:
             code_block = fmt_func(code_block, info_str)
         except Exception:
@@ -167,6 +167,9 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
             if filename:
                 warn_msg += f". Filename: {filename}"
             LOGGER.warning(warn_msg)
+        else:
+            if code_block and code_block[-1] != "\n":
+                code_block += "\n"
 
     # The code block must not include as long or longer sequence of `fence_char`s
     # as the fence string itself
