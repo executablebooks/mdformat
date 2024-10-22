@@ -94,7 +94,7 @@ commands = [
 
 [tool.tox.env."mypy"]
 description = "run mypy"
-basepython = "python3.11"
+basepython = ["python3.11"]
 deps = [
     "-r tests/requirements.txt",
     "mypy==1.11.2",
