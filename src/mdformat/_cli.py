@@ -195,7 +195,17 @@ def make_arg_parser(
         )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
-            # TODO: deprecate in favor of add_cli_argument_group
+            import inspect
+            import warnings
+
+            warnings.warn_explicit(
+                "`mdformat.plugins.ParserExtensionInterface.add_cli_options`"
+                " is deprecated."
+                " Please use `add_cli_argument_group`.",
+                DeprecationWarning,
+                filename=inspect.getsourcefile(plugin),
+                lineno=inspect.getsourcelines(plugin)[1],
+            )
             plugin.add_cli_options(parser)
     for plugin_id, plugin in parser_extensions.items():
         if hasattr(plugin, "add_cli_argument_group"):
