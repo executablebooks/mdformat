@@ -41,6 +41,8 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
     cli_opts = {
         k: v for k, v in vars(arg_parser.parse_args(cli_args)).items() if v is not None
     }
+    cli_core_opts, cli_plugin_opts = separate_core_and_plugin_opts(cli_opts)
+
     if not cli_opts["paths"]:
         print_paragraphs(["No files have been passed in. Doing nothing."])
         return 0
@@ -58,7 +60,13 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         except InvalidConfError as e:
             print_error(str(e))
             return 1
-        opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_opts}
+
+        opts: Mapping = {**DEFAULT_OPTS, **toml_opts, **cli_core_opts}
+        for plugin_id, plugin_opts in cli_plugin_opts.items():
+            if plugin_id in opts["plugin"]:
+                opts["plugin"][plugin_id] |= plugin_opts
+            else:
+                opts["plugin"][plugin_id] = plugin_opts
 
         if sys.version_info >= (3, 13):  # pragma: >=3.13 cover
             if is_excluded(path, opts["exclude"], toml_path, "exclude" in cli_opts):
@@ -187,8 +195,36 @@ def make_arg_parser(
         )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
+            # TODO: deprecate in favor of add_cli_argument_group
             plugin.add_cli_options(parser)
+    for plugin_id, plugin in parser_extensions.items():
+        if hasattr(plugin, "add_cli_argument_group"):
+            group = parser.add_argument_group(title=f"{plugin_id} plugin")
+            plugin.add_cli_argument_group(group)
+            for action in group._group_actions:
+                action.dest = f"plugin.{plugin_id}.{action.dest}"
     return parser
+
+
+def separate_core_and_plugin_opts(opts: Mapping) -> tuple[dict, dict]:
+    """Move dotted keys like 'plugin.gfm.some_key' to a separate mapping.
+
+    Return a tuple of two mappings. First is for core CLI options, the
+    second for plugin options. E.g. 'plugin.gfm.some_key' belongs to the
+    second mapping under {"gfm": {"some_key": <value>}}.
+    """
+    cli_core_opts = {}
+    cli_plugin_opts: dict = {}
+    for k, v in opts.items():
+        if k.startswith("plugin."):
+            _, plugin_id, plugin_conf_key = k.split(".", maxsplit=2)
+            if plugin_id in cli_plugin_opts:
+                cli_plugin_opts[plugin_id][plugin_conf_key] = v
+            else:
+                cli_plugin_opts[plugin_id] = {plugin_conf_key: v}
+        else:
+            cli_core_opts[k] = v
+    return cli_core_opts, cli_plugin_opts
 
 
 class InvalidPath(Exception):

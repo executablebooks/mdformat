@@ -68,6 +68,8 @@ def test_invalid_toml(tmp_path, capsys):
         ("number", "number = 0"),
         ("exclude", "exclude = '**'"),
         ("exclude", "exclude = ['1',3]"),
+        ("plugin", "plugin = []"),
+        ("plugin", "plugin.gfm = {}\nplugin.myst = 1"),
     ],
 )
 def test_invalid_conf_value(bad_conf, conf_key, tmp_path, capsys):

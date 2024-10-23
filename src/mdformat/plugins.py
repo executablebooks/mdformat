@@ -40,10 +40,26 @@ class ParserExtensionInterface(Protocol):
     # (optional)
     POSTPROCESSORS: Mapping[str, Postprocess]
 
+    # TODO: deprecate in favor of add_cli_argument_group
     @staticmethod
     def add_cli_options(parser: argparse.ArgumentParser) -> None:
         """Add options to the mdformat CLI, to be stored in
         mdit.options["mdformat"] (optional)"""
+
+    @staticmethod
+    def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
+        """Add an argument group to mdformat CLI and add arguments to it.
+
+        Call `group.add_argument()` to add CLI arguments (signature is
+        the same as argparse.ArgumentParser.add_argument). Values will be
+        stored in a mapping under mdit.options["mdformat"]["plugin"][<plugin_id>]
+        where <plugin_id> equals entry point name of the plugin.
+
+        The mapping will be merged with values read from TOML config file
+        section [plugin.<plugin_id>].
+
+        (optional)
+        """
 
     @staticmethod
     def update_mdit(mdit: MarkdownIt) -> None:
