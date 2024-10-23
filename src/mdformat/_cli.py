@@ -203,8 +203,8 @@ def make_arg_parser(
                 " is deprecated."
                 " Please use `add_cli_argument_group`.",
                 DeprecationWarning,
-                filename=inspect.getsourcefile(plugin),
-                lineno=inspect.getsourcelines(plugin)[1],
+                filename=str(inspect.getsourcefile(plugin)),  # type: ignore[arg-type]
+                lineno=inspect.getsourcelines(plugin)[1],  # type: ignore[arg-type]
             )
             plugin.add_cli_options(parser)
     for plugin_id, plugin in parser_extensions.items():
