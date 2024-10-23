@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
 import contextlib
+from datetime import datetime
 import itertools
 import logging
 import os.path
@@ -14,6 +15,7 @@ import textwrap
 import mdformat
 from mdformat._compat import importlib_metadata
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
+from mdformat._output import diff
 from mdformat._util import detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
@@ -99,6 +101,17 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
             if formatted_str != original_str:
                 format_errors_found = True
                 print_error(f'File "{path_str}" is not formatted.')
+
+                if opts["diff"]:
+                    then = datetime.utcfromtimestamp(path.stat().st_mtime)
+                    now = datetime.utcnow()
+                    src_name = f"{path}\t{then} +0000"
+                    dst_name = f"{path}\t{now} +0000"
+
+                    diff_contents = diff(
+                        original_str, formatted_str, src_name, dst_name
+                    )
+                    print(diff_contents)
         else:
             if not changes_ast and not is_md_equal(
                 original_str,
@@ -150,6 +163,11 @@ def make_arg_parser(
     parser.add_argument("paths", nargs="*", help="files to format")
     parser.add_argument(
         "--check", action="store_true", help="do not apply changes to files"
+    )
+    parser.add_argument(
+        "--diff",
+        action="store_true",
+        help="show diff of what would be changed when running with --check",
     )
     version_str = f"mdformat {mdformat.__version__}"
     if plugin_versions_str:
