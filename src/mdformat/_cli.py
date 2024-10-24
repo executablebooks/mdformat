@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
 import contextlib
+import inspect
 import itertools
 import logging
 import os.path
@@ -303,30 +304,45 @@ def log_handler_applied(
         logger.removeHandler(handler)
 
 
-def get_package_name(obj: object) -> str:
-    # Packages and modules should have `__package__`
-    if hasattr(obj, "__package__"):
-        package_name = obj.__package__
-    else:  # class or function
-        module_name = obj.__module__
-        package_name = module_name.split(".", maxsplit=1)[0]
-    return package_name
+def get_package_name(obj: object) -> str | None:
+    """Return top level module name, or None if not found."""
+    module = inspect.getmodule(obj)
+    return module.__name__.split(".", maxsplit=1)[0] if module else None
 
 
 def get_plugin_versions(
     parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
     codeformatters: Mapping[str, Callable[[str, str], str]],
-) -> dict[str, str]:
-    versions = {}
+) -> list[tuple[str, str]]:
+    """Return a list of (plugin_distro, plugin_version) tuples.
+
+    If many plugins come from the same distribution package, only return
+    the version of that distribution once. If we have no reliable way to
+    one-to-one map a plugin to a distribution package, use the top level
+    module name and set version to "unknown". If we don't even know the
+    top level module name, return the tuple ("unknown", "unknown").
+    """
+    problematic_versions = []
+    # Use a dict for successful version lookups so that if more than one plugin
+    # originates from the same distribution, it only shows up once in a version
+    # string.
+    success_versions = {}
+    import_package_to_distro = importlib_metadata.packages_distributions()
     for iface in itertools.chain(parser_extensions.values(), codeformatters.values()):
-        package_name = get_package_name(iface)
-        try:
-            package_version = importlib_metadata.version(package_name)
-        except importlib_metadata.PackageNotFoundError:
-            # In test scenarios the package may not exist
-            package_version = "unknown"
-        versions[package_name] = package_version
-    return versions
+        import_package = get_package_name(iface)
+        if import_package is None:
+            problematic_versions.append(("unknown", "unknown"))
+            continue
+        distro_list = import_package_to_distro.get(import_package)
+        if (
+            not distro_list  # No distribution package found
+            or len(distro_list) > 1  # Don't make any guesses with namespace packages
+        ):
+            problematic_versions.append((import_package, "unknown"))
+            continue
+        distro_name = distro_list[0]
+        success_versions[distro_name] = importlib_metadata.version(distro_name)
+    return [(k, v) for k, v in success_versions.items()] + problematic_versions
 
 
 def get_plugin_versions_str(
@@ -334,4 +350,4 @@ def get_plugin_versions_str(
     codeformatters: Mapping[str, Callable[[str, str], str]],
 ) -> str:
     plugin_versions = get_plugin_versions(parser_extensions, codeformatters)
-    return ", ".join(f"{name}: {version}" for name, version in plugin_versions.items())
+    return ", ".join(f"{name}: {version}" for name, version in plugin_versions)
