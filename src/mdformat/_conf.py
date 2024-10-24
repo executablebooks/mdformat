@@ -11,6 +11,7 @@ DEFAULT_OPTS = {
     "number": False,
     "end_of_line": "lf",
     "exclude": [],
+    "plugin": {},
 }
 
 
@@ -65,6 +66,12 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:  # noqa: C901
         for pattern in opts["exclude"]:
             if not isinstance(pattern, str):
                 raise InvalidConfError(f"Invalid 'exclude' value in {conf_path}")
+    if "plugin" in opts:
+        if not isinstance(opts["plugin"], dict):
+            raise InvalidConfError(f"Invalid 'plugin' value in {conf_path}")
+        for plugin_conf in opts["plugin"].values():
+            if not isinstance(plugin_conf, dict):
+                raise InvalidConfError(f"Invalid 'plugin' value in {conf_path}")
 
 
 def _validate_keys(opts: Mapping, conf_path: Path) -> None:

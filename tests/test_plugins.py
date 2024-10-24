@@ -222,6 +222,83 @@ def test_cli_options(monkeypatch, tmp_path):
     assert opts["mdformat"]["arg_name"] == 4
 
 
+class ExamplePluginWithGroupedCli:
+    """A plugin that adds CLI options."""
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        mdit.enable("table")
+
+    @staticmethod
+    def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
+        group.add_argument("--o1", type=str)
+        group.add_argument("--o2", type=str, default="a")
+        group.add_argument("--o3", dest="arg_name", type=int)
+        group.add_argument("--override-toml")
+
+
+def test_cli_options_group(monkeypatch, tmp_path):
+    """Test that CLI arguments added by plugins are correctly added to the
+    options dict.
+
+    Use add_cli_argument_group plugin API.
+    """
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExamplePluginWithGroupedCli)
+    file_path = tmp_path / "test_markdown.md"
+    conf_path = tmp_path / ".mdformat.toml"
+    file_path.touch()
+    conf_path.write_text(
+        """\
+[plugin.table]
+override_toml = 'failed'
+toml_only = true
+"""
+    )
+
+    with patch.object(MDRenderer, "render", return_value="") as mock_render:
+        assert (
+            run(
+                (
+                    str(file_path),
+                    "--o1",
+                    "other",
+                    "--o3",
+                    "4",
+                    "--override-toml",
+                    "success",
+                )
+            )
+            == 0
+        )
+
+    (call_,) = mock_render.call_args_list
+    posargs = call_[0]
+    # Options is the second positional arg of MDRender.render
+    opts = posargs[1]
+    assert opts["mdformat"]["plugin"]["table"]["o1"] == "other"
+    assert opts["mdformat"]["plugin"]["table"]["o2"] == "a"
+    assert opts["mdformat"]["plugin"]["table"]["arg_name"] == 4
+    assert opts["mdformat"]["plugin"]["table"]["override_toml"] == "success"
+    assert opts["mdformat"]["plugin"]["table"]["toml_only"] is True
+
+
+def test_cli_options_group__no_toml(monkeypatch, tmp_path):
+    """Test add_cli_argument_group plugin API with configuration only from
+    CLI."""
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExamplePluginWithGroupedCli)
+    file_path = tmp_path / "test_markdown.md"
+    file_path.touch()
+
+    with patch.object(MDRenderer, "render", return_value="") as mock_render:
+        assert run((str(file_path), "--o1", "other")) == 0
+
+    (call_,) = mock_render.call_args_list
+    posargs = call_[0]
+    # Options is the second positional arg of MDRender.render
+    opts = posargs[1]
+    assert opts["mdformat"]["plugin"]["table"]["o1"] == "other"
+
+
 class ExampleASTChangingPlugin:
     """A plugin that makes AST breaking formatting changes."""
 
