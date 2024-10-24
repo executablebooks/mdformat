@@ -352,13 +352,13 @@ def test_get_package_name():
 
 def test_get_plugin_versions():
     # Pretend that "pytest" and "unittest.mock.patch" are plugins
-    versions = get_plugin_versions({"p1": pytest}, {"f1": patch})
+    versions = get_plugin_versions({"p1": pytest}, {"f1": patch})  # type: ignore[dict-item] # noqa: E501
     assert versions[0][0] == "pytest"
     assert versions[0][1] != "unknown"
     assert versions[1] == ("unittest", "unknown")
 
     with patch("mdformat._cli.inspect.getmodule", return_value=None):
-        versions = get_plugin_versions({"p1": pytest}, {})
+        versions = get_plugin_versions({"p1": pytest}, {})  # type: ignore[dict-item]
     assert versions[0] == ("unknown", "unknown")
 
 
