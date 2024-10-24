@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 import mdformat
-from mdformat._cli import get_package_name, run, wrap_paragraphs
+from mdformat._cli import get_package_name, get_plugin_versions, run, wrap_paragraphs
 from mdformat.plugins import CODEFORMATTERS
 
 UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
@@ -348,6 +348,18 @@ def test_get_package_name():
     assert get_package_name(patch) == "unittest"
     # Test a package/module
     assert get_package_name(mdformat) == "mdformat"
+
+
+def test_get_plugin_versions():
+    # Pretend that "pytest" and "unittest.mock.patch" are plugins
+    versions = get_plugin_versions({"p1": pytest}, {"f1": patch})  # type: ignore[dict-item] # noqa: E501
+    assert versions[0][0] == "pytest"
+    assert versions[0][1] != "unknown"
+    assert versions[1] == ("unittest", "unknown")
+
+    with patch("mdformat._cli.inspect.getmodule", return_value=None):
+        versions = get_plugin_versions({"p1": pytest}, {})  # type: ignore[dict-item]
+    assert versions[0] == ("unknown", "unknown")
 
 
 def test_no_timestamp_modify(tmp_path):
