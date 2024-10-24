@@ -111,10 +111,14 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 print_error(
                     f'Could not format "{path_str}".',
                     paragraphs=[
-                        "The formatted Markdown renders to different HTML than the input Markdown. "  # noqa: E501
-                        "This is likely a bug in mdformat. "
-                        "Please create an issue report here, including the input Markdown: "  # noqa: E501
-                        "https://github.com/executablebooks/mdformat/issues",
+                        "Formatted Markdown renders to different HTML than input Markdown. "  # noqa: E501
+                        "This is a bug in mdformat or one of its installed plugins. "
+                        "Please retry without any plugins installed. "
+                        "If this error persists, "
+                        "report an issue including the input Markdown "
+                        "on https://github.com/executablebooks/mdformat/issues. "
+                        "If not, "
+                        "report an issue on the malfunctioning plugin's issue tracker.",
                     ],
                 )
                 return 1
