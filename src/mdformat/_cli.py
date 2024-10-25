@@ -195,16 +195,16 @@ def make_arg_parser(
         )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
-            import inspect
             import warnings
 
+            plugin_file, plugin_line = get_source_file_and_line(plugin)
             warnings.warn_explicit(
                 "`mdformat.plugins.ParserExtensionInterface.add_cli_options`"
                 " is deprecated."
                 " Please use `add_cli_argument_group`.",
                 DeprecationWarning,
-                filename=str(inspect.getsourcefile(plugin)),  # type: ignore[arg-type]
-                lineno=inspect.getsourcelines(plugin)[1],  # type: ignore[arg-type]
+                filename=plugin_file,
+                lineno=plugin_line,
             )
             plugin.add_cli_options(parser)
     for plugin_id, plugin in parser_extensions.items():
@@ -401,3 +401,19 @@ def get_plugin_versions_str(
 ) -> str:
     plugin_versions = get_plugin_versions(parser_extensions, codeformatters)
     return ", ".join(f"{name}: {version}" for name, version in plugin_versions)
+
+
+def get_source_file_and_line(obj: object) -> tuple[str, int]:
+    import inspect
+
+    try:
+        filename = inspect.getsourcefile(obj)  # type: ignore[arg-type]
+        if filename is None:  # pragma: no cover
+            filename = "not found"
+    except TypeError:  # pragma: no cover
+        filename = "built-in object"
+    try:
+        _, lineno = inspect.getsourcelines(obj)  # type: ignore[arg-type]
+    except (OSError, TypeError):  # pragma: no cover
+        lineno = 0
+    return filename, lineno

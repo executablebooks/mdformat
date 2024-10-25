@@ -42,7 +42,7 @@ class ParserExtensionInterface(Protocol):
 
     @staticmethod
     def add_cli_options(parser: argparse.ArgumentParser) -> None:
-        """DEPRECATED Use `add_cli_argument_group` instead.
+        """DEPRECATED - use `add_cli_argument_group` instead.
 
         Add options to the mdformat CLI, to be stored in
         mdit.options["mdformat"] (optional)
