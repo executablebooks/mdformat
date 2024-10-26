@@ -11,6 +11,8 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 - Added
   - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
     With this plugins can now read CLI arguments merged with values from `.mdformat.toml`.
+- Changed
+  - Style: No longer escape square bracket enclosures.
 - Improved
   - Plugin interface: A trailing newline is added to fenced code blocks if a plugin fails to add it.
 
