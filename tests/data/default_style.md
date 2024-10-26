@@ -495,3 +495,16 @@ Square bracket escapes
 
 [link-label]: /url
 .
+
+Less than sign escapes
+.
+< no escape < no escape, now escape <
+<
+
+<
+.
+< no escape < no escape, now escape \<
+\<
+
+\<
+.
