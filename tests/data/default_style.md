@@ -464,3 +464,34 @@ Unicode space (U+3000) after heading
 .
 # hoge
 .
+
+Square bracket escapes
+.
+[no-escape]no [no-escape] no [\[\]](/url)
+
+[escape]
+
+[inline\](/url)
+
+[link-label]
+
+[link-label\]
+
+[link-label\]: /url
+
+[link-label]: /url
+.
+[no-escape]no [no-escape] no [[]](/url)
+
+[escape]
+
+\[inline\](/url)
+
+[link-label]
+
+\[link-label\]
+
+\[link-label\]: /url
+
+[link-label]: /url
+.

@@ -186,3 +186,19 @@ def decimalify_trailing(char_set: Iterable[str], text: str) -> str:
     if last_char in char_set:
         return f"{text[:-1]}&#{ord(last_char)};"
     return text
+
+
+def split_at_indexes(text: str, indexes: Iterable[int]) -> list[str]:
+    """Return the text in parts.
+
+    Make splits right before the indexed character.
+    """
+    if not indexes:
+        raise ValueError("indexes must not be empty")
+    parts = []
+    prev_i = 0
+    for i in sorted(indexes):
+        parts.append(text[prev_i:i])
+        prev_i = i
+    parts.append(text[i:])
+    return parts

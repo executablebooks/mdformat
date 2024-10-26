@@ -24,6 +24,7 @@ from mdformat.renderer._util import (
     is_tight_list_item,
     longest_consecutive_sequence,
     maybe_add_link_brackets,
+    split_at_indexes,
 )
 from mdformat.renderer.typing import Postprocess, Render
 
@@ -115,8 +116,8 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
 
     text = escape_asterisk_emphasis(text)  # Escape emphasis/strong marker.
     text = escape_underscore_emphasis(text)  # Escape emphasis/strong marker.
-    text = text.replace("[", "\\[")  # Escape link label enclosure
-    text = text.replace("]", "\\]")  # Escape link label enclosure
+    # Escape link label and link ref enclosures
+    text = _escape_square_brackets(text, context.env["used_refs"])
     text = text.replace("<", "\\<")  # Escape URI enclosure
     text = text.replace("`", "\\`")  # Escape code span marker
 
@@ -139,6 +140,58 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
         text = re.sub(r"[ \t\n]+", WRAP_POINT, text)
 
     return text
+
+
+_RE_SQUARE_BRACKET = re.compile(r"[\[\]]")
+
+
+def _escape_square_brackets(text: str, used_refs: Iterable[str]) -> str:
+    """Return the input string with square brackets ("[" and "]") escaped in a
+    safe way that avoids unintended link labels or refs after formatting.
+
+    Heuristic to use:
+    Escape all square brackets unless all the following are true for
+    a closed pair of brackets ([ + text + ]):
+    - the brackets enclose text containing no square brackets
+    - the text is not a used_ref (a link label used in a valid link or image)
+    - the enclosure is not followed by ":" or "(" (I believe that this, rather
+      than requiring the enclosure to be followed by a character other than
+      ":" or "(", should be sufficient, as no inline other than 'text' can
+      start with ":" or "(", and a following text inline never exists as it
+      would be included in the same token.
+    """
+    escape_before_pos = []
+    pos = 0
+    enclosure_start: int | None = None
+    while True:
+        bracket_match = _RE_SQUARE_BRACKET.search(text, pos)
+        if not bracket_match:
+            if enclosure_start is not None:
+                escape_before_pos.append(enclosure_start)
+            break
+
+        bracket = bracket_match.group()
+        bracket_pos = bracket_match.start()
+        pos = bracket_pos + 1
+        if bracket == "[":
+            if enclosure_start is not None:
+                escape_before_pos.append(enclosure_start)
+            enclosure_start = bracket_pos
+        else:
+            if enclosure_start is None:
+                escape_before_pos.append(bracket_pos)
+            else:
+                enclosed = text[enclosure_start + 1 : bracket_pos]
+                next_char = text[bracket_pos + 1 : bracket_pos + 2]  # can be empty str
+                if enclosed.upper() not in used_refs and next_char not in {":", "("}:
+                    enclosure_start = None
+                else:
+                    escape_before_pos.append(enclosure_start)
+                    escape_before_pos.append(bracket_pos)
+                    enclosure_start = None
+    if not escape_before_pos:
+        return text
+    return "\\".join(split_at_indexes(text, escape_before_pos))
 
 
 def fence(node: RenderTreeNode, context: RenderContext) -> str:
