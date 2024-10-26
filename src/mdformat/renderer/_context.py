@@ -166,7 +166,7 @@ def _escape_square_brackets(text: str, used_refs: Iterable[str]) -> str:
     while True:
         bracket_match = _RE_SQUARE_BRACKET.search(text, pos)
         if not bracket_match:
-            if enclosure_start is not None:
+            if enclosure_start is not None:  # pragma: <3.10 no cover
                 escape_before_pos.append(enclosure_start)
             break
 
