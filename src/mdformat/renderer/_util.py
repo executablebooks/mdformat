@@ -202,3 +202,55 @@ def split_at_indexes(text: str, indexes: Iterable[int]) -> list[str]:
         prev_i = i
     parts.append(text[i:])
     return parts
+
+
+def escape_square_brackets(text: str, used_refs: Iterable[str]) -> str:
+    """Return the input string with square brackets ("[" and "]") escaped in a
+    safe way that avoids unintended link labels or refs after formatting.
+
+    Heuristic to use:
+    Escape all square brackets unless all the following are true for
+    a closed pair of brackets ([ + text + ]):
+    - the brackets enclose text containing no square brackets
+    - the text is not a used_ref (a link label used in a valid link or image)
+    - the enclosure is not followed by ":" or "(" (I believe that this, rather
+      than requiring the enclosure to be followed by a character other than
+      ":" or "(", should be sufficient, as no inline other than 'text' can
+      start with ":" or "(", and a following text inline never exists as it
+      would be included in the same token.
+    """
+    escape_before_pos = []
+    pos = 0
+    enclosure_start: int | None = None
+    while True:
+        bracket_match = RE_SQUARE_BRACKET.search(text, pos)
+        if not bracket_match:  # pragma: >=3.10 cover
+            if enclosure_start is not None:
+                escape_before_pos.append(enclosure_start)
+            break
+
+        bracket = bracket_match.group()
+        bracket_pos = bracket_match.start()
+        pos = bracket_pos + 1
+        if bracket == "[":
+            if enclosure_start is not None:
+                escape_before_pos.append(enclosure_start)
+            enclosure_start = bracket_pos
+        else:
+            if enclosure_start is None:
+                escape_before_pos.append(bracket_pos)
+            else:
+                enclosed = text[enclosure_start + 1 : bracket_pos]
+                next_char = text[bracket_pos + 1 : bracket_pos + 2]  # can be empty str
+                if enclosed.upper() not in used_refs and next_char not in {":", "("}:
+                    enclosure_start = None
+                else:
+                    escape_before_pos.append(enclosure_start)
+                    escape_before_pos.append(bracket_pos)
+                    enclosure_start = None
+    if not escape_before_pos:
+        return text
+    return "\\".join(split_at_indexes(text, escape_before_pos))
+
+
+RE_SQUARE_BRACKET = re.compile(r"[\[\]]")
