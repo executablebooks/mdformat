@@ -254,3 +254,16 @@ def escape_square_brackets(text: str, used_refs: Iterable[str]) -> str:
 
 
 RE_SQUARE_BRACKET = re.compile(r"[\[\]]")
+
+
+def escape_less_than_sign(text: str) -> str:
+    """Escape less than sign ('<') to prevent unexpected HTML or autolink.
+
+    Current heuristic to use: Always escape, except when
+    - followed by a space: This should be safe. Neither HTML nor autolink
+      allow space after the '<' sign
+    """
+    return RE_LESS_THAN_SIGN__NO_FOLLOWING_SPACE.sub(r"\\\g<0>", text)
+
+
+RE_LESS_THAN_SIGN__NO_FOLLOWING_SPACE = re.compile("<(?:[^ ]|$)")

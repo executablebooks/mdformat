@@ -18,6 +18,7 @@ from mdformat.renderer._util import (
     decimalify_leading,
     decimalify_trailing,
     escape_asterisk_emphasis,
+    escape_less_than_sign,
     escape_square_brackets,
     escape_underscore_emphasis,
     get_list_marker_type,
@@ -118,7 +119,7 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
     text = escape_underscore_emphasis(text)  # Escape emphasis/strong marker.
     # Escape link label and link ref enclosures
     text = escape_square_brackets(text, context.env["used_refs"])
-    text = text.replace("<", "\\<")  # Escape URI enclosure
+    text = escape_less_than_sign(text)  # Escape URI enclosure and HTML.
     text = text.replace("`", "\\`")  # Escape code span marker
 
     # Escape "&" if it starts a sequence that can be interpreted as
