@@ -14,6 +14,7 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 - Changed
   - Style: No longer escape square bracket enclosures.
   - Style: No longer escape less than sign followed by space character.
+  - Style: Convert tabs to spaces. Reduce space sequences to one space.
 - Improved
   - Plugin interface: A trailing newline is added to fenced code blocks if a plugin fails to add it.
 

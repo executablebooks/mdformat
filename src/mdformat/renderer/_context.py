@@ -111,6 +111,11 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
     """
     text = node.content
 
+    # Convert tabs to spaces
+    text = text.replace("\t", " ")
+    # Reduce tabs and spaces to one space
+    text = re.sub(" {2,}", " ", text)
+
     # Escape backslash to prevent it from making unintended escapes.
     # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")

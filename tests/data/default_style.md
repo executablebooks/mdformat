@@ -508,3 +508,25 @@ Less than sign escapes
 
 \<
 .
+
+Tabs to spaces
+.
+# Convert	tab	to	space	in			headings
+
+Make a space	here.
+.
+# Convert tab to space in headings
+
+Make a space here.
+.
+
+Reduce tabs and spaces to one space
+.
+# Reduce  		in			  	headings
+
+Reduce to a space	 	here.
+.
+# Reduce in headings
+
+Reduce to a space here.
+.
