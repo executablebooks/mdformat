@@ -23,11 +23,15 @@ formatted = mdformat.text(unformatted, codeformatters={"python"})
 assert formatted == '```python\n"""black converts quotes"""\n```\n'
 ````
 
-### Existing plugins (more on [GitHub](https://github.com/topics/mdformat))
+### Existing plugins
+
+This is a curated list of popular code formatter plugins.
+The list is not exhaustive.
+Explore mdformat's [GitHub topic](https://github.com/topics/mdformat) for more.
 
 <table>
   <tr>
-    <th>Plugin</th>
+    <th>Distribution</th>
     <th>Supported languages</th>
     <th>Notes</th>
   </tr>
@@ -64,7 +68,7 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
   <tr>
     <td><a href="https://github.com/hukkin/mdformat-shfmt">mdformat-shfmt</a></td>
     <td><code>bash</code>, <code>sh</code></td>
-    <td>Requires either <a href="https://github.com/mvdan/sh#shfmt">shfmt</a> or <a href="https://docs.docker.com/get-docker/">Docker</a> installation</td>
+    <td>Requires either <a href="https://github.com/mvdan/sh#shfmt">shfmt</a>, <a href="https://docs.docker.com/get-docker/">Docker</a> or <a href="https://podman.io/docs/installation">Podman</a> installation</td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkin/mdformat-web">mdformat-web</a></td>
@@ -75,9 +79,8 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
 
 ## Parser extension plugins
 
-Markdown-it-py offers a range of useful extensions to the base CommonMark parser (see the [documented list](https://markdown-it-py.readthedocs.io/en/latest/plugins.html)).
-
-Mdformat features a plugin system to support the loading and rendering of such extensions.
+By default, mdformat only parses and renders [CommonMark](https://spec.commonmark.org/current/).
+Installed plugins can add extensions to the syntax, such as footnotes, tables, and other document elements.
 
 For stability, mdformat Python API behavior will not change simply due to a plugin being installed.
 Extensions will have to be explicitly enabled in addition to being installed:
@@ -90,12 +93,16 @@ unformatted = "content...\n"
 formatted = mdformat.text(unformatted, extensions={"tables"})
 ```
 
-### Existing plugins (more on [GitHub](https://github.com/topics/mdformat))
+### Existing plugins
+
+This is a curated list of popular parser extension plugins.
+The list is not exhaustive.
+Explore mdformat's [GitHub topic](https://github.com/topics/mdformat) for more.
 
 <table>
   <tr>
-    <th>Plugin</th>
-    <th>Syntax Extensions</th>
+    <th>Distribution</th>
+    <th>Plugins</th>
     <th>Description</th>
   </tr>
   <tr>
@@ -152,21 +159,26 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
 
 ## Other misc plugins
 
-Other plugins that don't fit the above categories.
+### Existing plugins
 
-### Existing plugins (more on [GitHub](https://github.com/topics/mdformat))
+This is a curated list of other plugins that don't fit the above categories.
+The list is not exhaustive.
+Explore mdformat's [GitHub topic](https://github.com/topics/mdformat) for more.
 
 <table>
   <tr>
-    <th>Plugin</th>
+    <th>Distribution</th>
+    <th>Plugins</th>
     <th>Description</th>
   </tr>
   <tr>
     <td><a href="https://github.com/csala/mdformat-pyproject">mdformat-pyproject</a></td>
+    <td><code>pyproject</code></td>
     <td>Adds support for loading options from a <code>[tool.mdformat]</code> section inside the <code>pyproject.toml</code> file, if it exists</td>
   </tr>
   <tr>
     <td><a href="https://github.com/csala/mdformat-simple-breaks">mdformat-simple-breaks</a></td>
+    <td><code>simple_breaks</code></td>
     <td>Render <a href="https://mdformat.readthedocs.io/en/stable/users/style.html#thematic-breaks">thematic breaks</a> using three dashes instead of 70 underscores</td>
   </tr>
 </table>
