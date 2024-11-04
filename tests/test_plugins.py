@@ -8,7 +8,13 @@ import pytest
 
 import mdformat
 from mdformat._cli import run
-from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
+from mdformat._compat import importlib_metadata
+from mdformat.plugins import (
+    _PARSER_EXTENSION_DISTS,
+    CODEFORMATTERS,
+    PARSER_EXTENSIONS,
+    _load_entrypoints,
+)
 from mdformat.renderer import MDRenderer, RenderContext, RenderTreeNode
 
 
@@ -389,13 +395,15 @@ def test_plugin_conflict(monkeypatch, tmp_path, capsys):
 
 
 def test_plugin_versions_in_cli_help(monkeypatch, capsys):
-    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExampleTablePlugin)
+    monkeypatch.setitem(
+        _PARSER_EXTENSION_DISTS, "table-dist", ("v3.2.1", ["table-ext"])
+    )
     with pytest.raises(SystemExit) as exc_info:
         run(["--help"])
     assert exc_info.value.code == 0
     captured = capsys.readouterr()
-    assert "Installed plugins:" in captured.out
-    assert "tests: unknown" in captured.out
+    assert "installed extensions:" in captured.out
+    assert "table-dist: table-ext" in captured.out
 
 
 class PrefixPostprocessPlugin:
@@ -457,3 +465,34 @@ def test_postprocess_plugins(monkeypatch):
         Prefixed!Example paragraph.Suffixed!
         """
     )
+
+
+def test_load_entrypoints(tmp_path, monkeypatch):
+    """Test the function that loads plugins to constants."""
+    # Create a minimal .dist-info to create EntryPoints out of
+    dist_info_path = tmp_path / "mdformat_gfm-0.3.6.dist-info"
+    dist_info_path.mkdir()
+    entry_points_path = dist_info_path / "entry_points.txt"
+    metadata_path = dist_info_path / "METADATA"
+    # The modules here will get loaded so use ones we know will always exist
+    # (even though they aren't actual extensions).
+    entry_points_path.write_text(
+        """\
+[mdformat.parser_extension]
+ext1=mdformat.plugins
+ext2=mdformat.plugins
+"""
+    )
+    metadata_path.write_text(
+        """\
+Metadata-Version: 2.1
+Name: mdformat-gfm
+Version: 0.3.6
+"""
+    )
+    distro = importlib_metadata.PathDistribution(dist_info_path)
+    entrypoints = distro.entry_points
+
+    loaded_eps, dist_infos = _load_entrypoints(entrypoints)
+    assert loaded_eps == {"ext1": mdformat.plugins, "ext2": mdformat.plugins}
+    assert dist_infos == {"mdformat-gfm": ("0.3.6", ["ext1", "ext2"])}

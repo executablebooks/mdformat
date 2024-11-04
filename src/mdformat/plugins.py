@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Callable, Mapping
-from typing import Protocol
+from typing import Any, Protocol
 
 from markdown_it import MarkdownIt
 
@@ -10,14 +10,30 @@ from mdformat._compat import importlib_metadata
 from mdformat.renderer.typing import Postprocess, Render
 
 
-def _load_codeformatters() -> dict[str, Callable[[str, str], str]]:
-    codeformatter_entrypoints = importlib_metadata.entry_points(
-        group="mdformat.codeformatter"
-    )
-    return {ep.name: ep.load() for ep in codeformatter_entrypoints}
+def _load_entrypoints(
+    eps: importlib_metadata.EntryPoints,
+) -> tuple[dict[str, Any], dict[str, tuple[str, list[str]]]]:
+    loaded_ifaces: dict[str, Any] = {}
+    dist_versions: dict[str, tuple[str, list[str]]] = {}
+    for ep in eps:
+        assert ep.dist, (
+            "EntryPoint.dist should never be None "
+            "when coming from Distribution.entry_points"
+        )
+        loaded_ifaces[ep.name] = ep.load()
+        dist_name = ep.dist.name
+        if dist_name in dist_versions:
+            dist_versions[dist_name][1].append(ep.name)
+        else:
+            dist_versions[dist_name] = (ep.dist.version, [ep.name])
+    return loaded_ifaces, dist_versions
 
 
-CODEFORMATTERS: Mapping[str, Callable[[str, str], str]] = _load_codeformatters()
+CODEFORMATTERS: Mapping[str, Callable[[str, str], str]]
+_CODEFORMATTER_DISTS: Mapping[str, tuple[str, list[str]]]
+CODEFORMATTERS, _CODEFORMATTER_DISTS = _load_entrypoints(
+    importlib_metadata.entry_points(group="mdformat.codeformatter")
+)
 
 
 class ParserExtensionInterface(Protocol):
@@ -68,11 +84,8 @@ class ParserExtensionInterface(Protocol):
         """Update the parser, e.g. by adding a plugin: `mdit.use(myplugin)`"""
 
 
-def _load_parser_extensions() -> dict[str, ParserExtensionInterface]:
-    parser_extension_entrypoints = importlib_metadata.entry_points(
-        group="mdformat.parser_extension"
-    )
-    return {ep.name: ep.load() for ep in parser_extension_entrypoints}
-
-
-PARSER_EXTENSIONS: Mapping[str, ParserExtensionInterface] = _load_parser_extensions()
+PARSER_EXTENSIONS: Mapping[str, ParserExtensionInterface]
+_PARSER_EXTENSION_DISTS: Mapping[str, tuple[str, list[str]]]
+PARSER_EXTENSIONS, _PARSER_EXTENSION_DISTS = _load_entrypoints(
+    importlib_metadata.entry_points(group="mdformat.parser_extension")
+)
