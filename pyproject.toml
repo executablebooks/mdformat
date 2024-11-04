@@ -97,7 +97,7 @@ description = "run mypy"
 basepython = ["python3.11"]
 deps = [
     "-r tests/requirements.txt",
-    "mypy==1.11.2",
+    "mypy==1.13.0",
 ]
 commands = [
     ["mypy", { replace = "posargs", default = ["src/", "tests/"], extend = true }],

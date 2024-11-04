@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
+from collections.abc import Generator, Iterable, Mapping, Sequence
 import contextlib
 import inspect
-import itertools
 import logging
 import os.path
 from pathlib import Path
@@ -13,7 +12,6 @@ import sys
 import textwrap
 
 import mdformat
-from mdformat._compat import importlib_metadata
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
 from mdformat._util import detect_newline_type, is_md_equal
 import mdformat.plugins
@@ -37,7 +35,11 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
         for plugin in enabled_parserplugins.values()
     )
 
-    arg_parser = make_arg_parser(enabled_parserplugins, enabled_codeformatters)
+    arg_parser = make_arg_parser(
+        mdformat.plugins._PARSER_EXTENSION_DISTS,
+        mdformat.plugins._CODEFORMATTER_DISTS,
+        enabled_parserplugins,
+    )
     cli_opts = {
         k: v for k, v in vars(arg_parser.parse_args(cli_args)).items() if v is not None
     }
@@ -150,23 +152,26 @@ def validate_wrap_arg(value: str) -> str | int:
 
 
 def make_arg_parser(
+    parser_extension_dists: Mapping[str, tuple[str, list[str]]],
+    codeformatter_dists: Mapping[str, tuple[str, list[str]]],
     parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
-    codeformatters: Mapping[str, Callable[[str, str], str]],
 ) -> argparse.ArgumentParser:
-    plugin_versions_str = get_plugin_versions_str(parser_extensions, codeformatters)
+    epilog = get_plugin_info_str(parser_extension_dists, codeformatter_dists)
     parser = argparse.ArgumentParser(
         description="CommonMark compliant Markdown formatter",
-        epilog=(
-            f"Installed plugins: {plugin_versions_str}" if plugin_versions_str else None
-        ),
+        epilog=(epilog if epilog else None),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("paths", nargs="*", help="files to format")
     parser.add_argument(
         "--check", action="store_true", help="do not apply changes to files"
     )
     version_str = f"mdformat {mdformat.__version__}"
-    if plugin_versions_str:
-        version_str += f" ({plugin_versions_str})"
+    plugin_version_str = get_plugin_version_str(
+        {**parser_extension_dists, **codeformatter_dists}
+    )
+    if plugin_version_str:
+        version_str += f" ({plugin_version_str})"
     parser.add_argument("--version", action="version", version=version_str)
     parser.add_argument(
         "--number",
@@ -360,47 +365,30 @@ def get_package_name(obj: object) -> str | None:
     return module.__name__.split(".", maxsplit=1)[0] if module else None
 
 
-def get_plugin_versions(
-    parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
-    codeformatters: Mapping[str, Callable[[str, str], str]],
-) -> list[tuple[str, str]]:
-    """Return a list of (plugin_distro, plugin_version) tuples.
-
-    If many plugins come from the same distribution package, only return
-    the version of that distribution once. If we have no reliable way to
-    one-to-one map a plugin to a distribution package, use the top level
-    module name and set version to "unknown". If we don't even know the
-    top level module name, return the tuple ("unknown", "unknown").
-    """
-    problematic_versions = []
-    # Use a dict for successful version lookups so that if more than one plugin
-    # originates from the same distribution, it only shows up once in a version
-    # string.
-    success_versions = {}
-    import_package_to_distro = importlib_metadata.packages_distributions()
-    for iface in itertools.chain(parser_extensions.values(), codeformatters.values()):
-        import_package = get_package_name(iface)
-        if import_package is None:
-            problematic_versions.append(("unknown", "unknown"))
-            continue
-        distro_list = import_package_to_distro.get(import_package)
-        if (
-            not distro_list  # No distribution package found
-            or len(distro_list) > 1  # Don't make any guesses with namespace packages
-        ):
-            problematic_versions.append((import_package, "unknown"))
-            continue
-        distro_name = distro_list[0]
-        success_versions[distro_name] = importlib_metadata.version(distro_name)
-    return [(k, v) for k, v in success_versions.items()] + problematic_versions
-
-
-def get_plugin_versions_str(
-    parser_extensions: Mapping[str, mdformat.plugins.ParserExtensionInterface],
-    codeformatters: Mapping[str, Callable[[str, str], str]],
+def get_plugin_info_str(
+    parser_extension_dists: Mapping[str, tuple[str, list[str]]],
+    codeformatter_dists: Mapping[str, tuple[str, list[str]]],
 ) -> str:
-    plugin_versions = get_plugin_versions(parser_extensions, codeformatters)
-    return ", ".join(f"{name}: {version}" for name, version in plugin_versions)
+    info = ""
+    if codeformatter_dists:
+        info += "installed codeformatters:"
+        for dist, dist_info in codeformatter_dists.items():
+            langs = ", ".join(dist_info[1])
+            info += f"\n  {dist}: {langs}"
+    if parser_extension_dists:
+        if info:
+            info += "\n\n"
+        info += "installed extensions:"
+        for dist, dist_info in parser_extension_dists.items():
+            extensions = ", ".join(dist_info[1])
+            info += f"\n  {dist}: {extensions}"
+    return info
+
+
+def get_plugin_version_str(dist_map: Mapping[str, tuple[str, list[str]]]) -> str:
+    return ", ".join(
+        f"{dist_name} {dist_info[0]}" for dist_name, dist_info in dist_map.items()
+    )
 
 
 def get_source_file_and_line(obj: object) -> tuple[str, int]:

@@ -11,6 +11,9 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 - Added
   - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
     With this plugins can now read CLI arguments merged with values from `.mdformat.toml`.
+  - Improved plugin list at the end of `--help` output:
+    List languages supported by codeformatter plugin distributions,
+    and parser extensions added by parser extension distributions.
 - Changed
   - Style: No longer escape square bracket enclosures.
   - Style: No longer escape less than sign followed by space character.
