@@ -134,3 +134,37 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   No-wrap-points-until-
 Unicode whitespace shouldnt act as wrap point, the
 normal space should
 .
+
+
+Hard break (issue #326)
+.
+Loremiiinoeffefe\
+ipsum dolor sit amet, consectetur adip elitismisun.
+
+Here's 50 chars including hardbreak backslashhhhh\
+ipsum dolor sit amet, consectetur adip elitismisun.
+
+Here's 50 chars before hardbreak backslash ggggggg\
+ipsum dolor sit amet, consectetur adip elitismisun.
+
+sssssssssssssssssssssssssssssssssssss backslash <a href="foo\
+bar"> ipsum dolor sit amet, consectetur adip elitismisun.
+.
+Loremiiinoeffefe\
+ipsum dolor sit amet, consectetur adip
+elitismisun.
+
+Here's 50 chars including hardbreak backslashhhhh\
+ipsum dolor sit amet, consectetur adip
+elitismisun.
+
+Here's 50 chars before hardbreak backslash
+ggggggg\
+ipsum dolor sit amet, consectetur adip
+elitismisun.
+
+sssssssssssssssssssssssssssssssssssss backslash
+<a href="foo\
+bar"> ipsum dolor sit amet, consectetur adip
+elitismisun.
+.
