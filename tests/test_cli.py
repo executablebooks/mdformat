@@ -241,7 +241,6 @@ def test_consecutive_wrap_width_lines(tmp_path):
     assert file_path.read_text() == text
 
 
-@pytest.mark.xfail(reason="https://github.com/executablebooks/mdformat/issues/326")
 def test_wrap__hard_break(tmp_path):
     file_path = tmp_path / "test_markdown.md"
     file_path.write_text(

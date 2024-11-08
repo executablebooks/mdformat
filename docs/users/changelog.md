@@ -8,6 +8,9 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 - Deprecated
   - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_options`.
     The replacing interface is `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
+- Fixed
+  - Incorrect line wrap on lines right after a hard break.
+    Thank you, [MDW](https://github.com/mdeweerd), for the issue.
 - Added
   - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
     With this plugins can now read CLI arguments merged with values from `.mdformat.toml`.
