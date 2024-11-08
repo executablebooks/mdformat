@@ -146,9 +146,6 @@ ipsum dolor sit amet, consectetur adip elitismisun.
 
 Here's 50 chars before hardbreak backslash ggggggg\
 ipsum dolor sit amet, consectetur adip elitismisun.
-
-sssssssssssssssssssssssssssssssssssss backslash <a href="foo\
-bar"> ipsum dolor sit amet, consectetur adip elitismisun.
 .
 Loremiiinoeffefe\
 ipsum dolor sit amet, consectetur adip
@@ -162,9 +159,24 @@ Here's 50 chars before hardbreak backslash
 ggggggg\
 ipsum dolor sit amet, consectetur adip
 elitismisun.
+.
+
+
+Newline in HTML inline
+.
+There is no hard break here, only HTML inlineee <a href="foo\
+bar"> ipsum dolor sit amet, consectetur adip elitismisun.
+
+sssssssssssssssssssssssssssssssssssss backslash <a href="foo
+bar"> ipsum dolor sit amet, consectetur adip elitismisun.
+.
+There is no hard break here, only HTML inlineee
+<a href="foo\
+bar"> ipsum dolor sit amet, consectetur adip
+elitismisun.
 
 sssssssssssssssssssssssssssssssssssss backslash
-<a href="foo\
+<a href="foo
 bar"> ipsum dolor sit amet, consectetur adip
 elitismisun.
 .
