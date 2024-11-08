@@ -387,13 +387,14 @@ def paragraph(node: RenderTreeNode, context: RenderContext) -> str:  # noqa: C90
         if isinstance(wrap_mode, int):
             wrap_mode -= context.env["indent_width"]
             wrap_mode = max(1, wrap_mode)
-        # These are not really always hard break sections. Can also be
-        # backslash followed by newline in HTML inline. Anyway, we want
-        # the same treatment in that case too.
-        hardbreak_sections = text.split("\\\n")
-        for i in range(len(hardbreak_sections) - 1):
-            hardbreak_sections[i] += "\\"
-        text = "\n".join(_wrap(s, width=wrap_mode) for s in hardbreak_sections)
+        # Newlines should be mostly WRAP_POINTs by now, but there are
+        # exceptional newlines that need to be preserved:
+        # - hard breaks: newline defines the hard break
+        # - html inline: newline vs space can be the difference between
+        #                html block and html inline
+        # Split the text and word wrap each section separately.
+        sections = text.split("\n")
+        text = "\n".join(_wrap(s, width=wrap_mode) for s in sections)
 
     # A paragraph can start or end in whitespace e.g. if the whitespace was
     # in decimal representation form. We need to re-decimalify it, one reason being
