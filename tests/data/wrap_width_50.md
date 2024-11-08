@@ -180,3 +180,11 @@ sssssssssssssssssssssssssssssssssssss backslash
 bar"> ipsum dolor sit amet, consectetur adip
 elitismisun.
 .
+
+
+Starts with encoded space
+.
+&#32;* * *&#32;
+.
+&#32;* * \*
+.
