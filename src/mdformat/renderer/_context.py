@@ -346,7 +346,7 @@ def _wrap(text: str, *, width: int | Literal["no"]) -> str:
     )
     wrapped = wrapper.fill(text)
     wrapped = _recover_preserve_chars(wrapped, replacements)
-    return " " + wrapped if text.startswith(" ") else wrapped
+    return wrapped
 
 
 def _prepare_wrap(text: str) -> tuple[str, str]:
