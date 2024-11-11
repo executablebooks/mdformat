@@ -12,6 +12,8 @@ Note that there is currently no guarantee for a stable Markdown formatting style
   - Incorrect line wrap on lines right after a hard break.
     Thank you, [MDW](https://github.com/mdeweerd), for the issue.
   - Adding an extra leading space to paragraphs that start with space in line wrap modes.
+  - An error on empty paragraph (Unicode space only) surrounded by non-paragraph elements.
+    Thank you, [Nico Schlömer](https://github.com/nschloe), for the issue.
 - Added
   - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
     With this plugins can now read CLI arguments merged with values from `.mdformat.toml`.

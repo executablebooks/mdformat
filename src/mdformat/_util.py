@@ -13,7 +13,10 @@ import mdformat.plugins
 
 NULL_CTX = nullcontext()
 EMPTY_MAP: MappingProxyType = MappingProxyType({})
+
 RE_NEWLINES = re.compile(r"\r\n|\r|\n")
+RE_HTML_START_SPACE_PREFIX = re.compile(r" (<[a-zA-Z][-a-zA-Z0-9]*>)")
+RE_HTML_END_SPACE_SUFFIX = re.compile(r"(</[a-zA-Z][-a-zA-Z0-9]*>) ")
 
 
 def build_mdit(
@@ -62,13 +65,6 @@ def is_md_equal(
     for key, text in [("md1", md1), ("md2", md2)]:
         html = mdit.render(text)
 
-        # The HTML can start with whitespace if Markdown starts with raw HTML
-        # preceded by whitespace. This whitespace should be safe to lstrip.
-        # Also, the trailing newline we add at the end of a document that ends
-        # in a raw html block not followed by a newline, seems to propagate to
-        # an HTML rendering. This newline should be safe to rstrip.
-        html = html.strip()
-
         # Remove codeblocks because code formatter plugins do arbitrary changes.
         for codeclass in codeformatters:
             html = re.sub(
@@ -85,17 +81,19 @@ def is_md_equal(
         html = html.replace("<p> ", "<p>")
         html = html.replace(" </p>", "</p>")
 
-        # Also strip whitespace leading/trailing the <p> elements so that we can
-        # safely remove empty paragraphs below without introducing extra whitespace.
-        html = html.replace(" <p>", "<p>")
-        html = html.replace("</p> ", "</p>")
+        # Also remove whitespace preceding opening tags, and trailing
+        # closing tags, so that we can safely remove empty paragraphs
+        # below without introducing extra whitespace.
+        html = RE_HTML_END_SPACE_SUFFIX.sub(r"\g<1>", html)
+        html = RE_HTML_START_SPACE_PREFIX.sub(r"\g<1>", html)
 
         # empty p elements should be ignored by user agents
         # (https://www.w3.org/TR/REC-html40/struct/text.html#edef-P)
         html = html.replace("<p></p>", "")
 
-        # If it's nothing but whitespace, it's equal
-        html = re.sub(r"^\s+$", "", html)
+        # Leading and trailing whitespace should be safe to ignore. This
+        # also makes any documents that are whitespace-only equal.
+        html = html.strip()
 
         html_texts[key] = html
 
