@@ -28,26 +28,29 @@ Find out more in the [docs](https://mdformat.readthedocs.io).
 Install with [CommonMark](https://spec.commonmark.org/current/) support:
 
 ```bash
-pip install mdformat
+pipx install mdformat
 ```
 
 Install with [GitHub Flavored Markdown (GFM)](https://github.github.com/gfm/) support:
 
 ```bash
-pip install mdformat-gfm
+pipx install mdformat
+pipx inject mdformat mdformat-gfm
 ```
 
 Note that GitHub's Markdown renderer supports syntax extensions not included in the GFM specification.
 For full GitHub support do:
 
 ```bash
-pip install mdformat-gfm mdformat-frontmatter mdformat-footnote
+pipx install mdformat
+pipx inject mdformat mdformat-gfm mdformat-frontmatter mdformat-footnote mdformat-gfm-alerts
 ```
 
 Install with [Markedly Structured Text (MyST)](https://myst-parser.readthedocs.io/en/latest/using/syntax.html) support:
 
 ```bash
-pip install mdformat-myst
+pipx install mdformat
+pipx inject mdformat mdformat-myst
 ```
 
 <!-- end installing -->
@@ -90,7 +93,9 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ```console
 foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}] [--end-of-line {lf,crlf,keep}] [paths ...]
+usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}]
+                [--end-of-line {lf,crlf,keep}] [--exclude PATTERN]
+                [paths ...]
 
 CommonMark compliant Markdown formatter
 
@@ -106,7 +111,10 @@ options:
                         paragraph word wrap mode (default: keep)
   --end-of-line {lf,crlf,keep}
                         output file line ending mode (default: lf)
+  --exclude PATTERN     exclude files that match the Unix-style glob pattern (multiple allowed)
 ```
+
+The `--exclude` option is only available on Python 3.13+.
 
 <!-- end cli-usage -->
 
@@ -129,6 +137,24 @@ Here's a few pointers to get you started:
 
 ## Frequently Asked Questions
 
+### Why does mdformat backslash escape special syntax specific to MkDocs / Hugo / Obsidian / GitHub / some other Markdown engine?
+
+Mdformat is a CommonMark formatter.
+It doesn't have out-of-the-box support for syntax other than what is defined in [the CommonMark specification](https://spec.commonmark.org/current/).
+
+The custom syntax that these Markdown engines introduce typically reinvents the meaning of
+angle brackets, square brackets, parentheses, hash characters — characters that have a special meaning in CommonMark.
+Mdformat often resorts to backslash escaping these characters to ensure the formatting changes it makes never alters a rendered document.
+
+Additionally some engines, namely MkDocs, [do not support](https://github.com/mkdocs/mkdocs/issues/1835) CommonMark to begin, so incompatibilities are unavoidable.
+
+Luckily mdformat is extensible by plugins.
+For many Markdown engines you'll find support by searching
+[the plugin docs](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
+or [mdformat GitHub topic](https://github.com/topics/mdformat).
+
+You may also want to consider a documentation engine that adheres to CommonMark as its base syntax e.g. [mdBook](https://rust-lang.github.io/mdBook/) or [Sphinx with Markdown](https://www.sphinx-doc.org/en/master/usage/markdown.html).
+
 ### Why not use [Prettier](https://github.com/prettier/prettier) instead?
 
 Mdformat is pure Python code!
@@ -149,10 +175,10 @@ according to the author themselves,
 is [inferior to markdown-it](https://github.com/remarkjs/remark/issues/75#issuecomment-143532326) used by mdformat.
 `remark-parse` v9.x is advertised as CommonMark compliant
 and presumably would fix many of the issues,
-but is not used by Prettier (v2.4.0) yet.
+but is not used by Prettier (v3.3.3) yet.
 
-Prettier (v2.4.0), being able to format many languages other than Markdown,
-is a large package with 65 direct dependencies
+Prettier (v3.3.3), being able to format many languages other than Markdown,
+is a large package with 73 direct dependencies
 (mdformat only has one in Python 3.11+).
 This can be a disadvantage in many environments,
 one example being size optimized Docker images.

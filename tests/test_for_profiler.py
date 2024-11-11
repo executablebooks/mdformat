@@ -7,6 +7,7 @@ in this project are formatted. To get and read profiler results:
   - `tox -e profile`
   - `firefox .tox/prof/combined.svg`
 """
+
 from pathlib import Path
 
 from mdformat._cli import run

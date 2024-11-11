@@ -1,7 +1,7 @@
 # Plugins
 
-Mdformat offers an extensible plugin system for both code fence content formatting and Markdown parser extensions (like GFM tables).
-This document explains how to use plugins.
+Mdformat offers an extensible plugin system for code fence content formatting, Markdown parser extensions (like GFM tables),
+and modifying/adding other functionality. This document explains how to use plugins.
 If you want to create a new plugin, refer to the [contributing](../contributors/contributing.md) docs.
 
 ## Code formatter plugins
@@ -25,9 +25,13 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
 
 ### Existing plugins
 
+This is a curated list of popular code formatter plugins.
+The list is not exhaustive.
+Explore mdformat's [GitHub topic](https://github.com/topics/mdformat) for more.
+
 <table>
   <tr>
-    <th>Plugin</th>
+    <th>Distribution</th>
     <th>Supported languages</th>
     <th>Notes</th>
   </tr>
@@ -52,6 +56,11 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
     <td>Requires <a href="https://golang.org/doc/install">Go</a> installation</td>
   </tr>
   <tr>
+    <td><a href="https://github.com/Freed-Wu/mdformat-ruff">mdformat-ruff</a></td>
+    <td><code>python</code></td>
+    <td></td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/hukkin/mdformat-rustfmt">mdformat-rustfmt</a></td>
     <td><code>rust</code></td>
     <td>Requires <a href="https://github.com/rust-lang/rustfmt#quick-start">rustfmt</a> installation</td>
@@ -59,7 +68,7 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
   <tr>
     <td><a href="https://github.com/hukkin/mdformat-shfmt">mdformat-shfmt</a></td>
     <td><code>bash</code>, <code>sh</code></td>
-    <td>Requires either <a href="https://github.com/mvdan/sh#shfmt">shfmt</a> or <a href="https://docs.docker.com/get-docker/">Docker</a> installation</td>
+    <td>Requires either <a href="https://github.com/mvdan/sh#shfmt">shfmt</a>, <a href="https://docs.docker.com/get-docker/">Docker</a> or <a href="https://podman.io/docs/installation">Podman</a> installation</td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkin/mdformat-web">mdformat-web</a></td>
@@ -70,9 +79,8 @@ assert formatted == '```python\n"""black converts quotes"""\n```\n'
 
 ## Parser extension plugins
 
-Markdown-it-py offers a range of useful extensions to the base CommonMark parser (see the [documented list](https://markdown-it-py.readthedocs.io/en/latest/plugins.html)).
-
-Mdformat features a plugin system to support the loading and rendering of such extensions.
+By default, mdformat only parses and renders [CommonMark](https://spec.commonmark.org/current/).
+Installed plugins can add extensions to the syntax, such as footnotes, tables, and other document elements.
 
 For stability, mdformat Python API behavior will not change simply due to a plugin being installed.
 Extensions will have to be explicitly enabled in addition to being installed:
@@ -87,16 +95,50 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
 
 ### Existing plugins
 
+This is a curated list of popular parser extension plugins.
+The list is not exhaustive.
+Explore mdformat's [GitHub topic](https://github.com/topics/mdformat) for more.
+
 <table>
   <tr>
-    <th>Plugin</th>
-    <th>Syntax Extensions</th>
+    <th>Distribution</th>
+    <th>Plugins</th>
     <th>Description</th>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-admon">mdformat-admon</a></td>
+    <td><code>admonition</code></td>
+    <td>Adds support for <a href="https://python-markdown.github.io/extensions/admonition/">python-markdown</a> admonitions</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-deflist">mdformat-deflist</a></td>
+    <td><code>deflist</code></td>
+    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#definition-lists">Pandoc-style</a> definition lists</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/executablebooks/mdformat-footnote">mdformat-footnote</a></td>
+    <td><code>footnote</code></td>
+    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#footnotes">Pandoc-style</a> footnotes</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/butler54/mdformat-frontmatter">mdformat-frontmatter</a></td>
+    <td><code>frontmatter</code></td>
+    <td>Adds support for front matter, and formats YAML front matter</td>
   </tr>
   <tr>
     <td><a href="https://github.com/hukkin/mdformat-gfm">mdformat-gfm</a></td>
     <td><code>gfm</code></td>
     <td>Changes target specification to GitHub Flavored Markdown (GFM)</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-gfm-alerts">mdformat-gfm-alerts</a></td>
+    <td><code>gfm_alerts</code></td>
+    <td>Extends GitHub Flavored Markdown (GFM) with "Alerts"</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/KyleKing/mdformat-mkdocs">mdformat-mkdocs</a></td>
+    <td><code>mkdocs</code></td>
+    <td>Changes target specification to MKDocs. Indents lists with 4-spaces instead of 2</td>
   </tr>
   <tr>
     <td><a href="https://github.com/executablebooks/mdformat-myst">mdformat-myst</a></td>
@@ -113,19 +155,30 @@ formatted = mdformat.text(unformatted, extensions={"tables"})
     <td><code>toc</code></td>
     <td>Adds the capability to auto-generate a table of contents</td>
   </tr>
+</table>
+
+## Other misc plugins
+
+### Existing plugins
+
+This is a curated list of other plugins that don't fit the above categories.
+The list is not exhaustive.
+Explore mdformat's [GitHub topic](https://github.com/topics/mdformat) for more.
+
+<table>
   <tr>
-    <td><a href="https://github.com/executablebooks/mdformat-footnote">mdformat-footnote</a></td>
-    <td><code>footnote</code></td>
-    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#footnotes">Pandoc-style</a> footnotes</td>
+    <th>Distribution</th>
+    <th>Plugins</th>
+    <th>Description</th>
   </tr>
   <tr>
-    <td><a href="https://github.com/butler54/mdformat-frontmatter">mdformat-frontmatter</a></td>
-    <td><code>frontmatter</code></td>
-    <td>Adds support for front matter, and formats YAML front matter</td>
+    <td><a href="https://github.com/csala/mdformat-pyproject">mdformat-pyproject</a></td>
+    <td><code>pyproject</code></td>
+    <td>Adds support for loading options from a <code>[tool.mdformat]</code> section inside the <code>pyproject.toml</code> file, if it exists</td>
   </tr>
   <tr>
-    <td><a href="https://github.com/executablebooks/mdformat-deflist">mdformat-deflist</a></td>
-    <td><code>deflist</code></td>
-    <td>Adds support for <a href="https://pandoc.org/MANUAL.html#definition-lists">Pandoc-style</a> definition lists</td>
+    <td><a href="https://github.com/csala/mdformat-simple-breaks">mdformat-simple-breaks</a></td>
+    <td><code>simple_breaks</code></td>
+    <td>Render <a href="https://mdformat.readthedocs.io/en/stable/users/style.html#thematic-breaks">thematic breaks</a> using three dashes instead of 70 underscores</td>
   </tr>
 </table>

@@ -1,17 +1,17 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 3298ddab3c13dd77d6ce1fc0baf97691430d84b0  # frozen: v4.3.0
+  rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # frozen: v5.0.0
   hooks:
   - id: check-yaml
   - id: check-toml
 - repo: https://github.com/pre-commit/pygrep-hooks
-  rev: 6f51a66bba59954917140ec2eeeaa4d5e630e6ce  # frozen: v1.9.0
+  rev: 3a6eb0fadf60b3cccfd80bad9dbb6fae7e47b316  # frozen: v1.10.0
   hooks:
   - id: python-use-type-annotations
   - id: python-check-blanket-noqa
   - id: python-check-blanket-type-ignore
 - repo: https://github.com/asottile/yesqa
-  rev: 265e9ff7c83add4949f81bb5fe14f4a743ffb04c  # frozen: v1.4.0
+  rev: f2ae90cf9e1661ade79d0881186ce4fd7ba6ee79  # frozen: v1.5.0
   hooks:
   - id: yesqa
     additional_dependencies:
@@ -23,22 +23,26 @@ repos:
   hooks:
   - id: absolufy-imports
 - repo: https://github.com/PyCQA/isort
-  rev: c5e8fa75dda5f764d20f66a215d71c21cfa198e1  # frozen: 5.10.1
+  rev: c235f5e450b4b84e58d114ed4c589cbf454175a3  # frozen: 5.13.2
   hooks:
   - id: isort
 - repo: https://github.com/psf/black
-  rev: f6c139c5215ce04fd3e73a900f1372942d58eca0  # frozen: 22.6.0
+  rev: 1b2427a2b785cc4aac97c19bb4b9a0de063f9547  # frozen: 24.10.0
   hooks:
   - id: black
-- repo: https://github.com/myint/docformatter
-  rev: e0c24db9430c0df94a077c07af2e1de536689c5f  # frozen: v1.5.0-rc1
+- repo: https://github.com/hukkin/docformatter
+  rev: ab802050e6e96aaaf7f917fcbc333bb74e2e57f7  # frozen: v1.4.2
   hooks:
   - id: docformatter
 - repo: https://github.com/PyCQA/flake8
-  rev: f8e1b317742036ff11ff86356fd2b68147e169f7  # frozen: 5.0.4
+  rev: e43806be3607110919eff72939fda031776e885a  # frozen: 7.1.1
   hooks:
   - id: flake8
     additional_dependencies:
     - flake8-bugbear
     - flake8-builtins
     - flake8-comprehensions
+- repo: https://github.com/pre-commit/pre-commit
+  rev: cc4a52241565440ce200666799eef70626457488  # frozen: v4.0.1
+  hooks:
+  - id: validate_manifest

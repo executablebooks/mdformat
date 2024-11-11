@@ -7,18 +7,19 @@ import logging
 import re
 import textwrap
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, NamedTuple
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
 from markdown_it.rules_block.html_block import HTML_SEQUENCES
 
 from mdformat import codepoints
-from mdformat._compat import Literal
 from mdformat._conf import DEFAULT_OPTS
 from mdformat.renderer._util import (
     RE_CHAR_REFERENCE,
     decimalify_leading,
     decimalify_trailing,
     escape_asterisk_emphasis,
+    escape_less_than_sign,
+    escape_square_brackets,
     escape_underscore_emphasis,
     get_list_marker_type,
     is_tight_list,
@@ -110,15 +111,20 @@ def text(node: RenderTreeNode, context: RenderContext) -> str:
     """
     text = node.content
 
+    # Convert tabs to spaces
+    text = text.replace("\t", " ")
+    # Reduce tabs and spaces to one space
+    text = re.sub(" {2,}", " ", text)
+
     # Escape backslash to prevent it from making unintended escapes.
     # This escape has to be first, else we start multiplying backslashes.
     text = text.replace("\\", "\\\\")
 
     text = escape_asterisk_emphasis(text)  # Escape emphasis/strong marker.
     text = escape_underscore_emphasis(text)  # Escape emphasis/strong marker.
-    text = text.replace("[", "\\[")  # Escape link label enclosure
-    text = text.replace("]", "\\]")  # Escape link label enclosure
-    text = text.replace("<", "\\<")  # Escape URI enclosure
+    # Escape link label and link ref enclosures
+    text = escape_square_brackets(text, context.env["used_refs"])
+    text = escape_less_than_sign(text)  # Escape URI enclosure and HTML.
     text = text.replace("`", "\\`")  # Escape code span marker
 
     # Escape "&" if it starts a sequence that can be interpreted as
@@ -152,8 +158,8 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
     fence_char = "~" if "`" in info_str else "`"
 
     # Format the code block using enabled codeformatter funcs
-    if lang in context.options.get("codeformatters", {}):
-        fmt_func = context.options["codeformatters"][lang]
+    fmt_func = context.options.get("codeformatters", {}).get(lang)
+    if fmt_func:
         try:
             code_block = fmt_func(code_block, info_str)
         except Exception:
@@ -168,6 +174,9 @@ def fence(node: RenderTreeNode, context: RenderContext) -> str:
             if filename:
                 warn_msg += f". Filename: {filename}"
             LOGGER.warning(warn_msg)
+        else:
+            if code_block and code_block[-1] != "\n":
+                code_block += "\n"
 
     # The code block must not include as long or longer sequence of `fence_char`s
     # as the fence string itself
@@ -337,7 +346,7 @@ def _wrap(text: str, *, width: int | Literal["no"]) -> str:
     )
     wrapped = wrapper.fill(text)
     wrapped = _recover_preserve_chars(wrapped, replacements)
-    return " " + wrapped if text.startswith(" ") else wrapped
+    return wrapped
 
 
 def _prepare_wrap(text: str) -> tuple[str, str]:
@@ -378,7 +387,14 @@ def paragraph(node: RenderTreeNode, context: RenderContext) -> str:  # noqa: C90
         if isinstance(wrap_mode, int):
             wrap_mode -= context.env["indent_width"]
             wrap_mode = max(1, wrap_mode)
-        text = _wrap(text, width=wrap_mode)
+        # Newlines should be mostly WRAP_POINTs by now, but there are
+        # exceptional newlines that need to be preserved:
+        # - hard breaks: newline defines the hard break
+        # - html inline: newline vs space can be the difference between
+        #                html block and html inline
+        # Split the text and word wrap each section separately.
+        sections = text.split("\n")
+        text = "\n".join(_wrap(s, width=wrap_mode) for s in sections)
 
     # A paragraph can start or end in whitespace e.g. if the whitespace was
     # in decimal representation form. We need to re-decimalify it, one reason being

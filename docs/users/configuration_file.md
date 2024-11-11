@@ -20,4 +20,34 @@ Command line interface arguments take precedence over the configuration file.
 wrap = "keep"       # possible values: {"keep", "no", INTEGER}
 number = false      # possible values: {false, true}
 end_of_line = "lf"  # possible values: {"lf", "crlf", "keep"}
+
+# Python 3.13+ only:
+exclude = []        # possible values: a list of file path pattern strings
+```
+
+## Exclude patterns
+
+A list of file exclusion patterns can be defined on Python 3.13+.
+Unix-style glob patterns are supported, see
+[Python's documentation](https://docs.python.org/3/library/pathlib.html#pattern-language)
+for syntax definition.
+
+Glob patterns are matched against relative paths.
+If `--exclude` is used on the command line, the paths are relative to current working directory.
+Else the paths are relative to the parent directory of the file's `.mdformat.toml`.
+
+Files that match an exclusion pattern are _always_ excluded,
+even in the case that they are directly referenced in a command line invocation.
+
+### Example patterns
+
+```toml
+# .mdformat.toml
+exclude = [
+    "CHANGELOG.md",              # exclude a single root level file
+    "venv/**",                   # recursively exclude a root level directory
+    "**/node_modules/**",        # recursively exclude a directory at any level
+    "**/*.txt",                  # exclude all .txt files
+    "**/*.m[!d]", "**/*.[!m]d",  # exclude all files that are not suffixed .md
+]
 ```

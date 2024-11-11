@@ -3,6 +3,54 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.19
+
+- Deprecated
+  - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_options`.
+    The replacing interface is `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
+- Fixed
+  - Incorrect line wrap on lines right after a hard break.
+    Thank you, [MDW](https://github.com/mdeweerd), for the issue.
+  - Adding an extra leading space to paragraphs that start with space in line wrap modes.
+- Added
+  - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
+    With this plugins can now read CLI arguments merged with values from `.mdformat.toml`.
+  - Improved plugin list at the end of `--help` output:
+    List languages supported by codeformatter plugin distributions,
+    and parser extensions added by parser extension distributions.
+- Changed
+  - Style: No longer escape square bracket enclosures.
+  - Style: No longer escape less than sign followed by space character.
+  - Style: Convert tabs to spaces. Reduce space sequences to one space.
+- Improved
+  - Plugin interface: A trailing newline is added to fenced code blocks if a plugin fails to add it.
+
+## 0.7.18
+
+- Added
+  - Option to exclude file paths using Unix-style glob patterns
+    (`--exclude` on the CLI and `exclude` key in TOML).
+    This feature is Python 3.13+ only.
+    Thank you, [J. Sebastian Paez](https://github.com/jspaezp), for the issue.
+- Removed
+  - Python 3.8 support
+
+## 0.7.17
+
+- Added
+  - Do not update mtime if formatting result is identical to the file.
+    Thank you, [Pierre Augier](https://github.com/paugier), for the issue and the PR.
+- Fixed
+  - An error on empty paragraph (Unicode space only).
+    Thank you, [Nico Schlömer](https://github.com/nschloe), for the issue.
+  - File write fails if no permissions to write to the directory.
+    Fixed by removing atomic writes.
+    Thank you, [Guy Kisel](https://github.com/guykisel), for the issue.
+  - File permissions change on rewrite.
+    Thank you, [Keiichi Watanabe](https://github.com/keiichiw), for the issue.
+- Removed
+  - Python 3.7 support
+
 ## 0.7.16
 
 - Added

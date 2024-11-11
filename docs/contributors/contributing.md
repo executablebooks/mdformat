@@ -60,11 +60,11 @@ setuptools.setup(
 )
 ```
 
-If using Poetry for packaging, the entry point configuration in `pyproject.toml` would need to be like:
+If using a PEP 621 compliant build backend (e.g. Flit) for packaging, the entry point configuration in `pyproject.toml` would need to be like:
 
 ```toml
 # other config here...
-[tool.poetry.plugins."mdformat.codeformatter"]
+[project.entry-points."mdformat.codeformatter"]
 "python" = "my_package.some_module:format_python"
 ```
 
@@ -72,6 +72,18 @@ For a real-world example plugin, see [mdformat-black](https://github.com/hukkin/
 which formats Python code blocks with Black.
 
 ## Developing parser extension plugins
+
+The building blocks of an mdformat parses extension are typically:
+
+- Extend mdformat's CommonMark parser to parse the syntax extension.
+  Mdformat uses [markdown-it-py](https://github.com/executablebooks/markdown-it-py) to parse.
+  Note that markdown-it-py offers a range of extensions to the base CommonMark parser (see the [documented list](https://markdown-it-py.readthedocs.io/en/latest/plugins.html)),
+  so there's a chance the extension already exists.
+- Activate the parser extension in mdformat.
+- Add rendering support for the new syntax.
+- Backslash escape the new syntax where applicable (typically either `text`, `inline` or `paragraph` renderers),
+  to ensure mdformat doesn't render it when it must not.
+  This could happen, for instance, when the syntax was backslash escaped in source Markdown.
 
 The easiest way to get started on a plugin, is to use the <https://github.com/executablebooks/mdformat-plugin> template repository.
 
@@ -112,10 +124,17 @@ setuptools.setup(
 If using Poetry or Flit for packaging, the entry point configuration in `pyproject.toml` would need to be like:
 
 ```toml
-# other config here...
+# Poetry specific:
 [tool.poetry.plugins."mdformat.parser_extension"]
 "myextension" = "my_package:ext_module_or_class"
-# or
-[tool.flit.plugins."mdformat.parser_extension"]
+```
+
+```toml
+# or PEP 621 compliant (works with Flit):
+[project.entry-points."mdformat.parser_extension"]
 "myextension" = "my_package:ext_module_or_class"
 ```
+
+## Making your plugin discoverable
+
+In case you host your plugin on GitHub, make sure to add it under the "mdformat" topic so it shows up on <https://github.com/topics/mdformat>.

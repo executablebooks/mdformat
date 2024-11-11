@@ -8,16 +8,21 @@ import pytest
 
 import mdformat
 from mdformat._cli import run
-from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
+from mdformat._compat import importlib_metadata
+from mdformat.plugins import (
+    _PARSER_EXTENSION_DISTS,
+    CODEFORMATTERS,
+    PARSER_EXTENSIONS,
+    _load_entrypoints,
+)
 from mdformat.renderer import MDRenderer, RenderContext, RenderTreeNode
 
 
-def example_formatter(code, info):
-    return "dummy\n"
-
-
 def test_code_formatter(monkeypatch):
-    monkeypatch.setitem(CODEFORMATTERS, "lang", example_formatter)
+    def fmt_func(code, info):
+        return "dummy\n"
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
     text = mdformat.text(
         dedent(
             """\
@@ -32,6 +37,82 @@ def test_code_formatter(monkeypatch):
         """\
     ```lang
     dummy
+    ```
+    """
+    )
+
+
+def test_code_formatter__empty_str(monkeypatch):
+    def fmt_func(code, info):
+        return ""
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
+    text = mdformat.text(
+        dedent(
+            """\
+    ~~~lang
+    aag
+    gw
+    ~~~
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang
+    ```
+    """
+    )
+
+
+def test_code_formatter__no_end_newline(monkeypatch):
+    def fmt_func(code, info):
+        return "dummy\ndum"
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
+    text = mdformat.text(
+        dedent(
+            """\
+    ```lang
+    ```
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang
+    dummy
+    dum
+    ```
+    """
+    )
+
+
+def test_code_formatter__interface(monkeypatch):
+    def fmt_func(code, info):
+        return info + code * 2
+
+    monkeypatch.setitem(CODEFORMATTERS, "lang", fmt_func)
+    text = mdformat.text(
+        dedent(
+            """\
+    ```    lang  long
+    multi
+    mul
+    ```
+    """
+        ),
+        codeformatters={"lang"},
+    )
+    assert text == dedent(
+        """\
+    ```lang  long
+    lang  longmulti
+    mul
+    multi
+    mul
     ```
     """
     )
@@ -103,7 +184,7 @@ def test_table(monkeypatch):
     other text
     """
         ),
-        extensions=["table"],
+        extensions=["table", "table"],
     )
     assert text == dedent(
         """\
@@ -145,6 +226,83 @@ def test_cli_options(monkeypatch, tmp_path):
     assert opts["mdformat"]["o1"] == "other"
     assert opts["mdformat"]["o2"] == "a"
     assert opts["mdformat"]["arg_name"] == 4
+
+
+class ExamplePluginWithGroupedCli:
+    """A plugin that adds CLI options."""
+
+    @staticmethod
+    def update_mdit(mdit: MarkdownIt):
+        mdit.enable("table")
+
+    @staticmethod
+    def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
+        group.add_argument("--o1", type=str)
+        group.add_argument("--o2", type=str, default="a")
+        group.add_argument("--o3", dest="arg_name", type=int)
+        group.add_argument("--override-toml")
+
+
+def test_cli_options_group(monkeypatch, tmp_path):
+    """Test that CLI arguments added by plugins are correctly added to the
+    options dict.
+
+    Use add_cli_argument_group plugin API.
+    """
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExamplePluginWithGroupedCli)
+    file_path = tmp_path / "test_markdown.md"
+    conf_path = tmp_path / ".mdformat.toml"
+    file_path.touch()
+    conf_path.write_text(
+        """\
+[plugin.table]
+override_toml = 'failed'
+toml_only = true
+"""
+    )
+
+    with patch.object(MDRenderer, "render", return_value="") as mock_render:
+        assert (
+            run(
+                (
+                    str(file_path),
+                    "--o1",
+                    "other",
+                    "--o3",
+                    "4",
+                    "--override-toml",
+                    "success",
+                )
+            )
+            == 0
+        )
+
+    (call_,) = mock_render.call_args_list
+    posargs = call_[0]
+    # Options is the second positional arg of MDRender.render
+    opts = posargs[1]
+    assert opts["mdformat"]["plugin"]["table"]["o1"] == "other"
+    assert opts["mdformat"]["plugin"]["table"]["o2"] == "a"
+    assert opts["mdformat"]["plugin"]["table"]["arg_name"] == 4
+    assert opts["mdformat"]["plugin"]["table"]["override_toml"] == "success"
+    assert opts["mdformat"]["plugin"]["table"]["toml_only"] is True
+
+
+def test_cli_options_group__no_toml(monkeypatch, tmp_path):
+    """Test add_cli_argument_group plugin API with configuration only from
+    CLI."""
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExamplePluginWithGroupedCli)
+    file_path = tmp_path / "test_markdown.md"
+    file_path.touch()
+
+    with patch.object(MDRenderer, "render", return_value="") as mock_render:
+        assert run((str(file_path), "--o1", "other")) == 0
+
+    (call_,) = mock_render.call_args_list
+    posargs = call_[0]
+    # Options is the second positional arg of MDRender.render
+    opts = posargs[1]
+    assert opts["mdformat"]["plugin"]["table"]["o1"] == "other"
 
 
 class ExampleASTChangingPlugin:
@@ -195,7 +353,7 @@ class JSONFormatterPlugin:
         return json.dumps(parsed, indent=2) + "\n"
 
 
-def test_code_format_warnings(monkeypatch, tmp_path, capsys):
+def test_code_format_warnings__cli(monkeypatch, tmp_path, capsys):
     monkeypatch.setitem(CODEFORMATTERS, "json", JSONFormatterPlugin.format_json)
     file_path = tmp_path / "test_markdown.md"
     file_path.write_text("```json\nthis is invalid json\n```\n")
@@ -204,6 +362,18 @@ def test_code_format_warnings(monkeypatch, tmp_path, capsys):
     assert (
         captured.err
         == f"Warning: Failed formatting content of a json code block (line 1 before formatting). Filename: {file_path}\n"  # noqa: E501
+    )
+
+
+def test_code_format_warnings__api(monkeypatch, caplog):
+    monkeypatch.setitem(CODEFORMATTERS, "json", JSONFormatterPlugin.format_json)
+    assert (
+        mdformat.text("```json\nthis is invalid json\n```\n", codeformatters=("json",))
+        == "```json\nthis is invalid json\n```\n"
+    )
+    assert (
+        caplog.messages[0]
+        == "Failed formatting content of a json code block (line 1 before formatting)"
     )
 
 
@@ -225,13 +395,15 @@ def test_plugin_conflict(monkeypatch, tmp_path, capsys):
 
 
 def test_plugin_versions_in_cli_help(monkeypatch, capsys):
-    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExampleTablePlugin)
+    monkeypatch.setitem(
+        _PARSER_EXTENSION_DISTS, "table-dist", ("v3.2.1", ["table-ext"])
+    )
     with pytest.raises(SystemExit) as exc_info:
         run(["--help"])
     assert exc_info.value.code == 0
     captured = capsys.readouterr()
-    assert "Installed plugins:" in captured.out
-    assert "tests: unknown" in captured.out
+    assert "installed extensions:" in captured.out
+    assert "table-dist: table-ext" in captured.out
 
 
 class PrefixPostprocessPlugin:
@@ -293,3 +465,34 @@ def test_postprocess_plugins(monkeypatch):
         Prefixed!Example paragraph.Suffixed!
         """
     )
+
+
+def test_load_entrypoints(tmp_path, monkeypatch):
+    """Test the function that loads plugins to constants."""
+    # Create a minimal .dist-info to create EntryPoints out of
+    dist_info_path = tmp_path / "mdformat_gfm-0.3.6.dist-info"
+    dist_info_path.mkdir()
+    entry_points_path = dist_info_path / "entry_points.txt"
+    metadata_path = dist_info_path / "METADATA"
+    # The modules here will get loaded so use ones we know will always exist
+    # (even though they aren't actual extensions).
+    entry_points_path.write_text(
+        """\
+[mdformat.parser_extension]
+ext1=mdformat.plugins
+ext2=mdformat.plugins
+"""
+    )
+    metadata_path.write_text(
+        """\
+Metadata-Version: 2.1
+Name: mdformat-gfm
+Version: 0.3.6
+"""
+    )
+    distro = importlib_metadata.PathDistribution(dist_info_path)
+    entrypoints = distro.entry_points
+
+    loaded_eps, dist_infos = _load_entrypoints(entrypoints)
+    assert loaded_eps == {"ext1": mdformat.plugins, "ext2": mdformat.plugins}
+    assert dist_infos == {"mdformat-gfm": ("0.3.6", ["ext1", "ext2"])}
