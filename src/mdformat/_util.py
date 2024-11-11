@@ -105,21 +105,26 @@ def is_md_equal(
 
 # TODO: remove empty p tags, remove formatted code
 def normalize_html_ast(ast: list[dict]) -> list[dict]:
-    pass
+    raise NotImplementedError
 
 
 class HTML2AST(HTMLParser):
     """Parse HTML to a list/dict structure that can be used in comparisons.
 
-    HTML2AST.parse() is the only method considered public.
+    HTML2AST.parse() is the only public interface.
     """
 
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
+    def __init__(self) -> None:
+        HTMLParser.__init__(self, convert_charrefs=True)
+
+    def reset(self) -> None:
+        """This is called by HTMLParser.__init__."""
+        HTMLParser.reset(self)
         self.tree: list[dict] = []
         self.current: dict | None = None
 
     def parse(self, text: str, strip_classes: Iterable[str] = ()) -> list[dict]:
+        self.reset()
         self.feed(text)
         self.close()
         self.strip_classes(self.tree, set(strip_classes))
@@ -140,7 +145,7 @@ class HTML2AST(HTMLParser):
 
         return items
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str]]) -> None:
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         tag_item = {"tag": tag, "attrs": dict(attrs), "parent": self.current}
         if self.current is None:
             self.tree.append(tag_item)
@@ -161,9 +166,6 @@ class HTML2AST(HTMLParser):
         # ignore data outside tags
         if self.current is None:
             return
-        assert (
-            "data" not in self.current
-        ), "Oh no, the tag had data in more than one place."
 
         if self.current["tag"] == "p":
             # Strip insignificant paragraph leading/trailing whitespace
@@ -171,7 +173,10 @@ class HTML2AST(HTMLParser):
             # Reduce all collapsable whitespace to a single space
             data = re.sub(r"[\n\t ]+", " ", data)
 
-        self.current["data"] = data
+        if "data" in self.current:
+            self.current["data"].append(data)
+        else:
+            self.current["data"] = [data]
 
 
 def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:

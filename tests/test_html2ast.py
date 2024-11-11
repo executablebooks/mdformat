@@ -22,7 +22,7 @@ def test_html2ast():
 
 def test_html2ast_multiline():
     data = HTML2AST().parse("<div>a\nb \nc \n\n</div>")
-    assert data == [{"tag": "div", "attrs": {}, "data": ["a", "b", "c"]}]
+    assert data == [{"tag": "div", "attrs": {}, "data": ["a\nb \nc \n\n"]}]
 
 
 def test_html2ast_nested():
@@ -58,7 +58,7 @@ def test_html2ast_strip():
 
 def test_html2ast_multiple_content():
     data = HTML2AST().parse(
-        """'
+        """
 <div>
 hello
 
@@ -74,26 +74,36 @@ this one is multiline
         {
             "tag": "div",
             "attrs": {},
-            "children": [{"tag": "p", "attrs": {"class": "x y"}}],
+            "children": [
+                {"tag": "p", "attrs": {"class": "x y"}, "data": ["a"]},
+                {"tag": "p", "attrs": {"class": "a b"}},
+            ],
+            "data": [
+                "\nhello\n\n",
+                "\n",
+                """
+
+   another  hello  in  the same div
+this one is multiline
+""",
+            ],
         },
-        {"tag": "a", "attrs": {}, "data": ["b"]},
     ]
 
 
-def test_html2ast_multiple_contentssss():
+def test_html2ast_empty_paragraphs():
     data = HTML2AST().parse(
-        """'
+        """
 <p></p>
 <p>a</p>
 <p>
 </p>
+<p> </p>
 """,
     )
     assert data == [
-        {
-            "tag": "div",
-            "attrs": {},
-            "children": [{"tag": "p", "attrs": {"class": "x y"}}],
-        },
-        {"tag": "a", "attrs": {}, "data": ["b"]},
+        {"tag": "p", "attrs": {}},
+        {"tag": "p", "attrs": {}, "data": ["a"]},
+        {"tag": "p", "attrs": {}, "data": [""]},
+        {"tag": "p", "attrs": {}, "data": [""]},
     ]
