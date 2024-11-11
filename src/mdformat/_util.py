@@ -66,9 +66,10 @@ def is_md_equal(
         html = mdit.render(text)
 
         # Remove codeblocks because code formatter plugins do arbitrary changes.
-        for codeclass in codeformatters:
+        if codeformatters:
+            langs_re = "|".join(re.escape(lang) for lang in codeformatters)
             html = re.sub(
-                f'<code class="language-{codeclass}">.*</code>',
+                rf'<code class="language-(?:{langs_re})">.*</code>',
                 "",
                 html,
                 flags=re.DOTALL,
