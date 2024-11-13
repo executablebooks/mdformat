@@ -40,6 +40,7 @@ WRAP_POINT = "\x00"
 # A marker used to indicate location of a character that should be preserved
 # during word wrap. Should be converted to the actual character after wrap.
 PRESERVE_CHAR = "\x00"
+RE_PRESERVE_CHAR = re.compile(re.escape(PRESERVE_CHAR))
 
 
 def make_render_children(separator: str) -> Render:
@@ -372,10 +373,8 @@ def _prepare_wrap(text: str) -> tuple[str, str]:
 
 
 def _recover_preserve_chars(text: str, replacements: str) -> str:
-    replacement_iterator = iter(replacements)
-    return "".join(
-        next(replacement_iterator) if c == PRESERVE_CHAR else c for c in text
-    )
+    iter_replacements = iter(replacements)
+    return RE_PRESERVE_CHAR.sub(lambda _: next(iter_replacements), text)
 
 
 def paragraph(node: RenderTreeNode, context: RenderContext) -> str:  # noqa: C901

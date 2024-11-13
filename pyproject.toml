@@ -145,6 +145,15 @@ commands = [
     ["python", "fuzzer/fuzz.py", "{toxworkdir}/fuzzer-corpus", { replace = "posargs", default = ["-len_control=10000"], extend = true }],
 ]
 
+[tool.tox.env."benchmark"]
+description = "benchmark mdformat against local doc files"
+commands = [
+    ["python", "-c", "print('Wrap mode: keep')"],
+    ["python", "-m", "timeit", "from mdformat._cli import run", 'run(["README.md", "docs/", "--check"])'],
+    ["python", "-c", "print('Wrap mode: 50')"],
+    ["python", "-m", "timeit", "from mdformat._cli import run", 'run(["README.md", "docs/", "--check", "--wrap", "50"])'],
+]
+
 
 [tool.coverage.run]
 source = ["mdformat"]
