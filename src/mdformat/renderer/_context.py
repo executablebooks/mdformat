@@ -42,6 +42,10 @@ WRAP_POINT = "\x00"
 PRESERVE_CHAR = "\x00"
 RE_PRESERVE_CHAR = re.compile(re.escape(PRESERVE_CHAR))
 
+RE_UNICODE_WS_OR_WRAP_POINT = re.compile(
+    rf"[{re.escape(''.join(codepoints.UNICODE_WHITESPACE))}{re.escape(WRAP_POINT)}]"
+)
+
 
 def make_render_children(separator: str) -> Render:
     def render_children(
@@ -350,29 +354,30 @@ def _wrap(text: str, *, width: int | Literal["no"]) -> str:
     return wrapped
 
 
-def _prepare_wrap(text: str) -> tuple[str, str]:
+def _prepare_wrap(text: str) -> tuple[str, list[str]]:
     """Prepare text for wrap.
 
     Convert `WRAP_POINT`s to spaces. Convert whitespace to
-    `PRESERVE_CHAR`s. Return a tuple with the prepared string, and
-    another string consisting of replacement characters for
-    `PRESERVE_CHAR`s.
+    `PRESERVE_CHAR`s. Return a tuple with the prepared string, and a
+    list consisting of replacement characters for `PRESERVE_CHAR`s.
     """
-    result = ""
-    replacements = ""
-    for c in text:
+    replacements = []
+
+    def replacer(match: re.Match[str]) -> str:
+        c = match.group()
+        i = match.start()
         if c == WRAP_POINT:
-            if not result or result[-1] != " ":
-                result += " "
-        elif c in codepoints.UNICODE_WHITESPACE:
-            result += PRESERVE_CHAR
-            replacements += c
-        else:
-            result += c
+            if i == 0 or text[i - 1] != " ":
+                return " "
+            return ""
+        replacements.append(c)
+        return PRESERVE_CHAR
+
+    result = RE_UNICODE_WS_OR_WRAP_POINT.sub(replacer, text)
     return result, replacements
 
 
-def _recover_preserve_chars(text: str, replacements: str) -> str:
+def _recover_preserve_chars(text: str, replacements: Iterable[str]) -> str:
     iter_replacements = iter(replacements)
     return RE_PRESERVE_CHAR.sub(lambda _: next(iter_replacements), text)
 
