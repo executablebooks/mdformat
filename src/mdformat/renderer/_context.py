@@ -367,9 +367,7 @@ def _prepare_wrap(text: str) -> tuple[str, list[str]]:
         c = match.group()
         i = match.start()
         if c == WRAP_POINT:
-            if i == 0 or text[i - 1] != " ":
-                return " "
-            return ""
+            return " " if i == 0 or text[i - 1] != " " else ""
         replacements.append(c)
         return PRESERVE_CHAR
 
