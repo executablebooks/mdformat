@@ -43,7 +43,9 @@ PRESERVE_CHAR = "\x00"
 RE_PRESERVE_CHAR = re.compile(re.escape(PRESERVE_CHAR))
 
 RE_UNICODE_WS_OR_WRAP_POINT = re.compile(
-    rf"[{re.escape(''.join(codepoints.UNICODE_WHITESPACE))}{re.escape(WRAP_POINT)}]"
+    rf"[{re.escape(''.join(codepoints.UNICODE_WHITESPACE))}]"
+    "|"
+    rf"{re.escape(WRAP_POINT)}+"
 )
 
 
@@ -364,11 +366,10 @@ def _prepare_wrap(text: str) -> tuple[str, list[str]]:
     replacements = []
 
     def replacer(match: re.Match[str]) -> str:
-        c = match.group()
-        i = match.start()
-        if c == WRAP_POINT:
-            return " " if i == 0 or text[i - 1] != " " else ""
-        replacements.append(c)
+        first_char = match.group()[0]
+        if first_char == WRAP_POINT:
+            return " "
+        replacements.append(first_char)
         return PRESERVE_CHAR
 
     result = RE_UNICODE_WS_OR_WRAP_POINT.sub(replacer, text)
