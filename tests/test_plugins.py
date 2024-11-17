@@ -16,6 +16,7 @@ from mdformat.plugins import (
     _load_entrypoints,
 )
 from mdformat.renderer import MDRenderer, RenderContext, RenderTreeNode
+from tests.utils import run_with_clear_cache
 
 
 def test_code_formatter(monkeypatch):
@@ -496,3 +497,52 @@ Version: 0.3.6
     loaded_eps, dist_infos = _load_entrypoints(entrypoints)
     assert loaded_eps == {"ext1": mdformat.plugins, "ext2": mdformat.plugins}
     assert dist_infos == {"mdformat-gfm": ("0.3.6", ["ext1", "ext2"])}
+
+
+def test_no_codeformatters__toml(tmp_path, monkeypatch):
+    monkeypatch.setitem(CODEFORMATTERS, "json", JSONFormatterPlugin.format_json)
+    unformatted = """\
+```json
+{"a": "b"}
+```
+"""
+    formatted = """\
+```json
+{
+  "a": "b"
+}
+```
+"""
+    file1_path = tmp_path / "file1.md"
+
+    # Without TOML
+    file1_path.write_text(unformatted)
+    assert run((str(tmp_path),)) == 0
+    assert file1_path.read_text() == formatted
+
+    # With TOML
+    file1_path.write_text(unformatted)
+    config_path = tmp_path / ".mdformat.toml"
+    config_path.write_text("codeformatters = []")
+    assert run_with_clear_cache((str(tmp_path),)) == 0
+    assert file1_path.read_text() == unformatted
+
+
+def test_no_extensions__toml(tmp_path, monkeypatch):
+    plugin = ExampleASTChangingPlugin()
+    monkeypatch.setitem(PARSER_EXTENSIONS, "ast_changer", plugin)
+    unformatted = "text\n"
+    formatted = plugin.TEXT_REPLACEMENT + "\n"
+    file1_path = tmp_path / "file1.md"
+
+    # Without TOML
+    file1_path.write_text(unformatted)
+    assert run((str(tmp_path),)) == 0
+    assert file1_path.read_text() == formatted
+
+    # With TOML
+    file1_path.write_text(unformatted)
+    config_path = tmp_path / ".mdformat.toml"
+    config_path.write_text("extensions = []")
+    assert run_with_clear_cache((str(tmp_path),)) == 0
+    assert file1_path.read_text() == unformatted

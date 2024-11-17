@@ -17,6 +17,9 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 - Added
   - Plugin interface: `mdformat.plugins.ParserExtensionInterface.add_cli_argument_group`.
     With this plugins can now read CLI arguments merged with values from `.mdformat.toml`.
+  - Option to select enabled (and required) extensions and code formatter languages
+    (`--extensions` and `--codeformatters` on the CLI,
+    and `extensions` and `codeformatters` keys in TOML).
   - Improved plugin list at the end of `--help` output:
     List languages supported by codeformatter plugin distributions,
     and parser extensions added by parser extension distributions.

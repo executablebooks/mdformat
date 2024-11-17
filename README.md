@@ -95,6 +95,7 @@ If a file is not properly formatted, the exit code will be non-zero.
 foo@bar:~$ mdformat --help
 usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}]
                 [--end-of-line {lf,crlf,keep}] [--exclude PATTERN]
+                [--extensions EXTENSION] [--codeformatters LANGUAGE]
                 [paths ...]
 
 CommonMark compliant Markdown formatter
@@ -112,6 +113,12 @@ options:
   --end-of-line {lf,crlf,keep}
                         output file line ending mode (default: lf)
   --exclude PATTERN     exclude files that match the Unix-style glob pattern (multiple allowed)
+  --extensions EXTENSION
+                        require and enable an extension plugin (multiple allowed) (use
+                        `--no-extensions` to disable) (default: all enabled)
+  --codeformatters LANGUAGE
+                        require and enable a code formatter plugin (multiple allowed)
+                        (use `--no-codeformatters` to disable) (default: all enabled)
 ```
 
 The `--exclude` option is only available on Python 3.13+.
@@ -142,18 +149,22 @@ Here's a few pointers to get you started:
 Mdformat is a CommonMark formatter.
 It doesn't have out-of-the-box support for syntax other than what is defined in [the CommonMark specification](https://spec.commonmark.org/current/).
 
-The custom syntax that these Markdown engines introduce typically reinvents the meaning of
-angle brackets, square brackets, parentheses, hash characters — characters that have a special meaning in CommonMark.
-Mdformat often resorts to backslash escaping these characters to ensure the formatting changes it makes never alters a rendered document.
+The custom syntax that these Markdown engines introduce typically redefines the meaning of
+angle brackets, square brackets, parentheses, hash character — characters that are special in CommonMark.
+Mdformat often resorts to backslash escaping these characters to ensure its formatting changes never alter a rendered document.
 
-Additionally some engines, namely MkDocs, [do not support](https://github.com/mkdocs/mkdocs/issues/1835) CommonMark to begin, so incompatibilities are unavoidable.
+Additionally some engines, namely MkDocs,
+[do not support](https://github.com/mkdocs/mkdocs/issues/1835) CommonMark to begin with,
+so incompatibilities are unavoidable.
 
 Luckily mdformat is extensible by plugins.
 For many Markdown engines you'll find support by searching
 [the plugin docs](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
 or [mdformat GitHub topic](https://github.com/topics/mdformat).
 
-You may also want to consider a documentation engine that adheres to CommonMark as its base syntax e.g. [mdBook](https://rust-lang.github.io/mdBook/) or [Sphinx with Markdown](https://www.sphinx-doc.org/en/master/usage/markdown.html).
+You may also want to consider a documentation generator that adheres to CommonMark as its base syntax
+e.g. [mdBook](https://rust-lang.github.io/mdBook/)
+or [Sphinx with Markdown](https://www.sphinx-doc.org/en/master/usage/markdown.html).
 
 ### Why not use [Prettier](https://github.com/prettier/prettier) instead?
 

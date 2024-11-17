@@ -25,20 +25,10 @@ class RendererWarningPrinter(logging.Handler):
 
 
 def run(cli_args: Sequence[str]) -> int:  # noqa: C901
-    # Enable all parser plugins
-    enabled_parserplugins = mdformat.plugins.PARSER_EXTENSIONS
-    # Enable code formatting for all languages that have a plugin installed
-    enabled_codeformatters = mdformat.plugins.CODEFORMATTERS
-
-    changes_ast = any(
-        getattr(plugin, "CHANGES_AST", False)
-        for plugin in enabled_parserplugins.values()
-    )
-
     arg_parser = make_arg_parser(
         mdformat.plugins._PARSER_EXTENSION_DISTS,
         mdformat.plugins._CODEFORMATTER_DISTS,
-        enabled_parserplugins,
+        mdformat.plugins.PARSER_EXTENSIONS,
     )
     cli_opts = {
         k: v for k, v in vars(arg_parser.parse_args(cli_args)).items() if v is not None
@@ -84,6 +74,45 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 )
                 return 1
 
+        try:
+            enabled_parserplugins = (
+                mdformat.plugins.PARSER_EXTENSIONS
+                if opts["extensions"] is None
+                else {
+                    k: mdformat.plugins.PARSER_EXTENSIONS[k] for k in opts["extensions"]
+                }
+            )
+        except KeyError as e:
+            print_error(
+                "Invalid extension required.",
+                paragraphs=[
+                    f"The required {e.args[0]!r} extension is not available. "
+                    "Please install a plugin that adds the extension, "
+                    "or remove it from required extensions."
+                ],
+            )
+            return 1
+        try:
+            enabled_codeformatters = (
+                mdformat.plugins.CODEFORMATTERS
+                if opts["codeformatters"] is None
+                else {
+                    k: mdformat.plugins.CODEFORMATTERS[k]
+                    for k in opts["codeformatters"]
+                }
+            )
+        except KeyError as e:
+            print_error(
+                "Invalid code formatter required.",
+                paragraphs=[
+                    f"The required {e.args[0]!r} code formatter language "
+                    "is not available. "
+                    "Please install a plugin "
+                    "that adds support for the language, "
+                    "or remove it from required languages."
+                ],
+            )
+            return 1
         if path:
             path_str = str(path)
             # Unlike `path.read_text(encoding="utf-8")`, this preserves
@@ -111,6 +140,10 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 format_errors_found = True
                 print_error(f'File "{path_str}" is not formatted.')
         else:
+            changes_ast = any(
+                getattr(plugin, "CHANGES_AST", False)
+                for plugin in enabled_parserplugins.values()
+            )
             if not changes_ast and not is_md_equal(
                 original_str,
                 formatted_str,
@@ -198,6 +231,40 @@ def make_arg_parser(
             help="exclude files that match the Unix-style glob pattern "
             "(multiple allowed)",
         )
+    extensions_group = parser.add_mutually_exclusive_group()
+    extensions_group.add_argument(
+        "--extensions",
+        action="append",
+        metavar="EXTENSION",
+        help="require and enable an extension plugin "
+        "(multiple allowed) "
+        "(use `--no-extensions` to disable) "
+        "(default: all enabled)",
+    )
+    extensions_group.add_argument(
+        "--no-extensions",
+        action="store_const",
+        const=(),
+        dest="extensions",
+        help=argparse.SUPPRESS,
+    )
+    codeformatters_group = parser.add_mutually_exclusive_group()
+    codeformatters_group.add_argument(
+        "--codeformatters",
+        action="append",
+        metavar="LANGUAGE",
+        help="require and enable a code formatter plugin "
+        "(multiple allowed) "
+        "(use `--no-codeformatters` to disable) "
+        "(default: all enabled)",
+    )
+    codeformatters_group.add_argument(
+        "--no-codeformatters",
+        action="store_const",
+        const=(),
+        dest="codeformatters",
+        help=argparse.SUPPRESS,
+    )
     for plugin in parser_extensions.values():
         if hasattr(plugin, "add_cli_options"):
             import warnings
