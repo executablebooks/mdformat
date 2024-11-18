@@ -7,8 +7,8 @@ import pytest
 
 import mdformat
 from mdformat._cli import get_package_name, get_plugin_info_str, run, wrap_paragraphs
-from mdformat.plugins import CODEFORMATTERS
-from tests.utils import FORMATTED_MARKDOWN, UNFORMATTED_MARKDOWN
+from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
+from tests.utils import FORMATTED_MARKDOWN, UNFORMATTED_MARKDOWN, ASTChangingPlugin
 
 
 def test_no_files_passed():
@@ -426,3 +426,26 @@ def test_extensions__invalid(tmp_path, capsys):
     assert run((str(file_path), "--extensions", "no-exists")) == 1
     captured = capsys.readouterr()
     assert "Error: Invalid extension required" in captured.err
+
+
+def test_no_codeformatters(tmp_path, monkeypatch):
+    monkeypatch.setitem(CODEFORMATTERS, "lang", lambda code, info: "dumdum")
+    file_path = tmp_path / "test.md"
+    original_md = """\
+```lang
+original code
+```
+"""
+    file_path.write_text(original_md)
+    assert run((str(file_path), "--no-codeformatters")) == 0
+    assert file_path.read_text() == original_md
+
+
+def test_no_extensions(tmp_path, monkeypatch):
+    plugin_name = "plug-name"
+    monkeypatch.setitem(PARSER_EXTENSIONS, plugin_name, ASTChangingPlugin)
+    file_path = tmp_path / "test.md"
+    original_md = "original md\n"
+    file_path.write_text(original_md)
+    assert run((str(file_path), "--no-extensions")) == 0
+    assert file_path.read_text() == original_md
