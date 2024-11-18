@@ -8,9 +8,7 @@ import pytest
 import mdformat
 from mdformat._cli import get_package_name, get_plugin_info_str, run, wrap_paragraphs
 from mdformat.plugins import CODEFORMATTERS
-
-UNFORMATTED_MARKDOWN = "\n\n# A header\n\n"
-FORMATTED_MARKDOWN = "# A header\n"
+from tests.utils import FORMATTED_MARKDOWN, UNFORMATTED_MARKDOWN
 
 
 def test_no_files_passed():
@@ -412,3 +410,19 @@ def test_exclude(tmp_path):
             file_path_1.write_text(UNFORMATTED_MARKDOWN)
             assert run([str(file_path_1), "--exclude", bad_pattern]) == 0
             assert file_path_1.read_text() == FORMATTED_MARKDOWN
+
+
+def test_codeformatters__invalid(tmp_path, capsys):
+    file_path = tmp_path / "test.md"
+    file_path.write_text("")
+    assert run((str(file_path), "--codeformatters", "no-exists")) == 1
+    captured = capsys.readouterr()
+    assert "Error: Invalid code formatter required" in captured.err
+
+
+def test_extensions__invalid(tmp_path, capsys):
+    file_path = tmp_path / "test.md"
+    file_path.write_text("")
+    assert run((str(file_path), "--extensions", "no-exists")) == 1
+    captured = capsys.readouterr()
+    assert "Error: Invalid extension required" in captured.err

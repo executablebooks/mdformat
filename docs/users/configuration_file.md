@@ -17,12 +17,20 @@ Command line interface arguments take precedence over the configuration file.
 # no configuration file at all. Change the values for non-default
 # behavior.
 #
-wrap = "keep"       # possible values: {"keep", "no", INTEGER}
-number = false      # possible values: {false, true}
-end_of_line = "lf"  # possible values: {"lf", "crlf", "keep"}
+wrap = "keep"         # options: {"keep", "no", INTEGER}
+number = false        # options: {false, true}
+end_of_line = "lf"    # options: {"lf", "crlf", "keep"}
+# extensions = [      # options: a list of enabled extensions (default: all installed are enabled)
+#     "gfm",
+#     "toc",
+# ]
+# codeformatters = [  # options: a list of enabled code formatter languages (default: all installed are enabled)
+#     "python",
+#     "json",
+# ]
 
 # Python 3.13+ only:
-exclude = []        # possible values: a list of file path pattern strings
+exclude = []          # options: a list of file path pattern strings
 ```
 
 ## Exclude patterns
@@ -35,6 +43,8 @@ for syntax definition.
 Glob patterns are matched against relative paths.
 If `--exclude` is used on the command line, the paths are relative to current working directory.
 Else the paths are relative to the parent directory of the file's `.mdformat.toml`.
+
+Only files (recursively) contained by the base directory can be excluded.
 
 Files that match an exclusion pattern are _always_ excluded,
 even in the case that they are directly referenced in a command line invocation.

@@ -5,8 +5,7 @@ from unittest import mock
 import pytest
 
 from mdformat._cli import run
-from mdformat._conf import read_toml_opts
-from tests.test_cli import FORMATTED_MARKDOWN, UNFORMATTED_MARKDOWN
+from tests.utils import FORMATTED_MARKDOWN, UNFORMATTED_MARKDOWN, run_with_clear_cache
 
 
 def test_cli_override(tmp_path):
@@ -70,6 +69,10 @@ def test_invalid_toml(tmp_path, capsys):
         ("exclude", "exclude = ['1',3]"),
         ("plugin", "plugin = []"),
         ("plugin", "plugin.gfm = {}\nplugin.myst = 1"),
+        ("codeformatters", "codeformatters = 'python'"),
+        ("extensions", "extensions = 'gfm'"),
+        ("codeformatters", "codeformatters = ['python', 1]"),
+        ("extensions", "extensions = ['gfm', 1]"),
     ],
 )
 def test_invalid_conf_value(bad_conf, conf_key, tmp_path, capsys):
@@ -87,15 +90,13 @@ def test_invalid_conf_value(bad_conf, conf_key, tmp_path, capsys):
 
 
 def test_conf_with_stdin(tmp_path, capfd, monkeypatch):
-    read_toml_opts.cache_clear()
-
     config_path = tmp_path / ".mdformat.toml"
     config_path.write_text("number = true")
 
     monkeypatch.setattr(sys, "stdin", StringIO("1. one\n1. two\n1. three"))
 
     with mock.patch("mdformat._cli.Path.cwd", return_value=tmp_path):
-        assert run(("-",)) == 0
+        assert run_with_clear_cache(("-",)) == 0
     captured = capfd.readouterr()
     assert captured.out == "1. one\n2. two\n3. three\n"
 

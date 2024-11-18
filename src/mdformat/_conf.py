@@ -12,6 +12,8 @@ DEFAULT_OPTS = {
     "end_of_line": "lf",
     "exclude": [],
     "plugin": {},
+    "extensions": None,
+    "codeformatters": None,
 }
 
 
@@ -72,6 +74,18 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:  # noqa: C901
         for plugin_conf in opts["plugin"].values():
             if not isinstance(plugin_conf, dict):
                 raise InvalidConfError(f"Invalid 'plugin' value in {conf_path}")
+    if "extensions" in opts:
+        if not isinstance(opts["extensions"], list):
+            raise InvalidConfError(f"Invalid 'extensions' value in {conf_path}")
+        for extension in opts["extensions"]:
+            if not isinstance(extension, str):
+                raise InvalidConfError(f"Invalid 'extensions' value in {conf_path}")
+    if "codeformatters" in opts:
+        if not isinstance(opts["codeformatters"], list):
+            raise InvalidConfError(f"Invalid 'codeformatters' value in {conf_path}")
+        for lang in opts["codeformatters"]:
+            if not isinstance(lang, str):
+                raise InvalidConfError(f"Invalid 'codeformatters' value in {conf_path}")
 
 
 def _validate_keys(opts: Mapping, conf_path: Path) -> None:
