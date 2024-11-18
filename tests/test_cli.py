@@ -8,7 +8,12 @@ import pytest
 import mdformat
 from mdformat._cli import get_package_name, get_plugin_info_str, run, wrap_paragraphs
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
-from tests.utils import FORMATTED_MARKDOWN, UNFORMATTED_MARKDOWN, ASTChangingPlugin
+from tests.utils import (
+    FORMATTED_MARKDOWN,
+    UNFORMATTED_MARKDOWN,
+    ASTChangingPlugin,
+    PrefixPostprocessPlugin,
+)
 
 
 def test_no_files_passed():
@@ -410,6 +415,59 @@ def test_exclude(tmp_path):
             file_path_1.write_text(UNFORMATTED_MARKDOWN)
             assert run([str(file_path_1), "--exclude", bad_pattern]) == 0
             assert file_path_1.read_text() == FORMATTED_MARKDOWN
+
+
+def test_codeformatters(tmp_path, monkeypatch):
+    monkeypatch.setitem(CODEFORMATTERS, "enabled-lang", lambda code, info: "dumdum")
+    monkeypatch.setitem(CODEFORMATTERS, "disabled-lang", lambda code, info: "dumdum")
+    file_path = tmp_path / "test.md"
+    unformatted = """\
+```disabled-lang
+hey
+```
+
+```enabled-lang
+hey
+```
+"""
+    formatted = """\
+```disabled-lang
+hey
+```
+
+```enabled-lang
+dumdum
+```
+"""
+    file_path.write_text(unformatted)
+    assert run((str(file_path), "--codeformatters", "enabled-lang")) == 0
+    assert file_path.read_text() == formatted
+
+
+def test_extensions(tmp_path, monkeypatch):
+    ast_plugin_name = "ast-plug"
+    prefix_plugin_name = "prefix-plug"
+    monkeypatch.setitem(PARSER_EXTENSIONS, ast_plugin_name, ASTChangingPlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, prefix_plugin_name, PrefixPostprocessPlugin)
+    unformatted = "original text\n"
+    file_path = tmp_path / "test.md"
+
+    file_path.write_text(unformatted)
+    assert run((str(file_path), "--extensions", "prefix-plug")) == 0
+    assert file_path.read_text() == "Prefixed!original text\n"
+
+    file_path.write_text(unformatted)
+    assert run((str(file_path), "--extensions", "ast-plug")) == 0
+    assert file_path.read_text() == ASTChangingPlugin.TEXT_REPLACEMENT + "\n"
+
+    file_path.write_text(unformatted)
+    assert (
+        run((str(file_path), "--extensions", "ast-plug", "--extensions", "prefix-plug"))
+        == 0
+    )
+    assert (
+        file_path.read_text() == "Prefixed!" + ASTChangingPlugin.TEXT_REPLACEMENT + "\n"
+    )
 
 
 def test_codeformatters__invalid(tmp_path, capsys):
