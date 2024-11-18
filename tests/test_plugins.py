@@ -1,5 +1,4 @@
 import argparse
-import json
 from textwrap import dedent
 from unittest.mock import patch
 
@@ -15,8 +14,16 @@ from mdformat.plugins import (
     PARSER_EXTENSIONS,
     _load_entrypoints,
 )
-from mdformat.renderer import MDRenderer, RenderContext, RenderTreeNode
-from tests.utils import run_with_clear_cache
+from mdformat.renderer import MDRenderer
+from tests.utils import (
+    ASTChangingPlugin,
+    JSONFormatterPlugin,
+    PrefixPostprocessPlugin,
+    SuffixPostprocessPlugin,
+    TablePlugin,
+    TextEditorPlugin,
+    run_with_clear_cache,
+)
 
 
 def test_code_formatter(monkeypatch):
@@ -119,21 +126,6 @@ def test_code_formatter__interface(monkeypatch):
     )
 
 
-class TextEditorPlugin:
-    """A plugin that makes all text the same."""
-
-    @staticmethod
-    def update_mdit(mdit: MarkdownIt):
-        pass
-
-    def _text_renderer(  # type: ignore[misc]
-        tree: RenderTreeNode, context: RenderContext
-    ) -> str:
-        return "All text is like this now!"
-
-    RENDERERS = {"text": _text_renderer}
-
-
 def test_single_token_extension(monkeypatch):
     """Test the front matter plugin, as a single token extension example."""
     plugin_name = "text_editor"
@@ -157,24 +149,9 @@ def test_single_token_extension(monkeypatch):
     )
 
 
-class ExampleTablePlugin:
-    """A plugin that adds table extension to the parser."""
-
-    @staticmethod
-    def update_mdit(mdit: MarkdownIt):
-        mdit.enable("table")
-
-    def _table_renderer(  # type: ignore[misc]
-        tree: RenderTreeNode, context: RenderContext
-    ) -> str:
-        return "dummy 21"
-
-    RENDERERS = {"table": _table_renderer}
-
-
 def test_table(monkeypatch):
     """Test the table plugin, as a multi-token extension example."""
-    monkeypatch.setitem(PARSER_EXTENSIONS, "table", ExampleTablePlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, "table", TablePlugin)
     text = mdformat.text(
         dedent(
             """\
@@ -306,27 +283,8 @@ def test_cli_options_group__no_toml(monkeypatch, tmp_path):
     assert opts["mdformat"]["plugin"]["table"]["o1"] == "other"
 
 
-class ExampleASTChangingPlugin:
-    """A plugin that makes AST breaking formatting changes."""
-
-    CHANGES_AST = True
-
-    TEXT_REPLACEMENT = "Content replaced completely. AST is now broken!"
-
-    @staticmethod
-    def update_mdit(mdit: MarkdownIt):
-        pass
-
-    def _text_renderer(  # type: ignore[misc]
-        tree: RenderTreeNode, context: RenderContext
-    ) -> str:
-        return ExampleASTChangingPlugin.TEXT_REPLACEMENT
-
-    RENDERERS = {"text": _text_renderer}
-
-
 def test_ast_changing_plugin(monkeypatch, tmp_path):
-    plugin = ExampleASTChangingPlugin()
+    plugin = ASTChangingPlugin()
     monkeypatch.setitem(PARSER_EXTENSIONS, "ast_changer", plugin)
     file_path = tmp_path / "test_markdown.md"
 
@@ -343,15 +301,6 @@ def test_ast_changing_plugin(monkeypatch, tmp_path):
     file_path.write_text("Some markdown here\n")
     assert run((str(file_path),)) == 1
     assert file_path.read_text() == "Some markdown here\n"
-
-
-class JSONFormatterPlugin:
-    """A code formatter plugin that formats JSON."""
-
-    @staticmethod
-    def format_json(unformatted: str, _info_str: str) -> str:
-        parsed = json.loads(unformatted)
-        return json.dumps(parsed, indent=2) + "\n"
 
 
 def test_code_format_warnings__cli(monkeypatch, tmp_path, capsys):
@@ -383,7 +332,7 @@ def test_plugin_conflict(monkeypatch, tmp_path, capsys):
     plugin_name_1 = "plug1"
     plugin_name_2 = "plug2"
     monkeypatch.setitem(PARSER_EXTENSIONS, plugin_name_1, TextEditorPlugin)
-    monkeypatch.setitem(PARSER_EXTENSIONS, plugin_name_2, ExampleASTChangingPlugin)
+    monkeypatch.setitem(PARSER_EXTENSIONS, plugin_name_2, ASTChangingPlugin)
 
     file_path = tmp_path / "test_markdown.md"
     file_path.write_text("some markdown here")
@@ -405,42 +354,6 @@ def test_plugin_versions_in_cli_help(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "installed extensions:" in captured.out
     assert "table-dist: table-ext" in captured.out
-
-
-class PrefixPostprocessPlugin:
-    """A plugin that postprocesses text, adding a prefix."""
-
-    CHANGES_AST = True
-
-    @staticmethod
-    def update_mdit(mdit: MarkdownIt):
-        pass
-
-    def _text_postprocess(  # type: ignore[misc]
-        text: str, tree: RenderTreeNode, context: RenderContext
-    ) -> str:
-        return "Prefixed!" + text
-
-    RENDERERS: dict = {}
-    POSTPROCESSORS = {"text": _text_postprocess}
-
-
-class SuffixPostprocessPlugin:
-    """A plugin that postprocesses text, adding a suffix."""
-
-    CHANGES_AST = True
-
-    @staticmethod
-    def update_mdit(mdit: MarkdownIt):
-        pass
-
-    def _text_postprocess(  # type: ignore[misc]
-        text: str, tree: RenderTreeNode, context: RenderContext
-    ) -> str:
-        return text + "Suffixed!"
-
-    RENDERERS: dict = {}
-    POSTPROCESSORS = {"text": _text_postprocess}
 
 
 def test_postprocess_plugins(monkeypatch):
@@ -529,7 +442,7 @@ def test_no_codeformatters__toml(tmp_path, monkeypatch):
 
 
 def test_no_extensions__toml(tmp_path, monkeypatch):
-    plugin = ExampleASTChangingPlugin()
+    plugin = ASTChangingPlugin()
     monkeypatch.setitem(PARSER_EXTENSIONS, "ast_changer", plugin)
     unformatted = "text\n"
     formatted = plugin.TEXT_REPLACEMENT + "\n"
