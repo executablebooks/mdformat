@@ -3,6 +3,11 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## **unreleased**
+
+- Deprecated
+  - `mdformat.codepoints.ASCII_WHITESPACE`
+
 ## 0.7.19
 
 - Deprecated

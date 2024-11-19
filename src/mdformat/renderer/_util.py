@@ -65,9 +65,7 @@ def longest_consecutive_sequence(seq: str, char: str) -> int:
 
 def maybe_add_link_brackets(link: str) -> str:
     """Surround URI with brackets if required by spec."""
-    if not link or (
-        codepoints.ASCII_CTRL | codepoints.ASCII_WHITESPACE | {"(", ")"}
-    ).intersection(link):
+    if not link or (codepoints.ASCII_CTRL | {" ", "(", ")"}).intersection(link):
         return "<" + link + ">"
     return link
 

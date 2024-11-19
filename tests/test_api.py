@@ -141,3 +141,8 @@ def test_mdrenderer_no_finalize(tmp_path):
     unfinalized = MDRenderer().render(tokens, {}, env, finalize=False)
     finalized = MDRenderer().render(tokens, {}, env)
     assert finalized == unfinalized + "\n\n[gl ref]: https://gitlab.com\n"
+
+
+def test_ascii_whitespace_deprecation(tmp_path):
+    with pytest.warns(DeprecationWarning):
+        mdformat.codepoints.ASCII_WHITESPACE
