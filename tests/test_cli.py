@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 import mdformat
-from mdformat._cli import get_package_name, get_plugin_info_str, run, wrap_paragraphs
+from mdformat._cli import get_plugin_info_str, run, wrap_paragraphs
 from mdformat.plugins import CODEFORMATTERS, PARSER_EXTENSIONS
 from tests.utils import (
     FORMATTED_MARKDOWN,
@@ -343,13 +343,6 @@ def test_eol__check_keep_crlf(tmp_path):
 
     file_path.write_bytes(b"mixed\r\nEOLs\n")
     assert run((str(file_path), "--check", "--end-of-line=keep")) == 1
-
-
-def test_get_package_name():
-    # Test a function/class
-    assert get_package_name(patch) == "unittest"
-    # Test a package/module
-    assert get_package_name(mdformat) == "mdformat"
 
 
 def test_get_plugin_info_str():
