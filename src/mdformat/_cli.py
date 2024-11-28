@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from collections.abc import Generator, Iterable, Mapping, Sequence
 import contextlib
-import inspect
 import logging
 import os.path
 from pathlib import Path
@@ -424,12 +423,6 @@ def log_handler_applied(
         yield
     finally:
         logger.removeHandler(handler)
-
-
-def get_package_name(obj: object) -> str | None:
-    """Return top level module name, or None if not found."""
-    module = inspect.getmodule(obj)
-    return module.__name__.split(".", maxsplit=1)[0] if module else None
 
 
 def get_plugin_info_str(
