@@ -1,11 +1,11 @@
 <div align="center">
 
 [![Documentation Status](https://readthedocs.org/projects/mdformat/badge/?version=latest)](https://mdformat.readthedocs.io/en/latest/?badge=latest)
-[![Build Status](https://github.com/executablebooks/mdformat/workflows/Tests/badge.svg?branch=master)](https://github.com/executablebooks/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
-[![codecov.io](https://codecov.io/gh/executablebooks/mdformat/branch/master/graph/badge.svg)](https://codecov.io/gh/executablebooks/mdformat)
+[![Build Status](https://github.com/hukkin/mdformat/workflows/Tests/badge.svg?branch=master)](https://github.com/hukkin/mdformat/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
+[![codecov.io](https://codecov.io/gh/hukkin/mdformat/branch/master/graph/badge.svg)](https://codecov.io/gh/hukkin/mdformat)
 [![PyPI version](https://img.shields.io/pypi/v/mdformat)](https://pypi.org/project/mdformat)
 
-# ![mdformat](https://raw.githubusercontent.com/executablebooks/mdformat/master/docs/_static/logo.svg)
+# ![mdformat](https://raw.githubusercontent.com/hukkin/mdformat/master/docs/_static/logo.svg)
 
 > CommonMark compliant Markdown formatter
 

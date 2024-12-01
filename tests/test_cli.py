@@ -158,7 +158,7 @@ def test_wrap_paragraphs():
                 "The formatted Markdown renders to different HTML than the input Markdown. "  # noqa: E501
                 "This is likely a bug in mdformat. "
                 "Please create an issue report here: "
-                "https://github.com/executablebooks/mdformat/issues",
+                "https://github.com/hukkin/mdformat/issues",
             ]
         ) == (
             "Error: Could not format\n"
@@ -166,7 +166,7 @@ def test_wrap_paragraphs():
             "\n"
             "The formatted Markdown renders to different HTML than the input\n"
             "Markdown. This is likely a bug in mdformat. Please create an issue\n"
-            "report here: https://github.com/executablebooks/mdformat/issues\n"
+            "report here: https://github.com/hukkin/mdformat/issues\n"
         )
 
 

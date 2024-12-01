@@ -198,9 +198,9 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 
 - Fixed
   - Warnings being printed twice when wrap mode is other than "keep"
-    ([#167](https://github.com/executablebooks/mdformat/pull/167))
+    ([#167](https://github.com/hukkin/mdformat/pull/167))
   - An extra newline being added when consecutive lines' width equals wrap width
-    ([#166](https://github.com/executablebooks/mdformat/pull/166))
+    ([#166](https://github.com/hukkin/mdformat/pull/166))
 
 ## 0.6.3
 
@@ -239,23 +239,23 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 
 - Fixed
   - CLI crash when formatting standard error output and the operating system reports a terminal window width of zero or less
-    ([#131](https://github.com/executablebooks/mdformat/issues/131)).
+    ([#131](https://github.com/hukkin/mdformat/issues/131)).
     Thank you [ehontoria](https://github.com/ehontoria) for the issue.
 
 ## 0.5.6
 
 - Changed
   - Style: Reduce asterisk escaping
-    ([#120](https://github.com/executablebooks/mdformat/issues/120))
+    ([#120](https://github.com/hukkin/mdformat/issues/120))
   - Style: Reduce underscore escaping
-    ([#119](https://github.com/executablebooks/mdformat/issues/119)).
+    ([#119](https://github.com/hukkin/mdformat/issues/119)).
     Thank you [dustinmichels](https://github.com/dustinmichels) for the issue.
 
 ## 0.5.5
 
 - Changed
   - Style: Don't convert shortcut reference links into full reference links
-    ([#111](https://github.com/executablebooks/mdformat/issues/111))
+    ([#111](https://github.com/hukkin/mdformat/issues/111))
 
 ## 0.5.4
 
@@ -286,25 +286,25 @@ Note that there is currently no guarantee for a stable Markdown formatting style
 - Added
   - `CHANGES_AST` to extension plugin API.
     The feature allows plugins that alter Markdown AST to skip validation
-    ([#49](https://github.com/executablebooks/mdformat/pull/49)).
+    ([#49](https://github.com/hukkin/mdformat/pull/49)).
 
 ## 0.3.2
 
 - Changed
-  - Style: Keep reference links as reference links ([#32](https://github.com/executablebooks/mdformat/issues/32)).
+  - Style: Keep reference links as reference links ([#32](https://github.com/hukkin/mdformat/issues/32)).
     Thank you [chrisjsewell](https://github.com/chrisjsewell) for the issue and the PR.
 - Added
-  - Option to number ordered list items consecutively using the `--number` flag ([#33](https://github.com/executablebooks/mdformat/issues/33)).
+  - Option to number ordered list items consecutively using the `--number` flag ([#33](https://github.com/hukkin/mdformat/issues/33)).
     Thank you [chrisjsewell](https://github.com/chrisjsewell) for the issue and the PR.
-  - Parser extension plugins can now add their own CLI / Python API options ([#35](https://github.com/executablebooks/mdformat/pull/35)).
+  - Parser extension plugins can now add their own CLI / Python API options ([#35](https://github.com/hukkin/mdformat/pull/35)).
     Thanks [chrisjsewell](https://github.com/chrisjsewell) for the PR.
 - Fixed
-  - Image links that require surrounding angle brackets no longer break formatting ([#40](https://github.com/executablebooks/mdformat/issues/40)).
+  - Image links that require surrounding angle brackets no longer break formatting ([#40](https://github.com/hukkin/mdformat/issues/40)).
 
 ## 0.3.1
 
 - Added
-  - Plugin system for extending the parser ([#13](https://github.com/executablebooks/mdformat/issues/13)).
+  - Plugin system for extending the parser ([#13](https://github.com/hukkin/mdformat/issues/13)).
     Thank you [chrisjsewell](https://github.com/chrisjsewell) for the issue and the PR.
   - Exported `mdformat.renderer.MDRenderer` and `mdformat.renderer.MARKERS`
 

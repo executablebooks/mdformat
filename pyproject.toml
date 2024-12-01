@@ -32,7 +32,7 @@ classifiers = [
 keywords = ["mdformat", "markdown", "commonmark", "formatter", "pre-commit"]
 
 [project.urls]
-"Homepage" = "https://github.com/executablebooks/mdformat"
+"Homepage" = "https://github.com/hukkin/mdformat"
 "Documentation" = "https://mdformat.readthedocs.io"
 "Style guide" = "https://mdformat.readthedocs.io/en/stable/users/style.html"
 "Changelog" = "https://mdformat.readthedocs.io/en/stable/users/changelog.html"
