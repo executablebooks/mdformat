@@ -158,7 +158,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                         "Please retry without any plugins installed. "
                         "If this error persists, "
                         "report an issue including the input Markdown "
-                        "on https://github.com/executablebooks/mdformat/issues. "
+                        "on https://github.com/hukkin/mdformat/issues. "
                         "If not, "
                         "report an issue on the malfunctioning plugin's issue tracker.",
                     ],

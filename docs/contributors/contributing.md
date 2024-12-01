@@ -9,9 +9,7 @@ Note that mdformat is an opinionated tool
 that attempts to keep formatting style changing configuration to its minimum.
 New configuration will only be added for a very good reason and use case.
 
-Below are the basic development steps,
-and for further information also see the
-[EBP organisation guidelines](https://github.com/executablebooks/.github/blob/master/CONTRIBUTING.md).
+Below are the basic development steps.
 
 1. Fork and clone the repository.
 
