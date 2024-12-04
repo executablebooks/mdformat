@@ -89,7 +89,7 @@ description = "run linters (except mypy)"
 skip_install = true
 deps = ["pre-commit"]
 commands = [
-    ["pre-commit", "run", { replace = "posargs", default = ["--all"], extend = true }],
+    ["pre-commit", "run", { replace = "posargs", default = ["--all-files"], extend = true }],
 ]
 
 [tool.tox.env."mypy"]
