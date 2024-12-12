@@ -113,6 +113,7 @@ commands = [
 
 [tool.tox.env."cli"]
 description = "run mdformat's own CLI"
+deps = []
 commands = [
     ["mdformat", { replace = "posargs", extend = true }],
 ]
@@ -147,6 +148,7 @@ commands = [
 
 [tool.tox.env."benchmark"]
 description = "benchmark mdformat against local doc files"
+deps = []
 commands = [
     ["python", "-c", "print('Wrap mode: keep')"],
     ["python", "-m", "timeit", "from mdformat._cli import run", 'run(["README.md", "docs/", "--check"])'],
