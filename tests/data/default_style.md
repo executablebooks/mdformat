@@ -469,7 +469,7 @@ Square bracket escapes
 .
 [no-escape]no [no-escape] no [\[\]](/url)
 
-[escape]
+[`code-no-escape`]
 
 [inline\](/url)
 
@@ -483,7 +483,7 @@ Square bracket escapes
 .
 [no-escape]no [no-escape] no [[]](/url)
 
-[escape]
+[`code-no-escape`]
 
 \[inline\](/url)
 
