@@ -93,10 +93,9 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ```console
 foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}]
-                [--end-of-line {lf,crlf,keep}] [--exclude PATTERN]
-                [--extensions EXTENSION] [--codeformatters LANGUAGE]
-                [paths ...]
+usage: mdformat [-h] [--check] [--no-validate] [--version] [--number]
+                [--wrap {keep,no,INTEGER}] [--end-of-line {lf,crlf,keep}]
+                [--extensions EXTENSION] [--codeformatters LANGUAGE] [paths ...]
 
 CommonMark compliant Markdown formatter
 
@@ -106,6 +105,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --check               do not apply changes to files
+  --no-validate         do not validate that the rendered HTML is consistent
   --version             show program's version number and exit
   --number              apply consecutive numbering to ordered lists
   --wrap {keep,no,INTEGER}

@@ -8,6 +8,7 @@ from mdformat._compat import tomllib
 
 DEFAULT_OPTS = {
     "wrap": "keep",
+    "no_validate": False,
     "number": False,
     "end_of_line": "lf",
     "exclude": [],
@@ -59,6 +60,9 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:  # noqa: C901
     if "end_of_line" in opts:
         if opts["end_of_line"] not in {"crlf", "lf", "keep"}:
             raise InvalidConfError(f"Invalid 'end_of_line' value in {conf_path}")
+    if "no_validate" in opts:
+        if not isinstance(opts["no_validate"], bool):
+            raise InvalidConfError(f"Invalid 'no_validate' value in {conf_path}")
     if "number" in opts:
         if not isinstance(opts["number"], bool):
             raise InvalidConfError(f"Invalid 'number' value in {conf_path}")

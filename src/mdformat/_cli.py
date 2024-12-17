@@ -143,12 +143,16 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 getattr(plugin, "CHANGES_AST", False)
                 for plugin in enabled_parserplugins.values()
             )
-            if not changes_ast and not is_md_equal(
-                original_str,
-                formatted_str,
-                options=opts,
-                extensions=enabled_parserplugins,
-                codeformatters=enabled_codeformatters,
+            if (
+                not opts["no_validate"]
+                and not changes_ast
+                and not is_md_equal(
+                    original_str,
+                    formatted_str,
+                    options=opts,
+                    extensions=enabled_parserplugins,
+                    codeformatters=enabled_codeformatters,
+                )
             ):
                 print_error(
                     f'Could not format "{path_str}".',
@@ -197,6 +201,11 @@ def make_arg_parser(
     parser.add_argument("paths", nargs="*", help="files to format")
     parser.add_argument(
         "--check", action="store_true", help="do not apply changes to files"
+    )
+    parser.add_argument(
+        "--no-validate",
+        action="store_true",
+        help="do not validate that the rendered HTML is consistent",
     )
     version_str = f"mdformat {mdformat.__version__}"
     plugin_version_str = get_plugin_version_str(
