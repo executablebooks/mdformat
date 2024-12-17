@@ -8,11 +8,10 @@ import os.path
 from pathlib import Path
 import shutil
 import sys
-import textwrap
 
 import mdformat
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
-from mdformat._util import detect_newline_type, is_md_equal
+from mdformat._util import cached_textwrapper, detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 
@@ -408,9 +407,7 @@ def wrap_paragraphs(paragraphs: Iterable[str]) -> str:
         wrap_width = terminal_width
     else:
         wrap_width = 80
-    wrapper = textwrap.TextWrapper(
-        break_long_words=False, break_on_hyphens=False, width=wrap_width
-    )
+    wrapper = cached_textwrapper(wrap_width)
     return "\n\n".join(wrapper.fill(p) for p in paragraphs) + "\n"
 
 
