@@ -5,7 +5,6 @@ from collections.abc import Generator, Iterable, Mapping, MutableMapping
 from contextlib import contextmanager
 import logging
 import re
-import textwrap
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
@@ -13,6 +12,7 @@ from markdown_it.rules_block.html_block import HTML_SEQUENCES
 
 from mdformat import codepoints
 from mdformat._conf import DEFAULT_OPTS
+from mdformat._util import cached_textwrapper
 from mdformat.renderer._util import (
     RE_CHAR_REFERENCE,
     decimalify_leading,
@@ -344,13 +344,7 @@ def _wrap(text: str, *, width: int | Literal["no"]) -> str:
     if width == "no":
         return _recover_preserve_chars(text, replacements)
 
-    wrapper = textwrap.TextWrapper(
-        break_long_words=False,
-        break_on_hyphens=False,
-        width=width,
-        expand_tabs=False,
-        replace_whitespace=False,
-    )
+    wrapper = cached_textwrapper(width)
     wrapped = wrapper.fill(text)
     wrapped = _recover_preserve_chars(wrapped, replacements)
     return wrapped
