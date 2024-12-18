@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Callable, Mapping
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from markdown_it import MarkdownIt
 
 from mdformat._compat import importlib_metadata
-from mdformat.renderer.typing import Postprocess, Render
+
+if TYPE_CHECKING:
+    from mdformat.renderer.typing import Postprocess, Render
 
 
 def _load_entrypoints(

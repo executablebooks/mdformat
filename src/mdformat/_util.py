@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from contextlib import nullcontext
+import functools
 import re
+import textwrap
 from types import MappingProxyType
 from typing import Any, Literal
 
@@ -45,6 +47,15 @@ def build_mdit(
     return mdit
 
 
+# Chars that markdown-it-py escapes when rendering code_inline:
+# https://github.com/executablebooks/markdown-it-py/blob/c5161b550f3c6c0a98d77e8389872405e8f9f9ee/markdown_it/common/utils.py#L138
+# Note that "&" is not included as it is used in the escape sequences of
+# these characters.
+_invalid_html_code_chars = '<>"'
+# a regex str that matches all except above chars
+_valid_html_code_char_re = rf"[^{re.escape(_invalid_html_code_chars)}]"
+
+
 def is_md_equal(
     md1: str,
     md2: str,
@@ -69,10 +80,11 @@ def is_md_equal(
         if codeformatters:
             langs_re = "|".join(re.escape(lang) for lang in codeformatters)
             html = re.sub(
-                rf'<code class="language-(?:{langs_re})">.*</code>',
+                rf'<code class="language-(?:{langs_re})">'
+                rf"{_valid_html_code_char_re}*"
+                r"</code>",
                 "",
                 html,
-                flags=re.DOTALL,
             )
 
         # Reduce all whitespace to a single space
@@ -114,3 +126,14 @@ def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:
     if eol_setting == "crlf":
         return "\r\n"
     return "\n"
+
+
+@functools.lru_cache
+def cached_textwrapper(width: int) -> textwrap.TextWrapper:
+    return textwrap.TextWrapper(
+        break_long_words=False,
+        break_on_hyphens=False,
+        width=width,
+        expand_tabs=False,
+        replace_whitespace=False,
+    )
