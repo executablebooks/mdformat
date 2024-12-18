@@ -8,9 +8,9 @@ from mdformat._compat import tomllib
 
 DEFAULT_OPTS = {
     "wrap": "keep",
-    "validate": True,
     "number": False,
     "end_of_line": "lf",
+    "validate": True,
     "exclude": [],
     "plugin": {},
     "extensions": None,
