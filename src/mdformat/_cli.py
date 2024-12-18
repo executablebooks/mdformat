@@ -204,7 +204,8 @@ def make_arg_parser(
     )
     parser.add_argument(
         "--no-validate",
-        action="store_true",
+        action="store_false",
+        dest="validate",
         help="do not validate that the rendered HTML is consistent",
     )
     version_str = f"mdformat {mdformat.__version__}"
