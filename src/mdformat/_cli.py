@@ -143,7 +143,7 @@ def run(cli_args: Sequence[str]) -> int:  # noqa: C901
                 for plugin in enabled_parserplugins.values()
             )
             if (
-                not opts["no_validate"]
+                opts["validate"]
                 and not changes_ast
                 and not is_md_equal(
                     original_str,

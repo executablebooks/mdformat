@@ -64,7 +64,7 @@ def test_invalid_toml(tmp_path, capsys):
     [
         ("wrap", "wrap = -3"),
         ("end_of_line", "end_of_line = 'lol'"),
-        ("no_validate", "no_validate = 1"),
+        ("validate", "validate = 'off'"),
         ("number", "number = 0"),
         ("exclude", "exclude = '**'"),
         ("exclude", "exclude = ['1',3]"),
