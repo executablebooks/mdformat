@@ -345,19 +345,17 @@ def test_eol__check_keep_crlf(tmp_path):
     assert run((str(file_path), "--check", "--end-of-line=keep")) == 1
 
 
-@pytest.mark.skip
 def test_no_validate(tmp_path):
-    # FIXME: Fake an mdformat bug that renders to a different HTML
+    with patch("mdformat.renderer._context.get_list_marker_type", return_value="?"):
+        file_path = tmp_path / "test.md"
+        content = "1. ordered"
+        file_path.write_text(content)
 
-    file_path = tmp_path / "test.md"
-    content = "2. ordered"
-    file_path.write_text(content)
+        assert run((str(file_path),)) == 1
+        assert file_path.read_text() == content
 
-    assert run((str(file_path),)) == 1
-    assert file_path.read_text() == content
-
-    assert run((str(file_path), "--no-validate")) == 0
-    assert file_path.read_text() != content
+        assert run((str(file_path), "--no-validate")) == 0
+        assert file_path.read_text() == "1? ordered\n"
 
 
 def test_get_plugin_info_str():
