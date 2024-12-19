@@ -157,7 +157,10 @@ def test_conf_no_validate(tmp_path):
     content = "1. ordered"
     file_path.write_text(content)
 
-    with mock.patch("mdformat.renderer._context.get_list_marker_type", return_value="?"):
+    with mock.patch(
+        "mdformat.renderer._context.get_list_marker_type",
+        return_value="?",
+    ):
         assert run_with_clear_cache((str(file_path),)) == 1
         assert file_path.read_text() == content
 
