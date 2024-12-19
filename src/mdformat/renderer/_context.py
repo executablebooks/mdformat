@@ -3,8 +3,10 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Generator, Iterable, Mapping, MutableMapping
 from contextlib import contextmanager
+import functools
 import logging
 import re
+import textwrap
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
@@ -12,7 +14,6 @@ from markdown_it.rules_block.html_block import HTML_SEQUENCES
 
 from mdformat import codepoints
 from mdformat._conf import DEFAULT_OPTS
-from mdformat._util import cached_textwrapper
 from mdformat.renderer._util import (
     RE_CHAR_REFERENCE,
     decimalify_leading,
@@ -27,10 +28,10 @@ from mdformat.renderer._util import (
     longest_consecutive_sequence,
     maybe_add_link_brackets,
 )
-from mdformat.renderer.typing import Postprocess, Render
 
 if TYPE_CHECKING:
     from mdformat.renderer import RenderTreeNode
+    from mdformat.renderer.typing import Postprocess, Render
 
 LOGGER = logging.getLogger(__name__)
 
@@ -331,6 +332,17 @@ def blockquote(node: RenderTreeNode, context: RenderContext) -> str:
         quoted_lines = (f"{marker}{line}" if line else ">" for line in lines)
         quoted_str = "\n".join(quoted_lines)
         return quoted_str
+
+
+@functools.lru_cache
+def cached_textwrapper(width: int) -> textwrap.TextWrapper:
+    return textwrap.TextWrapper(
+        break_long_words=False,
+        break_on_hyphens=False,
+        width=width,
+        expand_tabs=False,
+        replace_whitespace=False,
+    )
 
 
 def _wrap(text: str, *, width: int | Literal["no"]) -> str:
