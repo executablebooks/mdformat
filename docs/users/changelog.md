@@ -3,10 +3,19 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
-## **unreleased**
+## 0.7.20
 
 - Deprecated
-  - `mdformat.codepoints.ASCII_WHITESPACE`
+  - `mdformat.codepoints.ASCII_WHITESPACE`.
+    CommonMark no longer defines this since v0.30.
+- Added
+  - `--no-validate` flag for disabling the AST safety check.
+    Thank you, [Kyle King](https://github.com/KyleKing), for the PR.
+  - Added the delete control character to `mdformat.codepoints.ASCII_CTRL` as per CommonMark v0.30
+- Fixed
+  - The AST safety check not triggering when a code formatter plugin is in use,
+    two or more code blocks are in the same file,
+    and unsafe formatting happens in between the code blocks.
 
 ## 0.7.19
 
