@@ -345,6 +345,19 @@ def test_eol__check_keep_crlf(tmp_path):
     assert run((str(file_path), "--check", "--end-of-line=keep")) == 1
 
 
+def test_cli_no_validate(tmp_path):
+    file_path = tmp_path / "test.md"
+    content = "1. ordered"
+    file_path.write_text(content)
+
+    with patch("mdformat.renderer._context.get_list_marker_type", return_value="?"):
+        assert run((str(file_path),)) == 1
+        assert file_path.read_text() == content
+
+        assert run((str(file_path), "--no-validate")) == 0
+        assert file_path.read_text() == "1? ordered\n"
+
+
 def test_get_plugin_info_str():
     info = get_plugin_info_str(
         {"mdformat-tables": ("0.1.0", ["tables"])},

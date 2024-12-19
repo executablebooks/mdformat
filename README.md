@@ -93,9 +93,10 @@ If a file is not properly formatted, the exit code will be non-zero.
 
 ```console
 foo@bar:~$ mdformat --help
-usage: mdformat [-h] [--check] [--version] [--number] [--wrap {keep,no,INTEGER}]
-                [--end-of-line {lf,crlf,keep}] [--exclude PATTERN]
-                [--extensions EXTENSION] [--codeformatters LANGUAGE]
+usage: mdformat [-h] [--check] [--no-validate] [--version] [--number]
+                [--wrap {keep,no,INTEGER}] [--end-of-line {lf,crlf,keep}]
+                [--exclude PATTERN] [--extensions EXTENSION]
+                [--codeformatters LANGUAGE]
                 [paths ...]
 
 CommonMark compliant Markdown formatter
@@ -106,19 +107,23 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --check               do not apply changes to files
+  --no-validate         do not validate that the rendered HTML is consistent
   --version             show program's version number and exit
   --number              apply consecutive numbering to ordered lists
   --wrap {keep,no,INTEGER}
                         paragraph word wrap mode (default: keep)
   --end-of-line {lf,crlf,keep}
                         output file line ending mode (default: lf)
-  --exclude PATTERN     exclude files that match the Unix-style glob pattern (multiple allowed)
+  --exclude PATTERN     exclude files that match the Unix-style glob pattern
+                        (multiple allowed)
   --extensions EXTENSION
-                        require and enable an extension plugin (multiple allowed) (use
-                        `--no-extensions` to disable) (default: all enabled)
+                        require and enable an extension plugin (multiple
+                        allowed) (use `--no-extensions` to disable) (default:
+                        all enabled)
   --codeformatters LANGUAGE
-                        require and enable a code formatter plugin (multiple allowed)
-                        (use `--no-codeformatters` to disable) (default: all enabled)
+                        require and enable a code formatter plugin (multiple
+                        allowed) (use `--no-codeformatters` to disable)
+                        (default: all enabled)
 ```
 
 The `--exclude` option is only available on Python 3.13+.

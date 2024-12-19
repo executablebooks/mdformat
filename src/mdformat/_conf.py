@@ -10,6 +10,7 @@ DEFAULT_OPTS = {
     "wrap": "keep",
     "number": False,
     "end_of_line": "lf",
+    "validate": True,
     "exclude": [],
     "plugin": {},
     "extensions": None,
@@ -59,6 +60,9 @@ def _validate_values(opts: Mapping, conf_path: Path) -> None:  # noqa: C901
     if "end_of_line" in opts:
         if opts["end_of_line"] not in {"crlf", "lf", "keep"}:
             raise InvalidConfError(f"Invalid 'end_of_line' value in {conf_path}")
+    if "validate" in opts:
+        if not isinstance(opts["validate"], bool):
+            raise InvalidConfError(f"Invalid 'validate' value in {conf_path}")
     if "number" in opts:
         if not isinstance(opts["number"], bool):
             raise InvalidConfError(f"Invalid 'number' value in {conf_path}")
