@@ -219,6 +219,7 @@ class ExamplePluginWithGroupedCli:
         group.add_argument("--o2", type=str, default="a")
         group.add_argument("--o3", dest="arg_name", type=int)
         group.add_argument("--override-toml")
+        group.add_argument("--dont-override-toml", action="store_const", const=True)
 
 
 def test_cli_options_group(monkeypatch, tmp_path):
@@ -236,6 +237,7 @@ def test_cli_options_group(monkeypatch, tmp_path):
 [plugin.table]
 override_toml = 'failed'
 toml_only = true
+dont_override_toml = 'dont override this with None if CLI opt not given'
 """
     )
 
@@ -259,11 +261,16 @@ toml_only = true
     posargs = call_[0]
     # Options is the second positional arg of MDRender.render
     opts = posargs[1]
-    assert opts["mdformat"]["plugin"]["table"]["o1"] == "other"
-    assert opts["mdformat"]["plugin"]["table"]["o2"] == "a"
-    assert opts["mdformat"]["plugin"]["table"]["arg_name"] == 4
-    assert opts["mdformat"]["plugin"]["table"]["override_toml"] == "success"
-    assert opts["mdformat"]["plugin"]["table"]["toml_only"] is True
+    table_opts = opts["mdformat"]["plugin"]["table"]
+    assert table_opts["o1"] == "other"
+    assert table_opts["o2"] == "a"
+    assert table_opts["arg_name"] == 4
+    assert table_opts["override_toml"] == "success"
+    assert table_opts["toml_only"] is True
+    assert (
+        table_opts["dont_override_toml"]
+        == "dont override this with None if CLI opt not given"
+    )
 
 
 def test_cli_options_group__no_toml(monkeypatch, tmp_path):
