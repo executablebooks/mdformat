@@ -345,12 +345,12 @@ def test_eol__check_keep_crlf(tmp_path):
     assert run((str(file_path), "--check", "--end-of-line=keep")) == 1
 
 
-def test_no_validate(tmp_path):
-    with patch("mdformat.renderer._context.get_list_marker_type", return_value="?"):
-        file_path = tmp_path / "test.md"
-        content = "1. ordered"
-        file_path.write_text(content)
+def test_cli_no_validate(tmp_path):
+    file_path = tmp_path / "test.md"
+    content = "1. ordered"
+    file_path.write_text(content)
 
+    with patch("mdformat.renderer._context.get_list_marker_type", return_value="?"):
         assert run((str(file_path),)) == 1
         assert file_path.read_text() == content
 

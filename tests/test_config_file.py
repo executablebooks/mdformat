@@ -1,6 +1,7 @@
 from io import StringIO
 import sys
 from unittest import mock
+from unittest.mock import patch
 
 import pytest
 
@@ -150,3 +151,19 @@ def test_empty_exclude(tmp_path, capsys):
 
     assert run((str(tmp_path),)) == 0
     assert file1_path.read_text() == FORMATTED_MARKDOWN
+
+
+def test_conf_no_validate(tmp_path):
+    file_path = tmp_path / "file.md"
+    content = "1. ordered"
+    file_path.write_text(content)
+
+    with patch("mdformat.renderer._context.get_list_marker_type", return_value="?"):
+        assert run_with_clear_cache((str(file_path),)) == 1
+        assert file_path.read_text() == content
+
+        config_path = tmp_path / ".mdformat.toml"
+        config_path.write_text("validate = false")
+
+        assert run_with_clear_cache((str(file_path),)) == 0
+        assert file_path.read_text() == "1? ordered\n"
