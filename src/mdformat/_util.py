@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from contextlib import nullcontext
-import functools
 import re
-import textwrap
 from types import MappingProxyType
 from typing import Any, Literal
 
@@ -126,14 +124,3 @@ def detect_newline_type(md: str, eol_setting: str) -> Literal["\n", "\r\n"]:
     if eol_setting == "crlf":
         return "\r\n"
     return "\n"
-
-
-@functools.lru_cache
-def cached_textwrapper(width: int) -> textwrap.TextWrapper:
-    return textwrap.TextWrapper(
-        break_long_words=False,
-        break_on_hyphens=False,
-        width=width,
-        expand_tabs=False,
-        replace_whitespace=False,
-    )

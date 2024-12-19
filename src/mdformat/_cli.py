@@ -3,15 +3,17 @@ from __future__ import annotations
 import argparse
 from collections.abc import Generator, Iterable, Mapping, Sequence
 import contextlib
+import functools
 import logging
 import os.path
 from pathlib import Path
 import shutil
 import sys
+import textwrap
 
 import mdformat
 from mdformat._conf import DEFAULT_OPTS, InvalidConfError, read_toml_opts
-from mdformat._util import cached_textwrapper, detect_newline_type, is_md_equal
+from mdformat._util import detect_newline_type, is_md_equal
 import mdformat.plugins
 import mdformat.renderer
 
@@ -404,6 +406,17 @@ def print_error(title: str, paragraphs: Iterable[str] = ()) -> None:
     title = "Error: " + title
     paragraphs = [title] + list(paragraphs)
     print_paragraphs(paragraphs)
+
+
+@functools.lru_cache
+def cached_textwrapper(width: int) -> textwrap.TextWrapper:
+    return textwrap.TextWrapper(
+        break_long_words=False,
+        break_on_hyphens=False,
+        width=width,
+        expand_tabs=False,
+        replace_whitespace=False,
+    )
 
 
 def wrap_paragraphs(paragraphs: Iterable[str]) -> str:

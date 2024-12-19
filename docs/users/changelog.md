@@ -3,7 +3,14 @@
 This log documents all Python API or CLI breaking backwards incompatible changes.
 Note that there is currently no guarantee for a stable Markdown formatting style across versions.
 
+## 0.7.21
+
+- Fixed
+  - Circular import in plugins that import from `mdformat.renderer`.
+
 ## 0.7.20
+
+**NOTE:** This release was yanked from PyPI.
 
 - Deprecated
   - `mdformat.codepoints.ASCII_WHITESPACE`.
