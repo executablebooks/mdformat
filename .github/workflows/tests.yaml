@@ -59,6 +59,29 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
+  # Run mdformat-gfm's tests to catch issues like https://github.com/hukkin/mdformat/issues/501.
+  test-gfm-plugin:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - uses: actions/checkout@v4
+      with:
+        path: mdformat/
+    - uses: actions/checkout@v4
+      with:
+        repository: hukkin/mdformat-gfm
+        path: mdformat-gfm/
+    - run: |
+        pip install pytest
+        pip install --editable mdformat-gfm/
+        pip install --force-reinstall --editable mdformat/
+    - run: |
+        pytest mdformat-gfm/
+
   allgood:
     runs-on: ubuntu-latest
     needs:
